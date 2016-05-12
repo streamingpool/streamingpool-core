@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<products>
+	<product name="streaming-pool" version="0.0.1" directory="org/streaming-pool">
+		<jar>streaming-pool.jar</jar>
+		<desc />
+		<dependencies>
+			<dep product="rxjava" />
+			<dep product="log4j" local="true" />
+			<dep product="slf4j-api" version="PRO" />
+			<dep product="slf4j-log4j12" local="true" version="PRO" />
+			
+			<dep product="spring-core" version="4.2.3.RELEASE" />
+			<dep product="spring-context" version="4.2.3.RELEASE" />
+			<dep product="spring-test" version="4.2.3.RELEASE" />
+
+			<dep product="junit" local="true" excluded="true" />
+			<dep product="assertj-core" version="3.2.0"/>
+			<dep product="mockito-core" local="true" excluded="true" />
+		</dependencies>
+	</product>
+</products>
