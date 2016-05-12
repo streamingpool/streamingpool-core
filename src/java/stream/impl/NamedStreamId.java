@@ -6,11 +6,11 @@ package stream.impl;
 
 import stream.StreamId;
 
-public class SimpleStreamId<T> implements StreamId<T> {
+public class NamedStreamId<T> implements StreamId<T> {
 
     private final String id;
 
-    public SimpleStreamId(String id) {
+    public NamedStreamId(String id) {
         super();
         this.id = id;
     }
@@ -38,7 +38,7 @@ public class SimpleStreamId<T> implements StreamId<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        SimpleStreamId<?> other = (SimpleStreamId<?>) obj;
+        NamedStreamId<?> other = (NamedStreamId<?>) obj;
         if (id == null) {
             if (other.id != null) {
                 return false;

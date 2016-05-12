@@ -7,13 +7,13 @@ package conf;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import stream.impl.SimpleRegistry;
+import stream.impl.SimplePool;
 
 @Configuration
 public class SpringContext {
 
     @Bean
-    public SimpleRegistry createServiceProvider() {
-        return new SimpleRegistry();
+    public SimplePool createPool() {
+        return new SimplePool();
     }
 }

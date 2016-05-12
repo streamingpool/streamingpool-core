@@ -12,7 +12,7 @@ import stream.DiscoveryService;
 import stream.ProvidingService;
 import stream.StreamId;
 
-public class SimpleRegistry implements DiscoveryService, ProvidingService {
+public class SimplePool implements DiscoveryService, ProvidingService {
 
     ConcurrentMap<StreamId<?>, ReactStream<?>> map = new ConcurrentHashMap<>();
 
