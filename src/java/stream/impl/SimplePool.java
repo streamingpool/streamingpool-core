@@ -4,12 +4,14 @@
 
 package stream.impl;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import stream.ReactStream;
 import stream.DiscoveryService;
 import stream.ProvidingService;
+import stream.ReactStream;
 import stream.StreamId;
 
 public class SimplePool implements DiscoveryService, ProvidingService {
@@ -18,10 +20,13 @@ public class SimplePool implements DiscoveryService, ProvidingService {
 
     @Override
     public <T> void provide(StreamId<T> id, ReactStream<T> obs) {
-        if (map.containsKey(id)) {
-            throw new IllegalArgumentException("ID already in the map");
+        requireNonNull(id, "id must not be null!");
+        requireNonNull(obs, "stream must not be null!");
+
+        ReactStream<?> oldValue = map.putIfAbsent(id, obs);
+        if (oldValue != null) {
+            throw new IllegalArgumentException("Id " + id + " already registered! Cannot register twice.");
         }
-        map.put(id, obs);
     }
 
     @SuppressWarnings("unchecked")
