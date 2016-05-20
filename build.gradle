@@ -48,5 +48,5 @@ sourceSets {
 
 test {
     jvmArgs "-Dlog4j.debug"
-    jvmArgs "-Dlog4j.configuration=classpath:conf/log4j-default.properties"
+    jvmArgs "-Dlog4j.configuration=file:src/java/conf/log4j.properties"
 }
