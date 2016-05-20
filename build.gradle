@@ -28,3 +28,24 @@ dependencies {
     testCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
 
 }
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/java'
+        }
+        resources {
+            srcDir 'src/java'
+        }
+    }
+    test {
+        java {
+            srcDir 'src/test'
+        }
+    }
+}
+
+test {
+    jvmArgs "-Dlog4j.debug"
+    jvmArgs "-Dlog4j.configuration=classpath:conf/log4j-default.properties"
+}
