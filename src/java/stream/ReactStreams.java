@@ -5,6 +5,7 @@
 package stream;
 
 import rx.Observable;
+import rx.RxReactiveStreams;
 import stream.impl.SimpleReactStream;
 
 public final class ReactStreams {
@@ -13,11 +14,11 @@ public final class ReactStreams {
     }
     
     public static <T> Observable<T> rxFrom(ReactStream<T> stream) {
-        return ((SimpleReactStream<T>) stream).getSource();
+        return RxReactiveStreams.toObservable(((SimpleReactStream<T>) stream).getSource());
     }
     
     public static <T> ReactStream<T> fromRx(Observable<T> source) {
-        return new SimpleReactStream<>(source);
+        return new SimpleReactStream<>(RxReactiveStreams.toPublisher(source));
     }
 }
 
