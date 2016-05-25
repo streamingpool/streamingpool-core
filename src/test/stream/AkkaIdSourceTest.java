@@ -45,9 +45,10 @@ public class AkkaIdSourceTest {
         public GraphStageLogic createLogic(Attributes inheritedAttributes) {
             DiscoveryService service = toBeImplemented();
             ReactStream<T> stream = service.discover(streamId);
-            
-            
-           final  Source<T, NotUsed> publisherSource = Source.fromPublisher(ReactStreams.publisherFrom(stream));
+
+            // lookup the stream and forward all the input to the outlet
+
+            final Source<T, NotUsed> publisherSource = Source.fromPublisher(ReactStreams.publisherFrom(stream));
 
             return new GraphStageLogic(shape()) {
                 {
