@@ -4,6 +4,6 @@
 
 package stream;
 
-public interface ReactStream <T> {
+public interface ReactStream<T> {
 
 }
