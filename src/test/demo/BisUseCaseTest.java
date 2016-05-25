@@ -1,17 +1,17 @@
 package demo;
 
+import java.io.IOException;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Test;
+
 import rx.Observable;
-import rx.functions.Action1;
 import stream.ReactStream;
 import stream.ReactStreams;
 import stream.StreamId;
 import stream.impl.NamedStreamId;
 import stream.impl.SimplePool;
-
-import java.io.IOException;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by garnierj on 20/05/2016.

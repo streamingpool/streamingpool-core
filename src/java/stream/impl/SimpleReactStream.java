@@ -6,7 +6,6 @@ package stream.impl;
 
 import org.reactivestreams.Publisher;
 
-import rx.Observable;
 import stream.ReactStream;
 
 public class SimpleReactStream <T> implements ReactStream <T> {
