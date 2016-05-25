@@ -4,18 +4,20 @@
 
 package stream.impl;
 
+import org.reactivestreams.Publisher;
+
 import rx.Observable;
 import stream.ReactStream;
 
 public class SimpleReactStream <T> implements ReactStream <T> {
     
-    private final Observable<T> source;
+    private final Publisher<T> source;
 
-    public SimpleReactStream(Observable<T> source) {
+    public SimpleReactStream(Publisher<T> source) {
         this.source = source;
     }
 
-    public Observable<T> getSource() {
+    public Publisher<T> getSource() {
         return source;
     }
     

@@ -35,17 +35,34 @@ public class ArchitectureTest extends StreamProcessingSupport {
         ReactStream<Integer> reactStream = fromRx(prepareRxStreamWith(INTEGER_SOURCE_ITEMS));
         provide(reactStream).as(id);
 
-        final int result = rxFrom(discover(id))
-                .reduce(Math::addExact)
-                .toBlocking()
-                .single();
-        final int expected = INTEGER_SOURCE_ITEMS.stream()
-                .mapToInt(i -> i.intValue())
-                .sum();
+        final int result = rxFrom(discover(id)).reduce(Math::addExact).toBlocking().single();
+        final int expected = INTEGER_SOURCE_ITEMS.stream().mapToInt(i -> i.intValue()).sum();
 
         assertThat(result).isEqualTo(expected);
     }
-    
+
+    @Test
+    public void testRepublish() {
+        final StreamId<Integer> idA = new NamedStreamId<Integer>("idA");
+        final StreamId<Integer> idB = new NamedStreamId<Integer>("idB");
+
+        // Original stream
+        Observable<Integer> sourceStream = prepareRxStreamWith(INTEGER_SOURCE_ITEMS);
+        ReactStream<Integer> reactSourceStream = fromRx(sourceStream);
+        provide(reactSourceStream).as(idA);
+
+        // Discover + re-provide
+        ReactStream<Integer> reactStreamB = fromRx(rxFrom(discover(idA)).map(value -> value * 2));
+        provide(reactStreamB).as(idB);
+
+        // Discover
+        final int result = rxFrom(discover(idB)).reduce(Math::addExact).toBlocking().single();
+        final int expected = INTEGER_SOURCE_ITEMS.stream().mapToInt(i -> i.intValue()).sum() * 2;
+
+        assertThat(result).isEqualTo(expected);
+
+    }
+
     private static <T> Observable<T> prepareRxStreamWith(List<T> items) {
         return Observable.from(items);
     }
