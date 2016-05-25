@@ -10,7 +10,9 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 /**
- * Demo of the back-pressure management in rxJava, to assert that a slow observer will not penalize faster observers.
+ * Demo of the back-pressure management in rxJava, to assert that a slow observer will not penalize faster observers. It
+ * behaves as expected, the fast observers sees everything, the stream drops elements only for the slow observer.
+ * <p>
  * Default rxJava Buffer size for backpressure : 9223372036854775807 (Long.MAX_VALUE). Not sure how to modify it ...
  * 
  * @author garnierj
