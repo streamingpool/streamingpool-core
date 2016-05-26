@@ -7,6 +7,9 @@ package stream;
 import org.reactivestreams.Publisher;
 
 import akka.NotUsed;
+import akka.stream.Materializer;
+import akka.stream.javadsl.AsPublisher;
+import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import rx.Observable;
 import rx.RxReactiveStreams;
@@ -42,4 +45,12 @@ public final class ReactStreams {
     }
     
 
+    public static <T, U> ReactStream<T> streamFrom(Source<T, U> source, Materializer actorMaterializer) {
+        return ReactStreams.fromPublisher(publisherFrom(source, actorMaterializer));
+    }
+
+    public static <T, U> Publisher<T> publisherFrom(Source<T, U> source, Materializer actorMaterializer) {
+        Sink<T, Publisher<T>> akkaSink = Sink.asPublisher(AsPublisher.WITHOUT_FANOUT);
+        return source.runWith(akkaSink, actorMaterializer);
+    }
 }

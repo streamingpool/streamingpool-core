@@ -2,43 +2,39 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package demo.projectreactor;
+package demo.subscriber;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AccumulatorTestSubscriber implements Subscriber<Long> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccumulatorTestSubscriber.class);
+public class TestSubscriber <T> implements Subscriber<T> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestSubscriber.class);
 
-    private final List<Long> values;
+    private final List<T> values;
     private final String name;
     private final long consumingDurationMs;
-    private final CountDownLatch sync;
     private Subscription subscription;
     private boolean isVerbose;
 
     private int requestedItems;
 
-    public AccumulatorTestSubscriber(String name, long consumingDurationMs, CountDownLatch sync) {
+    public TestSubscriber(String name, long consumingDurationMs) {
         this.name = name;
         this.consumingDurationMs = consumingDurationMs;
-        this.sync = sync;
         this.values = new LinkedList<>();
         this.isVerbose = false;
         this.requestedItems = 1;
     }
 
-    public AccumulatorTestSubscriber(String name, long consumingDurationMs, CountDownLatch sync, boolean verbose) {
+    public TestSubscriber(String name, long consumingDurationMs, boolean verbose) {
         this.name = name;
         this.consumingDurationMs = consumingDurationMs;
-        this.sync = sync;
         this.values = new LinkedList<>();
         this.isVerbose = verbose;
         this.requestedItems = 1;
@@ -52,7 +48,7 @@ public class AccumulatorTestSubscriber implements Subscriber<Long> {
     }
 
     @Override
-    public void onNext(Long value) {
+    public void onNext(T value) {
         log("[{}] onNext: {}", name, value);
         values.add(value);
         sleep();
@@ -63,13 +59,11 @@ public class AccumulatorTestSubscriber implements Subscriber<Long> {
     public void onError(Throwable t) {
         log("[{}] onError", name, t);
         subscription.cancel();
-        sync.countDown();
     }
 
     @Override
     public void onComplete() {
         log("[{}] onComplete", name);
-        sync.countDown();
     }
 
     public void setRequestedItems(int requestedItems) {
@@ -94,7 +88,7 @@ public class AccumulatorTestSubscriber implements Subscriber<Long> {
         isVerbose = verbose;
     }
 
-    public List<Long> getValues() {
+    public List<T> getValues() {
         return new ArrayList<>(values);
     }
 
