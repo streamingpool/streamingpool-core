@@ -1,5 +1,7 @@
-package akka;
+package demo.akka;
 
+import akka.Done;
+import akka.NotUsed;
 import akka.actor.ActorSystem;
 import akka.japi.function.Function3;
 import akka.japi.function.Function4;
@@ -64,7 +66,7 @@ abstract class AbstractDifferentRatesDemo implements Runnable {
 
         RunnableGraph.fromGraph(graph)
                 .run(materializer)
-                .thenRunAsync(system::shutdown, system.dispatcher()); /* shutdown akka system on completion */
+                .thenRunAsync(system::terminate, system.dispatcher()); /* shutdown akka system on completion */
     }
 
     abstract protected <T, U> Sink<T, CompletionStage<U>> droppySink(Sink<T, CompletionStage<U>> sink);

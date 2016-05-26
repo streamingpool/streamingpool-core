@@ -1,4 +1,4 @@
-package akka;
+package demo.akka;
 
 import akka.japi.function.Function2;
 import akka.stream.javadsl.Flow;
@@ -20,6 +20,7 @@ public class DifferentRatesDemo2 extends AbstractDifferentRatesDemo {
         new DifferentRatesDemo2().run();
     }
 
+    @Override
     protected <T, U> Sink<T, CompletionStage<U>> droppySink(Sink<T, CompletionStage<U>> sink) {
         Function2<T, T, T> function2 = (older, newer) -> {
             System.out.println("conflating " + older + " and " + newer + " to " + newer);

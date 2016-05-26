@@ -1,4 +1,4 @@
-package akka;
+package demo.akka;
 
 import akka.stream.OverflowStrategy;
 import akka.stream.javadsl.Flow;
@@ -22,6 +22,7 @@ public class DifferentRatesDemo1 extends AbstractDifferentRatesDemo {
         new DifferentRatesDemo1().run();
     }
 
+    @Override
     protected <T, U> Sink<T, CompletionStage<U>> droppySink(Sink<T, CompletionStage<U>> sink) {
         return Flow.<T>create()
                 .buffer(BUFFER_SIZE, OverflowStrategy.dropHead())
