@@ -13,6 +13,7 @@ import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import rx.Observable;
 import rx.RxReactiveStreams;
+import stream.impl.NamedStreamId;
 import stream.impl.SimpleReactStream;
 
 public final class ReactStreams {
@@ -43,5 +44,9 @@ public final class ReactStreams {
     public static <T> Source<T, NotUsed> sourceFrom(StreamId<T> streamId) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
-      
+
+    public static <T> StreamId<T> namedId(String name) {
+        return new NamedStreamId<>(name);
+    }
+
 }

@@ -6,6 +6,9 @@ import akka.stream.SourceShape;
 import akka.stream.stage.AbstractOutHandler;
 import akka.stream.stage.GraphStage;
 import akka.stream.stage.GraphStageLogic;
+
+import java.util.Optional;
+
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -43,7 +46,7 @@ public class IdBasedSource<T> extends GraphStage<SourceShape<T>> {
                     @Override
                     public void onPull() throws Exception {
                         push(out, subscriber.latestValue);
-                        if(subscriber.live) {
+                        if (subscriber.live) {
                             subscriber.subscription.request(1); // TODO tune request amount smartly
                         } else {
                             completeStage();
@@ -73,7 +76,8 @@ public class IdBasedSource<T> extends GraphStage<SourceShape<T>> {
     // from attributes? injected?
     // currently package protected for testing purposes
     protected DiscoveryService getDiscoveryService(Attributes inheritedAttributes) {
-        throw new UnsupportedOperationException("not implemented");
+        Optional<StreamDiscovery> discovery = inheritedAttributes.getAttribute(StreamDiscovery.class);
+        return discovery.get().service();
     }
 
     private class SourceSubscriber implements Subscriber<T> {

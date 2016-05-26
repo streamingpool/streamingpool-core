@@ -15,9 +15,9 @@ import akka.stream.ActorMaterializer;
 import akka.stream.Materializer;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
-import conf.AkkaConfiguration;
+import conf.AkkaStreamingConfiguration;
 
-@ContextConfiguration(classes = AkkaConfiguration.class, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = AkkaStreamingConfiguration.class, loader = AnnotationConfigContextLoader.class)
 public class AkkaStreamSupport extends StreamProcessingSupport {
 
     @Autowired

@@ -4,6 +4,7 @@
 
 package stream;
 
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
@@ -21,12 +22,16 @@ public abstract class StreamProcessingSupport {
     @Autowired
     protected ProvidingService providingService;
 
-    protected ReactStream<Integer> discover(final StreamId<Integer> id) {
+    protected ReactStream<Integer> discover(StreamId<Integer> id) {
         return discoveryService.discover(id);
     }
 
     protected <T> OngoingProviding<T> provide(ReactStream<T> reactStream) {
         return new OngoingProviding<>(providingService, reactStream);
+    }
+
+    protected Publisher<Integer> publisherFrom(StreamId<Integer> id) {
+        return ReactStreams.publisherFrom(discover(id));
     }
 
     public static class OngoingProviding<T> {

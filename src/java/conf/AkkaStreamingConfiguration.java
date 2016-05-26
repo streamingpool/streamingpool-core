@@ -11,7 +11,7 @@ import akka.actor.ActorSystem;
 import akka.stream.ActorMaterializer;
 
 @Configuration
-public class AkkaConfiguration {
+public class AkkaStreamingConfiguration {
 
     @Bean(destroyMethod = "terminate")
     public ActorSystem createActorSystem() {

@@ -20,7 +20,7 @@ public class BisUseCaseTest {
 
     @Test
     public void test() throws IOException, InterruptedException {
-        System.out.println("Here is begins");
+        System.out.println("Here it begins");
         SimplePool streamPool = new SimplePool();
 
         StreamId<Boolean> bisBeamPermitId = new NamedStreamId<>("bisBeamPermit");
@@ -37,7 +37,7 @@ public class BisUseCaseTest {
         Observable<Boolean> discoveredRxStream = ReactStreams.rxFrom(bisBeamPermitStream);
         discoveredRxStream.map(beamPermit -> beamPermit?"Given":"interlocked").forEach(x-> stuff(x));
 
-        System.out.println("Here is ends");
+        System.out.println("Here it ends");
         TimeUnit.SECONDS.sleep(3);
     }
 
