@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * @author acalia
  */
-public class StreamProcessingSupport {
+public abstract class StreamProcessingSupport {
 
     @Autowired
     protected DiscoveryService discoveryService;

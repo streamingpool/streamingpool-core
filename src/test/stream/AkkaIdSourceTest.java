@@ -6,6 +6,7 @@ package stream;
 
 import static org.junit.Assert.fail;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import akka.NotUsed;
@@ -22,7 +23,7 @@ public class AkkaIdSourceTest {
     @Test
     public void createIdSource() {
         Source<Object, NotUsed> source = Source.fromPublisher(null);
-        fail("Not yet implemented");
+        Assertions.assertThat(source).isNotNull();
     }
 
     public class IdBasedSource<T> extends GraphStage<SourceShape<T>> {

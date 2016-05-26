@@ -38,7 +38,7 @@ public class BisUseCaseTest {
         discoveredRxStream.map(beamPermit -> beamPermit?"Given":"interlocked").forEach(x-> stuff(x));
 
         System.out.println("Here is ends");
-        TimeUnit.SECONDS.sleep(100);
+        TimeUnit.SECONDS.sleep(3);
     }
 
     private void stuff(String x) {
