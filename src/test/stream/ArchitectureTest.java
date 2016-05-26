@@ -10,6 +10,9 @@ import static stream.ReactStreams.rxFrom;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +22,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import conf.SpringContext;
 import rx.Observable;
+import rx.functions.Func1;
 import stream.impl.NamedStreamId;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -61,6 +65,25 @@ public class ArchitectureTest extends StreamProcessingSupport {
 
         assertThat(result).isEqualTo(expected);
 
+    }
+
+    @Test
+    public void test() throws InterruptedException {
+
+        // This object is used as a kind of semaphore in order to block the main thread until the stream finishes
+        // Rx uses deamon threads inside, so we have to block the main thread because it would kill Rx ones when it finishes
+        CountDownLatch counter = new CountDownLatch(1);
+
+        Observable.interval(1, TimeUnit.SECONDS) // Generate a value each second
+            .filter(value -> value % 2 == 0) // Pass down only the values that are even
+            .limit(3) // Just accept 3 values
+            .finallyDo(counter::countDown) // When the stream ends (or there is an error) tell the counter to decrease
+            .subscribe(System.out::println); // Subscribe to the stream in order to get the values (in this case print them)
+
+        // The counter works like this: it is initiated with a value (1 in this case) and this value can be decreased.
+        // When it reaches 0, is considered done. In this case, the await() waits for the counter to reach 0 and then unblock 
+        // the calling thream (the main in this case)
+        counter.await();
     }
 
     private static <T> Observable<T> prepareRxStreamWith(List<T> items) {
