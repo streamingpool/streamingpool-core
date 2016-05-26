@@ -14,6 +14,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 
 import org.mockito.runners.ConsoleSpammingMockitoJUnitRunner;
+import org.reactivestreams.Processor;
 import org.reactivestreams.Publisher;
 
 import com.typesafe.config.Config;
@@ -64,12 +65,9 @@ public class RxJavaAkkaInteroperabilityDemo {
         SimplePool simplePool = new SimplePool();
 
         StreamId<Long> rxJavaStreamId = provideRxStream(simplePool);
-
         ReactStream<Long> discoveredStream = simplePool.discover(rxJavaStreamId);
 
-        Publisher<Long> publisherFrom = ReactStreams.publisherFrom(discoveredStream);
-
-        Source<Long, NotUsed> rxSource = Source.fromPublisher(publisherFrom);
+        Source<Long, NotUsed> rxSource = ReactStreams.sourceFrom(discoveredStream);
         Sink<Long, CompletionStage<Done>> consoleSink = Sink.foreach(l -> {
             TimeUnit.SECONDS.sleep(2);
             System.out.println("akka : " + l);
