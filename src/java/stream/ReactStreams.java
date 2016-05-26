@@ -43,14 +43,5 @@ public final class ReactStreams {
     public static <T> Source<T, NotUsed> sourceFrom(StreamId<T> streamId) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
-    
-
-    public static <T, U> ReactStream<T> streamFrom(Source<T, U> source, Materializer actorMaterializer) {
-        return ReactStreams.fromPublisher(publisherFrom(source, actorMaterializer));
-    }
-
-    public static <T, U> Publisher<T> publisherFrom(Source<T, U> source, Materializer actorMaterializer) {
-        Sink<T, Publisher<T>> akkaSink = Sink.asPublisher(AsPublisher.WITHOUT_FANOUT);
-        return source.runWith(akkaSink, actorMaterializer);
-    }
+      
 }

@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import stream.impl.SimplePool;
 
 @Configuration
-public class SpringContext {
+public class InProcessPoolConfiguration {
 
     @Bean
     public SimplePool createPool() {

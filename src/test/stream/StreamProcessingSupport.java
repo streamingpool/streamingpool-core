@@ -5,10 +5,15 @@
 package stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+
+import conf.InProcessPoolConfiguration;
 
 /**
  * @author acalia
  */
+@ContextConfiguration(classes = InProcessPoolConfiguration.class, loader = AnnotationConfigContextLoader.class)
 public abstract class StreamProcessingSupport {
 
     @Autowired

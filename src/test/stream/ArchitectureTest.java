@@ -20,13 +20,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import conf.SpringContext;
+import conf.InProcessPoolConfiguration;
 import rx.Observable;
 import rx.functions.Func1;
 import stream.impl.NamedStreamId;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = SpringContext.class, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = InProcessPoolConfiguration.class, loader = AnnotationConfigContextLoader.class)
 public class ArchitectureTest extends StreamProcessingSupport {
 
     private static final String ANY_NAME = "";
