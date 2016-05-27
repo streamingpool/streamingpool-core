@@ -22,7 +22,7 @@ public abstract class StreamProcessingSupport {
     @Autowired
     protected ProvidingService providingService;
 
-    protected ReactStream<Integer> discover(StreamId<Integer> id) {
+    protected <T> ReactStream<T> discover(final StreamId<T> id) {
         return discoveryService.discover(id);
     }
 
