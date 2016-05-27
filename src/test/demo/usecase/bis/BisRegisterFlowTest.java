@@ -7,7 +7,6 @@ package demo.usecase.bis;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +20,6 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import conf.AkkaStreamingConfiguration;
 import conf.InProcessPoolConfiguration;
 import rx.Observable;
-import rx.functions.Action1;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 import stream.ReactStreams;
@@ -49,20 +47,29 @@ public class BisRegisterFlowTest extends StreamProcessingSupport {
 
         CountDownLatch sync = new CountDownLatch(1);
 
-        ReactStreams.rxFrom(discover(SOURCE_ID)).flatMap(this::mapBitsToUserPermits)
-                .groupBy(permit -> permit.getPermitId())
-                .doOnCompleted(sync::countDown).subscribe(this::provideStreams);
+        //@formatter:off
+        ReactStreams.rxFrom(discover(SOURCE_ID))
+            .flatMap(this::mapBitsToUserPermits)
+            .groupBy(UserPermit::getPermitId)
+            .doOnCompleted(sync::countDown)
+            .subscribe(this::provideStreams);
+        //@formatter:on
 
         sync.await();
 
-        Observable<UserPermit> userPermit10AStream = ReactStreams
-                .rxFrom(discover(new NamedStreamId<>(RedundantPermitId.USER_PERMIT_1_A.toString())));
-        Observable<UserPermit> userPermit10BStream = ReactStreams
-                .rxFrom(discover(new NamedStreamId<>(RedundantPermitId.USER_PERMIT_1_B.toString())));
+        Observable<UserPermit> userPermit10AStream = getUserPermitStream(RedundantPermitId.USER_PERMIT_1_A);
+        Observable<UserPermit> userPermit10BStream = getUserPermitStream(RedundantPermitId.USER_PERMIT_1_B);
 
-        Observable.zip(userPermit10AStream, userPermit10BStream, (userPermitA, userPermitB) -> {
-            return userPermitA.isGiven() & userPermitB.isGiven();
-        }).subscribe(value -> System.out.println("User Permit 1 : " + value));
+        //@formatter:off        
+        Observable
+            .zip(userPermit10AStream, userPermit10BStream,
+                    (a, b) -> a.isGiven() & b.isGiven())
+            .subscribe(value -> System.out.println("User Permit 1 : " + value));
+        //@formatter:on
+    }
+
+    private Observable<UserPermit> getUserPermitStream(RedundantPermitId redundantPermitId) {
+        return ReactStreams.rxFrom(discover(new NamedStreamId<>(redundantPermitId.toString())));
     }
 
     private Observable<UserPermit> mapBitsToUserPermits(Integer register) {
@@ -82,7 +89,7 @@ public class BisRegisterFlowTest extends StreamProcessingSupport {
     private List<Integer> someValues() {
         ArrayList<Integer> values = new ArrayList<>();
         for (int i = 0; i < SOURCE_STREAM_ELEMENTS; ++i) {
-            values.add(new Random().nextBoolean() ? 0 : USER_PERMIT_1_A_AND_B_TRUE);
+            values.add(i % 4 == 0 ? 0 : USER_PERMIT_1_A_AND_B_TRUE);
         }
         return values;
     }
