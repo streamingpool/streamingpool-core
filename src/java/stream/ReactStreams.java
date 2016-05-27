@@ -7,9 +7,6 @@ package stream;
 import org.reactivestreams.Publisher;
 
 import akka.NotUsed;
-import akka.stream.Materializer;
-import akka.stream.javadsl.AsPublisher;
-import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import rx.Observable;
 import rx.RxReactiveStreams;

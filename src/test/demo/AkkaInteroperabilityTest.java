@@ -9,30 +9,38 @@ import static stream.ReactStreams.namedId;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import akka.NotUsed;
+import akka.stream.ActorMaterializer;
 import akka.stream.DelayOverflowStrategy;
-import akka.stream.javadsl.AsPublisher;
 import akka.stream.javadsl.Flow;
 import akka.stream.javadsl.Keep;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
+import conf.AkkaStreamingConfiguration;
 import demo.subscriber.BlockingTestSubscriber;
 import rx.Observable;
 import scala.concurrent.duration.Duration;
-import stream.AkkaStreamSupport;
-import stream.ReactStreams;
 import stream.StreamId;
+import stream.helper.AbstractStreamTest;
+import stream.helper.AkkaTestHelper;
+import stream.helper.RxTestHelper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class AkkaInteroperabilityTest extends AkkaStreamSupport {
+@ContextConfiguration(classes = AkkaStreamingConfiguration.class, loader = AnnotationConfigContextLoader.class)
+public class AkkaInteroperabilityTest extends AbstractStreamTest implements AkkaTestHelper, RxTestHelper {
+
     private static final StreamId<Integer> SOURCE_ID = namedId("SourceStream");
     private static final StreamId<Integer> BUFFERED_ID = namedId("BufferedSourceStream");
 
@@ -41,13 +49,12 @@ public class AkkaInteroperabilityTest extends AkkaStreamSupport {
     private static final int CONSUMING_DURATION_MS = 5;
     private static final List<Integer> ELEMENTS = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
             17, 18, 19, 20);
+    private static final Source<Integer, NotUsed> RANGE_SOURCE_AKKA = createAkkaRangeSource();
+    private static final Flow<Integer, Integer, NotUsed> DELAY_FLOW = createDelayFlow();
+    private static final Observable<Integer> RANGE_SOURCE_RX = createRxRangeSource();
 
-    private static final Source<Integer, NotUsed> RANGE_SOURCE_AKKA = Source.range(1, SOURCE_STREAM_ELEMENT_NUM);
-    private static final Flow<Integer, Integer, NotUsed> DELAY_FLOW = Flow.of(Integer.class)
-            .delay(Duration.create(SOURCE_INTERVAL_MS, TimeUnit.MILLISECONDS), DelayOverflowStrategy.backpressure())
-            .async();
-    private static final Observable<Integer> RANGE_SOURCE_RX = Observable.range(1, SOURCE_STREAM_ELEMENT_NUM);
-
+    @Autowired
+    private ActorMaterializer actorMaterializer;
     private BlockingTestSubscriber<Integer> subscriber;
 
     @Before
@@ -62,7 +69,6 @@ public class AkkaInteroperabilityTest extends AkkaStreamSupport {
 
     @Test
     public void provideAndDiscoverAkkaStream() {
-        provide(RANGE_SOURCE_AKKA).as(SOURCE_ID);
         provide(RANGE_SOURCE_AKKA.via(DELAY_FLOW)).as(BUFFERED_ID);
 
         publisherFrom(BUFFERED_ID).subscribe(subscriber);
@@ -83,17 +89,32 @@ public class AkkaInteroperabilityTest extends AkkaStreamSupport {
     }
 
     @Test
-    public void provideAsRxAndDiscoverAsAkka() {
-        provide(ReactStreams.fromRx(RANGE_SOURCE_RX)).as(SOURCE_ID);
+    public void provideAsRxAndDiscoverAsAkka() throws InterruptedException, ExecutionException {
+        provide(RANGE_SOURCE_RX).as(SOURCE_ID);
 
-        sourceFrom(SOURCE_ID)
-                .toMat(Sink.asPublisher(AsPublisher.WITHOUT_FANOUT), Keep.right())
-                .run(materializer())
-                .subscribe(subscriber);
+        List<Integer> values = sourceFrom(SOURCE_ID).toMat(Sink.seq(), Keep.right()).run(materializer())
+                .toCompletableFuture().get();
 
-        subscriber.await();
+        assertThat(values).hasSize(SOURCE_STREAM_ELEMENT_NUM);
+        assertThat(values).containsExactlyElementsOf(ELEMENTS);
+    }
 
-        assertThat(subscriber.getValues()).hasSize(SOURCE_STREAM_ELEMENT_NUM);
-        assertThat(subscriber.getValues()).containsExactlyElementsOf(ELEMENTS);
+    @Override
+    public ActorMaterializer materializer() {
+        return actorMaterializer;
+    }
+
+    private static Flow<Integer, Integer, NotUsed> createDelayFlow() {
+        return Flow.of(Integer.class)
+                .delay(Duration.create(SOURCE_INTERVAL_MS, TimeUnit.MILLISECONDS), DelayOverflowStrategy.backpressure())
+                .async();
+    }
+
+    private static Source<Integer, NotUsed> createAkkaRangeSource() {
+        return Source.range(1, SOURCE_STREAM_ELEMENT_NUM);
+    }
+
+    private static Observable<Integer> createRxRangeSource() {
+        return Observable.range(1, SOURCE_STREAM_ELEMENT_NUM);
     }
 }
