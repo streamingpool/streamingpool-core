@@ -4,6 +4,8 @@
 
 package stream;
 
+import java.util.function.Supplier;
+
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,6 +27,8 @@ public abstract class StreamProcessingSupport {
     private DiscoveryService discoveryService;
     @Autowired
     private ProvidingService providingService;
+    @Autowired
+    private LazyProvidingService lazyProvidingService;
 
     /**
      * TODO Find a better way to unregister streams
@@ -39,6 +43,10 @@ public abstract class StreamProcessingSupport {
 
     protected <T> OngoingProviding<T> provide(ReactStream<T> reactStream) {
         return new OngoingProviding<>(providingService, reactStream);
+    }
+
+    protected <T> OngoingLazyProviding<T> provide(Supplier<ReactStream<T>> reactStream) {
+        return new OngoingLazyProviding<>(lazyProvidingService, reactStream);
     }
 
     protected <T> Publisher<T> publisherFrom(StreamId<T> id) {
@@ -58,6 +66,21 @@ public abstract class StreamProcessingSupport {
         private final ProvidingService providingService;
 
         private OngoingProviding(ProvidingService providingService, ReactStream<T> reactStream) {
+            this.providingService = providingService;
+            this.reactStream = reactStream;
+        }
+
+        public void as(StreamId<T> id) {
+            providingService.provide(id, reactStream);
+        }
+
+    }
+
+    public static class OngoingLazyProviding<T> {
+        private final Supplier<ReactStream<T>> reactStream;
+        private final LazyProvidingService providingService;
+
+        private OngoingLazyProviding(LazyProvidingService providingService, Supplier<ReactStream<T>> reactStream) {
             this.providingService = providingService;
             this.reactStream = reactStream;
         }
