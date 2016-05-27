@@ -52,13 +52,13 @@ public class BisRegisterFlowTest extends StreamProcessingSupport {
 
         ReactStreams.rxFrom(discover(SOURCE_ID)).flatMap(register -> {
             List<UserPermit> bitList = new ArrayList<>(32);
-            for (PermitId permitId : PermitId.values()) {
+            for (RedundantPermitId permitId : RedundantPermitId.values()) {
                 boolean testBit = BigInteger.valueOf(register).testBit(permitId.offset);
                 bitList.add(new UserPermit(permitId, testBit));
             }
             return Observable.from(bitList);
         }).groupBy(permit -> permit.getPermitId()).doOnCompleted(sync::countDown).subscribe(groupedObservable -> {
-            PermitId key = groupedObservable.getKey();
+            RedundantPermitId key = groupedObservable.getKey();
 
             provide(ReactStreams.fromRx(groupedObservable)).as(new NamedStreamId<>(key.toString()));
 
@@ -67,9 +67,9 @@ public class BisRegisterFlowTest extends StreamProcessingSupport {
         sync.await();
 
         Observable<UserPermit> userPermit10AStream = ReactStreams
-                .rxFrom(discover(new NamedStreamId<>(PermitId.USER_PERMIT_1_A.toString())));
+                .rxFrom(discover(new NamedStreamId<>(RedundantPermitId.USER_PERMIT_1_A.toString())));
         Observable<UserPermit> userPermit10BStream = ReactStreams
-                .rxFrom(discover(new NamedStreamId<>(PermitId.USER_PERMIT_1_B.toString())));
+                .rxFrom(discover(new NamedStreamId<>(RedundantPermitId.USER_PERMIT_1_B.toString())));
 
         Observable.zip(userPermit10AStream, userPermit10BStream, (userPermitA, userPermitB) -> {
             return userPermitA.isGiven() & userPermitB.isGiven();
@@ -83,20 +83,20 @@ public class BisRegisterFlowTest extends StreamProcessingSupport {
      * @author acalia
      */
     private static final class UserPermit {
-        private final PermitId label;
+        private final RedundantPermitId label;
         private final boolean value;
 
         /**
          * @param permitId
          * @param value
          */
-        public UserPermit(PermitId permitId, boolean value) {
+        public UserPermit(RedundantPermitId permitId, boolean value) {
             super();
             this.label = permitId;
             this.value = value;
         }
 
-        public PermitId getPermitId() {
+        public RedundantPermitId getPermitId() {
             return label;
         }
 
@@ -110,7 +110,7 @@ public class BisRegisterFlowTest extends StreamProcessingSupport {
         }
     }
 
-    private static enum PermitId {
+    private static enum RedundantPermitId {
         USER_PERMIT_1_A(0),
         USER_PERMIT_1_B(16),
         USER_PERMIT_2_A(1),
@@ -146,7 +146,7 @@ public class BisRegisterFlowTest extends StreamProcessingSupport {
 
         private int offset;
 
-        private PermitId(int offset) {
+        private RedundantPermitId(int offset) {
             this.offset = offset;
         }
 
