@@ -34,4 +34,8 @@ public class SimplePool implements DiscoveryService, ProvidingService {
     public <T> ReactStream<T> discover(StreamId<T> id) {
         return (ReactStream<T>) map.get(id);
     }
+    
+    public void clearPool() {
+        map.clear();
+    }
 }

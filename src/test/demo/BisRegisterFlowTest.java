@@ -61,8 +61,8 @@ public class BisRegisterFlowTest extends StreamProcessingSupport {
 
         sync.await();
 
-        Observable<UserPermit> userPermit10AStream = ReactStreams.rxFrom(discover(new NamedStreamId<>(PermitId.USER_PERMIT_1_A.toString())));
-        Observable<UserPermit> userPermit10BStream = ReactStreams.rxFrom(discover(new NamedStreamId<>(PermitId.USER_PERMIT_1_B.toString())));
+        Observable<UserPermit> userPermit10AStream = ReactStreams.rxFrom(discover(new NamedStreamId<>(PermitId.USER_PERMIT_13_B.toString())));
+        Observable<UserPermit> userPermit10BStream = ReactStreams.rxFrom(discover(new NamedStreamId<>(PermitId.USER_PERMIT_14_B.toString())));
         
         Observable.zip(userPermit10AStream, userPermit10BStream, (userPermitA, userPermitB) -> {
             return userPermitA.isGiven() & userPermitB.isGiven();

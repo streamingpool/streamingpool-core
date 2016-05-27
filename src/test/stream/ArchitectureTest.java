@@ -6,12 +6,10 @@ package stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static stream.ReactStreams.fromRx;
-import static stream.ReactStreams.rxFrom;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -22,7 +20,6 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import conf.InProcessPoolConfiguration;
 import rx.Observable;
-import rx.functions.Func1;
 import stream.impl.NamedStreamId;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,7 +36,7 @@ public class ArchitectureTest extends StreamProcessingSupport {
         ReactStream<Integer> reactStream = fromRx(prepareRxStreamWith(INTEGER_SOURCE_ITEMS));
         provide(reactStream).as(id);
 
-        final int result = rxFrom(discover(id)).reduce(Math::addExact).toBlocking().single();
+        final int result = rxFrom(id).reduce(Math::addExact).toBlocking().single();
         final int expected = INTEGER_SOURCE_ITEMS.stream().mapToInt(i -> i.intValue()).sum();
 
         assertThat(result).isEqualTo(expected);
@@ -56,11 +53,11 @@ public class ArchitectureTest extends StreamProcessingSupport {
         provide(reactSourceStream).as(idA);
 
         // Discover + re-provide
-        ReactStream<Integer> reactStreamB = fromRx(rxFrom(discover(idA)).map(value -> value * 2));
+        ReactStream<Integer> reactStreamB = fromRx(rxFrom(idA).map(value -> value * 2));
         provide(reactStreamB).as(idB);
 
         // Discover
-        final int result = rxFrom(discover(idB)).reduce(Math::addExact).toBlocking().single();
+        final int result = rxFrom(idB).reduce(Math::addExact).toBlocking().single();
         final int expected = INTEGER_SOURCE_ITEMS.stream().mapToInt(i -> i.intValue()).sum() * 2;
 
         assertThat(result).isEqualTo(expected);
@@ -77,7 +74,7 @@ public class ArchitectureTest extends StreamProcessingSupport {
         Observable.interval(1, TimeUnit.SECONDS) // Generate a value each second
             .filter(value -> value % 2 == 0) // Pass down only the values that are even
             .limit(3) // Just accept 3 values
-            .finallyDo(counter::countDown) // When the stream ends (or there is an error) tell the counter to decrease
+            .doAfterTerminate(counter::countDown) // When the stream ends (or there is an error) tell the counter to decrease
             .subscribe(System.out::println); // Subscribe to the stream in order to get the values (in this case print them)
 
         // The counter works like this: it is initiated with a value (1 in this case) and this value can be decreased.
