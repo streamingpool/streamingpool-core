@@ -32,15 +32,12 @@ import stream.impl.NamedStreamId;
 public class BisRegisterFlowTest extends StreamProcessingSupport {
 
     private static final int USER_PERMIT_1_A_AND_B_TRUE = 65537;
-    private static final NamedStreamId<Integer> SOURCE_ID = new NamedStreamId<>("SourceStream");
     private static final int SOURCE_STREAM_ELEMENTS = 20;
-    private static final int SOURCE_INTERVAL_MS = 10;
+    private static final NamedStreamId<Integer> SOURCE_ID = new NamedStreamId<>("BisUserPermitsStream");
 
     @Before
     public void setup() {
-        List<Integer> values = someValues();
-        // (Arrays.asList(0, 65537, 65537, 0))
-        provide(ReactStreams.fromRx(Observable.from(values).observeOn(Schedulers.newThread())
+        provide(ReactStreams.fromRx(Observable.from(someValues()).observeOn(Schedulers.newThread())
                 .delay(10, TimeUnit.MILLISECONDS).limit(SOURCE_STREAM_ELEMENTS).map(l -> Long.valueOf(l).intValue())))
                         .as(SOURCE_ID);
     }
