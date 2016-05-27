@@ -19,14 +19,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import conf.SpringContext;
+import conf.AkkaStreamingConfiguration;
+import conf.InProcessPoolConfiguration;
 import rx.Observable;
 import stream.ReactStreams;
 import stream.StreamProcessingSupport;
 import stream.impl.NamedStreamId;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = SpringContext.class, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = {AkkaStreamingConfiguration.class, InProcessPoolConfiguration.class}, loader = AnnotationConfigContextLoader.class)
 public class BisRegisterFlowTest extends StreamProcessingSupport {
 
     private static final NamedStreamId<Integer> SOURCE_ID = new NamedStreamId<>("SourceStream");
