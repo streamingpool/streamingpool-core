@@ -23,7 +23,7 @@ public class SimplePool implements DiscoveryService, ProvidingService {
         requireNonNull(id, "id must not be null!");
         requireNonNull(obs, "stream must not be null!");
 
-        ReactStream<?> oldValue = activeStreams().putIfAbsent(id, obs);
+        ReactStream<?> oldValue = activeStreams.putIfAbsent(id, obs);
         if (oldValue != null) {
             throw new IllegalArgumentException("Id " + id + " already registered! Cannot register twice.");
         }
@@ -32,7 +32,11 @@ public class SimplePool implements DiscoveryService, ProvidingService {
     @SuppressWarnings("unchecked")
     @Override
     public <T> ReactStream<T> discover(StreamId<T> id) {
-        return (ReactStream<T>) activeStreams().get(id);
+        ReactStream<T> stream = (ReactStream<T>) activeStreams.get(id);
+        if (stream == null) {
+            throw new IllegalArgumentException("Stream of id '" + id + "' does not exist.");
+        }
+        return stream;
     }
 
     public void clearPool() {

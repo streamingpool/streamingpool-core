@@ -33,13 +33,13 @@ import demo.subscriber.BlockingTestSubscriber;
 import rx.Observable;
 import scala.concurrent.duration.Duration;
 import stream.StreamId;
-import stream.helper.AbstractStreamTest;
-import stream.helper.AkkaTestHelper;
-import stream.helper.RxTestHelper;
+import stream.support.AkkaStreamSupport;
+import stream.support.RxStreamSupport;
+import stream.testing.AbstractStreamTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = AkkaStreamingConfiguration.class, loader = AnnotationConfigContextLoader.class)
-public class AkkaInteroperabilityTest extends AbstractStreamTest implements AkkaTestHelper, RxTestHelper {
+public class AkkaInteroperabilityTest extends AbstractStreamTest implements AkkaStreamSupport, RxStreamSupport {
 
     private static final StreamId<Integer> SOURCE_ID = namedId("SourceStream");
     private static final StreamId<Integer> BUFFERED_ID = namedId("BufferedSourceStream");

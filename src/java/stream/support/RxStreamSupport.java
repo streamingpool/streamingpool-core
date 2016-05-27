@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package stream.helper;
+package stream.support;
 
 import org.reactivestreams.Publisher;
 
@@ -10,9 +10,10 @@ import rx.Observable;
 import stream.ReactStream;
 import stream.ReactStreams;
 import stream.StreamId;
-import stream.helper.AbstractStreamTest.OngoingProviding;
+import stream.testing.AbstractStreamTest;
+import stream.testing.AbstractStreamTest.OngoingProviding;
 
-public interface RxTestHelper extends StreamTestHelper {
+public interface RxStreamSupport extends StreamSupport {
 
     default <T> ReactStream<T> streamFrom(Observable<T> observable) {
         return ReactStreams.fromRx(observable);

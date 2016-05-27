@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package stream.helper;
+package stream.testing;
 
 import java.util.function.Supplier;
 
@@ -19,9 +19,10 @@ import stream.ReactStream;
 import stream.ReactStreams;
 import stream.StreamId;
 import stream.impl.SimplePool;
+import stream.support.StreamSupport;
 
 @ContextConfiguration(classes = InProcessPoolConfiguration.class, loader = AnnotationConfigContextLoader.class)
-public abstract class AbstractStreamTest implements StreamTestHelper {
+public abstract class AbstractStreamTest implements StreamSupport {
 
     @Autowired
     private DiscoveryService discoveryService;
@@ -30,7 +31,7 @@ public abstract class AbstractStreamTest implements StreamTestHelper {
     @Autowired
     private LazyProvidingService lazyProvidingService;
 
-    /**
+    /*
      * TODO Find a better way to unregister streams
      */
     public void unregisterAllStreams() {
@@ -41,15 +42,17 @@ public abstract class AbstractStreamTest implements StreamTestHelper {
     public <T> ReactStream<T> discover(StreamId<T> id) {
         return discoveryService.discover(id);
     }
+
     @Override
     public <T> OngoingProviding<T> provide(ReactStream<T> reactStream) {
         return new OngoingProviding<>(providingService, reactStream);
     }
+
     @Override
     public <T> OngoingLazyProviding<T> provide(Supplier<ReactStream<T>> reactStream) {
         return new OngoingLazyProviding<>(lazyProvidingService, reactStream);
     }
-    
+
     @Override
     public <T> Publisher<T> publisherFrom(StreamId<T> id) {
         return ReactStreams.publisherFrom(discover(id));

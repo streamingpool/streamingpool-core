@@ -23,13 +23,13 @@ import rx.Observable;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 import stream.ReactStreams;
-import stream.StreamProcessingSupport;
 import stream.impl.NamedStreamId;
+import stream.testing.AbstractStreamTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { AkkaStreamingConfiguration.class,
         InProcessPoolConfiguration.class }, loader = AnnotationConfigContextLoader.class)
-public class BisRegisterFlowTest extends StreamProcessingSupport {
+public class BisRegisterFlowTest extends AbstractStreamTest {
 
     private static final int USER_PERMIT_1_A_AND_B_TRUE = 65537;
     private static final int SOURCE_STREAM_ELEMENTS = 20;

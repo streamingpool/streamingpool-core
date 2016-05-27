@@ -21,10 +21,12 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import conf.InProcessPoolConfiguration;
 import rx.Observable;
 import stream.impl.NamedStreamId;
+import stream.support.RxStreamSupport;
+import stream.testing.AbstractStreamTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = InProcessPoolConfiguration.class, loader = AnnotationConfigContextLoader.class)
-public class ArchitectureTest extends StreamProcessingSupport {
+public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupport {
 
     private static final String ANY_NAME = "";
     private static final List<Integer> INTEGER_SOURCE_ITEMS = Arrays.asList(1, 3, 5, 11);
@@ -68,17 +70,21 @@ public class ArchitectureTest extends StreamProcessingSupport {
     public void test() throws InterruptedException {
 
         // This object is used as a kind of semaphore in order to block the main thread until the stream finishes
-        // Rx uses deamon threads inside, so we have to block the main thread because it would kill Rx ones when it finishes
+        // Rx uses deamon threads inside, so we have to block the main thread because it would kill Rx ones when it
+        // finishes
         CountDownLatch counter = new CountDownLatch(1);
 
         Observable.interval(1, TimeUnit.SECONDS) // Generate a value each second
-            .filter(value -> value % 2 == 0) // Pass down only the values that are even
-            .limit(3) // Just accept 3 values
-            .doAfterTerminate(counter::countDown) // When the stream ends (or there is an error) tell the counter to decrease
-            .subscribe(System.out::println); // Subscribe to the stream in order to get the values (in this case print them)
+                .filter(value -> value % 2 == 0) // Pass down only the values that are even
+                .limit(3) // Just accept 3 values
+                .doAfterTerminate(counter::countDown) // When the stream ends (or there is an error) tell the counter to
+                                                      // decrease
+                .subscribe(System.out::println); // Subscribe to the stream in order to get the values (in this case
+                                                 // print them)
 
         // The counter works like this: it is initiated with a value (1 in this case) and this value can be decreased.
-        // When it reaches 0, is considered done. In this case, the await() waits for the counter to reach 0 and then unblock 
+        // When it reaches 0, is considered done. In this case, the await() waits for the counter to reach 0 and then
+        // unblock
         // the calling thream (the main in this case)
         counter.await();
     }

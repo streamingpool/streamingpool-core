@@ -4,44 +4,42 @@
 
 package stream.impl;
 
-import static java.util.Objects.requireNonNull;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.function.Supplier;
-
-import stream.LazyProvidingService;
 import stream.ReactStream;
+import stream.StreamFactory;
 import stream.StreamId;
 
-public class LazyPool extends SimplePool implements LazyProvidingService {
+public class LazyPool extends SimplePool {
 
-    private ConcurrentMap<StreamId<?>, Supplier<? extends ReactStream<?>>> suppliers = new ConcurrentHashMap<>();
+    private final List<StreamFactory> factories;
+
+    public LazyPool(List<StreamFactory> factories) {
+        this.factories = factories;
+    }
 
     @Override
     public <T> ReactStream<T> discover(StreamId<T> id) {
-
         /* This cast is safe, because we only allow to add the right types into the map */
         @SuppressWarnings("unchecked")
-        ReactStream<T> activeStream = (ReactStream<T>) activeStreams().computeIfAbsent(id,
-                (newId) -> suppliers.get(newId).get());
+        ReactStream<T> activeStream = (ReactStream<T>) activeStreams().computeIfAbsent(id, this::create);
 
         if (activeStream == null) {
             throw new IllegalArgumentException(
-                    "The stream for id " + id + "is neither present nor can it be created by any supplier.");
+                    "The stream for id " + id + "is neither present nor can it be created by any factory.");
         }
         return activeStream;
     }
 
-    @Override
-    public <T> void provide(StreamId<T> id, Supplier<ReactStream<T>> streamSupplier) {
-        requireNonNull(id, "id must not be null!");
-        requireNonNull(streamSupplier, "stream suplier must not be null!");
-
-        Supplier<?> existingSupplier = suppliers.putIfAbsent(id, streamSupplier);
-        if (existingSupplier != null) {
-            throw new IllegalArgumentException("Id " + id + " already registered! Cannot register twice.");
+    private <T> ReactStream<T> create(StreamId<T> newId) {
+        for (StreamFactory factory : factories) {
+            ReactStream<T> stream = factory.create(newId);
+            if (stream != null) {
+                return stream;
+            }
         }
+        return null;
     }
 
 }
