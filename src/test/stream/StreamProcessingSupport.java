@@ -22,9 +22,9 @@ import stream.impl.SimplePool;
 public abstract class StreamProcessingSupport {
 
     @Autowired
-    protected DiscoveryService discoveryService;
+    private DiscoveryService discoveryService;
     @Autowired
-    protected ProvidingService providingService;
+    private ProvidingService providingService;
 
     /**
      * TODO Find a better way to unregister streams
@@ -32,7 +32,7 @@ public abstract class StreamProcessingSupport {
     protected void unregisterAllStreams() {
         ((SimplePool) discoveryService).clearPool();
     }
-    
+
     protected <T> ReactStream<T> discover(final StreamId<T> id) {
         return discoveryService.discover(id);
     }
@@ -44,11 +44,11 @@ public abstract class StreamProcessingSupport {
     protected <T> Publisher<T> publisherFrom(StreamId<T> id) {
         return ReactStreams.publisherFrom(discover(id));
     }
-    
+
     protected <T> Observable<T> rxFrom(StreamId<T> id) {
         return ReactStreams.rxFrom(discover(id));
     }
-    
+
     protected <T> Source<T, NotUsed> sourceFrom(StreamId<T> id) {
         return ReactStreams.sourceFrom(discover(id));
     }

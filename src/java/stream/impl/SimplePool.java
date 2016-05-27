@@ -16,14 +16,14 @@ import stream.StreamId;
 
 public class SimplePool implements DiscoveryService, ProvidingService {
 
-    ConcurrentMap<StreamId<?>, ReactStream<?>> map = new ConcurrentHashMap<>();
+    private final ConcurrentMap<StreamId<?>, ReactStream<?>> activeStreams = new ConcurrentHashMap<>();
 
     @Override
     public <T> void provide(StreamId<T> id, ReactStream<T> obs) {
         requireNonNull(id, "id must not be null!");
         requireNonNull(obs, "stream must not be null!");
 
-        ReactStream<?> oldValue = map.putIfAbsent(id, obs);
+        ReactStream<?> oldValue = activeStreams().putIfAbsent(id, obs);
         if (oldValue != null) {
             throw new IllegalArgumentException("Id " + id + " already registered! Cannot register twice.");
         }
@@ -32,10 +32,14 @@ public class SimplePool implements DiscoveryService, ProvidingService {
     @SuppressWarnings("unchecked")
     @Override
     public <T> ReactStream<T> discover(StreamId<T> id) {
-        return (ReactStream<T>) map.get(id);
+        return (ReactStream<T>) activeStreams().get(id);
     }
-    
+
     public void clearPool() {
-        map.clear();
+        activeStreams().clear();
+    }
+
+    protected ConcurrentMap<StreamId<?>, ReactStream<?>> activeStreams() {
+        return activeStreams;
     }
 }

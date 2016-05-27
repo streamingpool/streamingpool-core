@@ -7,13 +7,13 @@ package conf;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import stream.impl.SimplePool;
+import stream.impl.LazyPool;
 
 @Configuration
 public class InProcessPoolConfiguration {
 
     @Bean
-    public SimplePool createPool() {
-        return new SimplePool();
+    public LazyPool createPool() {
+        return new LazyPool();
     }
 }
