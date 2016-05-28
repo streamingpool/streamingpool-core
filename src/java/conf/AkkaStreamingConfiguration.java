@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 
 import akka.actor.ActorSystem;
 import akka.stream.ActorMaterializer;
+import akka.stream.Materializer;
+import stream.akka.AkkaStreamFactory;
 
 @Configuration
 public class AkkaStreamingConfiguration {
@@ -21,6 +23,11 @@ public class AkkaStreamingConfiguration {
     @Bean(destroyMethod = "shutdown")
     public ActorMaterializer createActorMaterializer(ActorSystem actorSystem) {
         return ActorMaterializer.create(actorSystem);
+    }
+
+    @Bean
+    public AkkaStreamFactory akkaSourceProvidingService(Materializer materializer) {
+        return new AkkaStreamFactory(materializer);
     }
 
 }

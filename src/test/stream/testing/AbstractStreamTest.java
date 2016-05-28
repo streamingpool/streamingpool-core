@@ -44,47 +44,17 @@ public abstract class AbstractStreamTest implements StreamSupport {
     }
 
     @Override
-    public <T> OngoingProviding<T> provide(ReactStream<T> reactStream) {
-        return new OngoingProviding<>(providingService, reactStream);
+    public <T> StreamSupport.OngoingProviding<T> provide(ReactStream<T> reactStream) {
+        return new StreamSupport.OngoingProviding<>(providingService, reactStream);
     }
 
     @Override
-    public <T> OngoingLazyProviding<T> provide(Supplier<ReactStream<T>> reactStream) {
-        return new OngoingLazyProviding<>(lazyProvidingService, reactStream);
+    public <T> StreamSupport.OngoingLazyProviding<T> provide(Supplier<ReactStream<T>> reactStream) {
+        return new StreamSupport.OngoingLazyProviding<>(lazyProvidingService, reactStream);
     }
 
     @Override
     public <T> Publisher<T> publisherFrom(StreamId<T> id) {
         return ReactStreams.publisherFrom(discover(id));
-    }
-
-    public static class OngoingProviding<T> {
-        private final ReactStream<T> reactStream;
-        private final ProvidingService providingService;
-
-        private OngoingProviding(ProvidingService providingService, ReactStream<T> reactStream) {
-            this.providingService = providingService;
-            this.reactStream = reactStream;
-        }
-
-        public void as(StreamId<T> id) {
-            providingService.provide(id, reactStream);
-        }
-
-    }
-
-    public static class OngoingLazyProviding<T> {
-        private final Supplier<ReactStream<T>> reactStream;
-        private final LazyProvidingService providingService;
-
-        private OngoingLazyProviding(LazyProvidingService providingService, Supplier<ReactStream<T>> reactStream) {
-            this.providingService = providingService;
-            this.reactStream = reactStream;
-        }
-
-        public void as(StreamId<T> id) {
-            providingService.provide(id, reactStream);
-        }
-
     }
 }

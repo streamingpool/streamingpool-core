@@ -32,6 +32,8 @@ public class SimplePool implements DiscoveryService, ProvidingService {
     @SuppressWarnings("unchecked")
     @Override
     public <T> ReactStream<T> discover(StreamId<T> id) {
+        requireNonNull(id, "id must not be null");
+
         ReactStream<T> stream = (ReactStream<T>) activeStreams.get(id);
         if (stream == null) {
             throw new IllegalArgumentException("Stream of id '" + id + "' does not exist.");

@@ -35,11 +35,11 @@ import scala.concurrent.duration.Duration;
 import stream.StreamId;
 import stream.support.AkkaStreamSupport;
 import stream.support.RxStreamSupport;
+import stream.testing.AbstractAkkaStreamTest;
 import stream.testing.AbstractStreamTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = AkkaStreamingConfiguration.class, loader = AnnotationConfigContextLoader.class)
-public class AkkaInteroperabilityTest extends AbstractStreamTest implements AkkaStreamSupport, RxStreamSupport {
+public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements AkkaStreamSupport, RxStreamSupport {
 
     private static final StreamId<Integer> SOURCE_ID = namedId("SourceStream");
     private static final StreamId<Integer> BUFFERED_ID = namedId("BufferedSourceStream");
@@ -53,8 +53,6 @@ public class AkkaInteroperabilityTest extends AbstractStreamTest implements Akka
     private static final Flow<Integer, Integer, NotUsed> DELAY_FLOW = createDelayFlow();
     private static final Observable<Integer> RANGE_SOURCE_RX = createRxRangeSource();
 
-    @Autowired
-    private ActorMaterializer actorMaterializer;
     private BlockingTestSubscriber<Integer> subscriber;
 
     @Before
@@ -97,11 +95,6 @@ public class AkkaInteroperabilityTest extends AbstractStreamTest implements Akka
 
         assertThat(values).hasSize(SOURCE_STREAM_ELEMENT_NUM);
         assertThat(values).containsExactlyElementsOf(ELEMENTS);
-    }
-
-    @Override
-    public ActorMaterializer materializer() {
-        return actorMaterializer;
     }
 
     private static Flow<Integer, Integer, NotUsed> createDelayFlow() {

@@ -10,7 +10,7 @@ import rx.Observable;
 import stream.ReactStream;
 import stream.ReactStreams;
 import stream.StreamId;
-import stream.testing.AbstractStreamTest.OngoingProviding;
+import stream.support.StreamSupport.OngoingProviding;
 
 public interface RxStreamSupport extends StreamSupport {
 
@@ -18,7 +18,7 @@ public interface RxStreamSupport extends StreamSupport {
         return ReactStreams.fromRx(observable);
     }
     
-    default <T> OngoingProviding<T> provide(Observable<T> observable) {
+    default <T> StreamSupport.OngoingProviding<T> provide(Observable<T> observable) {
         return provide(ReactStreams.fromRx(observable));
     }
     

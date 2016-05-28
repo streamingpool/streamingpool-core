@@ -15,17 +15,20 @@ import akka.stream.javadsl.Source;
 import stream.ReactStream;
 import stream.ReactStreams;
 import stream.StreamId;
-import stream.testing.AbstractStreamTest.OngoingProviding;
+import stream.akka.AkkaSourceProvidingService;
+import stream.support.StreamSupport.OngoingProviding;
 
 public interface AkkaStreamSupport extends StreamSupport {
 
     Materializer materializer();
 
+    AkkaSourceProvidingService sourceProvidingService();
+
     default <Out, Mat> ReactStream<Out> streamFrom(Source<Out, Mat> akkaSource) {
         return ReactStreams.fromPublisher(publisherFrom(akkaSource));
     }
 
-    default <Out, Mat> OngoingProviding<Out> provide(Source<Out, Mat> akkaSource) {
+    default <Out, Mat> StreamSupport.OngoingProviding<Out> provide(Source<Out, Mat> akkaSource) {
         return provide(streamFrom(akkaSource));
     }
 

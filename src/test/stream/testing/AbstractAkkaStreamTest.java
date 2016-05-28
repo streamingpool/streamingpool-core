@@ -11,10 +11,14 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import akka.stream.ActorMaterializer;
 import akka.stream.Materializer;
 import conf.AkkaStreamingConfiguration;
+import stream.akka.AkkaSourceProvidingService;
 import stream.support.AkkaStreamSupport;
 
 @ContextConfiguration(classes = AkkaStreamingConfiguration.class, loader = AnnotationConfigContextLoader.class)
 public abstract class AbstractAkkaStreamTest extends AbstractStreamTest implements AkkaStreamSupport {
+
+    @Autowired
+    private AkkaSourceProvidingService sourceProvidingService;
 
     @Autowired
     private ActorMaterializer materializer;
@@ -22,5 +26,10 @@ public abstract class AbstractAkkaStreamTest extends AbstractStreamTest implemen
     @Override
     public Materializer materializer() {
         return materializer;
+    }
+
+    @Override
+    public AkkaSourceProvidingService sourceProvidingService() {
+        return sourceProvidingService;
     }
 }
