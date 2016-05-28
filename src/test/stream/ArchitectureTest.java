@@ -74,7 +74,7 @@ public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupp
         // finishes
         CountDownLatch counter = new CountDownLatch(1);
 
-        Observable.interval(1, TimeUnit.SECONDS) // Generate a value each second
+        Observable.interval(100, TimeUnit.MILLISECONDS) // Generate a value every 100 milliseconds
                 .filter(value -> value % 2 == 0) // Pass down only the values that are even
                 .limit(3) // Just accept 3 values
                 .doAfterTerminate(counter::countDown) // When the stream ends (or there is an error) tell the counter to
@@ -85,7 +85,7 @@ public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupp
         // The counter works like this: it is initiated with a value (1 in this case) and this value can be decreased.
         // When it reaches 0, is considered done. In this case, the await() waits for the counter to reach 0 and then
         // unblock
-        // the calling thream (the main in this case)
+        // the calling thread (the main in this case)
         counter.await();
     }
 
