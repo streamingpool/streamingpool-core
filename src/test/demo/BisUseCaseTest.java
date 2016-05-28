@@ -19,13 +19,14 @@ import stream.impl.SimplePool;
 public class BisUseCaseTest {
 
     @Test
-    public void test() throws InterruptedException {
+    /* (KF) removed sleeps for the moment */
+    public void doNotKnowWhatThisTestDoes() {
         System.out.println("Here it begins");
         SimplePool streamPool = new SimplePool();
 
         StreamId<Boolean> bisBeamPermitId = new NamedStreamId<>("bisBeamPermit");
         rx.Observable<Boolean> rxBisBeamPermitStream = rx.Observable.fromCallable(() -> {
-            TimeUnit.SECONDS.sleep(3);
+            // TimeUnit.SECONDS.sleep(3);
 
             return new Random().nextBoolean();
         });
@@ -38,7 +39,7 @@ public class BisUseCaseTest {
         discoveredRxStream.map(beamPermit -> beamPermit ? "Given" : "interlocked").forEach(x -> print(x));
 
         System.out.println("Here it ends");
-        TimeUnit.SECONDS.sleep(3);
+        // TimeUnit.SECONDS.sleep(3);
     }
 
     private void print(String x) {
