@@ -17,4 +17,5 @@ import stream.support.AbstractAkkaStreamSupport;
 @ContextConfiguration(classes = { InProcessPoolConfiguration.class,
         AkkaStreamingConfiguration.class }, loader = AnnotationConfigContextLoader.class)
 public abstract class AbstractAkkaStreamTest extends AbstractAkkaStreamSupport {
+    /* Nothing to do here. Only the contexts and the test runner */
 }

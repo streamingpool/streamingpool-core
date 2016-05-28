@@ -27,8 +27,12 @@ public interface AkkaStreamSupport extends StreamSupport {
         return ReactStreams.fromPublisher(publisherFrom(akkaSource));
     }
 
-    default <Out, Mat> StreamSupport.OngoingProviding<Out> provide(Source<Out, Mat> akkaSource) {
+    default <Out, Mat> StreamSupport.OngoingProviding<Out> provideMaterialized(Source<Out, Mat> akkaSource) {
         return provide(streamFrom(akkaSource));
+    }
+
+    default <Out, Mat> OngoingAkkaSourceProviding<Out> provide(Source<Out, Mat> akkaSource) {
+        return new OngoingAkkaSourceProviding<>(sourceProvidingService(), akkaSource);
     }
 
     default <T, U> Publisher<T> publisherFrom(Source<T, U> source) {
@@ -38,6 +42,21 @@ public interface AkkaStreamSupport extends StreamSupport {
 
     default <T> Source<T, NotUsed> sourceFrom(StreamId<T> id) {
         return ReactStreams.sourceFrom(discover(id));
+    }
+
+    class OngoingAkkaSourceProviding<T> {
+        private final Source<T, ?> akkaSource;
+        private final AkkaSourceProvidingService sourceProvidingService;
+
+        public OngoingAkkaSourceProviding(AkkaSourceProvidingService sourceProvidingService, Source<T, ?> akkaSource) {
+            this.sourceProvidingService = sourceProvidingService;
+            this.akkaSource = akkaSource;
+        }
+
+        public void as(StreamId<T> id) {
+            sourceProvidingService.provide(id, akkaSource);
+        }
+
     }
 
 }
