@@ -1,11 +1,11 @@
 package demo.akka;
 
+import java.util.concurrent.CompletionStage;
+
 import akka.stream.OverflowStrategy;
 import akka.stream.javadsl.Flow;
 import akka.stream.javadsl.Keep;
 import akka.stream.javadsl.Sink;
-
-import java.util.concurrent.CompletionStage;
 
 /**
  * Created by mgalilee on 19/05/2016.

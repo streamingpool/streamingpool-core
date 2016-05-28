@@ -10,7 +10,6 @@ import rx.Observable;
 import stream.ReactStream;
 import stream.ReactStreams;
 import stream.StreamId;
-import stream.testing.AbstractStreamTest;
 import stream.testing.AbstractStreamTest.OngoingProviding;
 
 public interface RxStreamSupport extends StreamSupport {

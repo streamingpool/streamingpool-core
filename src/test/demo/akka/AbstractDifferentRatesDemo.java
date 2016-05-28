@@ -1,15 +1,26 @@
 package demo.akka;
 
+import java.util.concurrent.CompletionStage;
+
 import akka.Done;
 import akka.NotUsed;
 import akka.actor.ActorSystem;
 import akka.japi.function.Function3;
 import akka.japi.function.Function4;
-import akka.stream.*;
-import akka.stream.javadsl.*;
+import akka.stream.ActorMaterializer;
+import akka.stream.ClosedShape;
+import akka.stream.Graph;
+import akka.stream.Materializer;
+import akka.stream.SinkShape;
+import akka.stream.ThrottleMode;
+import akka.stream.UniformFanOutShape;
+import akka.stream.javadsl.Broadcast;
+import akka.stream.javadsl.Flow;
+import akka.stream.javadsl.GraphDSL;
+import akka.stream.javadsl.RunnableGraph;
+import akka.stream.javadsl.Sink;
+import akka.stream.javadsl.Source;
 import scala.concurrent.duration.FiniteDuration;
-
-import java.util.concurrent.CompletionStage;
 
 /**
  * Created by mgalilee on 25/05/2016.

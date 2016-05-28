@@ -4,7 +4,6 @@
 
 package stream.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import stream.ReactStream;

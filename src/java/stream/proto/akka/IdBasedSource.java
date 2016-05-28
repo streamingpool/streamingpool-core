@@ -1,17 +1,17 @@
 package stream.proto.akka;
 
+import java.util.Optional;
+
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import akka.stream.Attributes;
 import akka.stream.Outlet;
 import akka.stream.SourceShape;
 import akka.stream.stage.AbstractOutHandler;
 import akka.stream.stage.GraphStage;
 import akka.stream.stage.GraphStageLogic;
-
-import java.util.Optional;
-
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import stream.DiscoveryService;
 import stream.ReactStream;
 import stream.ReactStreams;

@@ -10,7 +10,6 @@ import org.reactivestreams.Publisher;
 
 import stream.ReactStream;
 import stream.StreamId;
-import stream.testing.AbstractStreamTest;
 import stream.testing.AbstractStreamTest.OngoingLazyProviding;
 import stream.testing.AbstractStreamTest.OngoingProviding;
 

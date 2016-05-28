@@ -4,17 +4,18 @@
 
 package stream;
 
+import java.util.concurrent.CountDownLatch;
+
+import org.junit.Test;
+
 import akka.actor.ActorSystem;
 import akka.stream.ActorMaterializer;
 import akka.stream.Attributes;
 import akka.stream.Materializer;
 import akka.stream.javadsl.Source;
-import org.junit.Test;
 import rx.Observable;
 import stream.impl.SimplePool;
 import stream.proto.akka.IdBasedSource;
-
-import java.util.concurrent.CountDownLatch;
 
 public class AkkaIdSourceTest {
 
