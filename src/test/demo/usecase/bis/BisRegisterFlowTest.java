@@ -12,13 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import conf.AkkaStreamingConfiguration;
-import conf.InProcessPoolConfiguration;
 import rx.Observable;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
@@ -26,9 +20,6 @@ import stream.ReactStreams;
 import stream.impl.NamedStreamId;
 import stream.testing.AbstractStreamTest;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { AkkaStreamingConfiguration.class,
-        InProcessPoolConfiguration.class }, loader = AnnotationConfigContextLoader.class)
 public class BisRegisterFlowTest extends AbstractStreamTest {
 
     private static final int USER_PERMIT_1_A_AND_B_TRUE = 65537;

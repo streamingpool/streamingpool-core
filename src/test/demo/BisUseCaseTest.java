@@ -1,8 +1,6 @@
 package demo;
 
-import java.io.IOException;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 

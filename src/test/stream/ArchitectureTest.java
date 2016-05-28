@@ -13,19 +13,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import conf.InProcessPoolConfiguration;
 import rx.Observable;
 import stream.impl.NamedStreamId;
 import stream.support.RxStreamSupport;
 import stream.testing.AbstractStreamTest;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = InProcessPoolConfiguration.class, loader = AnnotationConfigContextLoader.class)
 public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupport {
 
     private static final String ANY_NAME = "";

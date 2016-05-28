@@ -4,32 +4,16 @@
 
 package stream.testing;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import akka.stream.ActorMaterializer;
-import akka.stream.Materializer;
 import conf.AkkaStreamingConfiguration;
-import stream.akka.AkkaSourceProvidingService;
-import stream.support.AkkaStreamSupport;
+import conf.InProcessPoolConfiguration;
 
-@ContextConfiguration(classes = AkkaStreamingConfiguration.class, loader = AnnotationConfigContextLoader.class)
-public abstract class AbstractAkkaStreamTest extends AbstractStreamTest implements AkkaStreamSupport {
-
-    @Autowired
-    private AkkaSourceProvidingService sourceProvidingService;
-
-    @Autowired
-    private ActorMaterializer materializer;
-
-    @Override
-    public Materializer materializer() {
-        return materializer;
-    }
-
-    @Override
-    public AkkaSourceProvidingService sourceProvidingService() {
-        return sourceProvidingService;
-    }
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = { InProcessPoolConfiguration.class,
+        AkkaStreamingConfiguration.class }, loader = AnnotationConfigContextLoader.class)
+public abstract class AbstractAkkaStreamTest extends AbstractAkkaStreamSupport {
 }

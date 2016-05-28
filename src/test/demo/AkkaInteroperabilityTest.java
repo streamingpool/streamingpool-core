@@ -15,20 +15,13 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import akka.NotUsed;
-import akka.stream.ActorMaterializer;
 import akka.stream.DelayOverflowStrategy;
 import akka.stream.javadsl.Flow;
 import akka.stream.javadsl.Keep;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
-import conf.AkkaStreamingConfiguration;
 import demo.subscriber.BlockingTestSubscriber;
 import rx.Observable;
 import scala.concurrent.duration.Duration;
@@ -36,9 +29,7 @@ import stream.StreamId;
 import stream.support.AkkaStreamSupport;
 import stream.support.RxStreamSupport;
 import stream.testing.AbstractAkkaStreamTest;
-import stream.testing.AbstractStreamTest;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements AkkaStreamSupport, RxStreamSupport {
 
     private static final StreamId<Integer> SOURCE_ID = namedId("SourceStream");

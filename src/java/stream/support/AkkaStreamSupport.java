@@ -16,7 +16,6 @@ import stream.ReactStream;
 import stream.ReactStreams;
 import stream.StreamId;
 import stream.akka.AkkaSourceProvidingService;
-import stream.support.StreamSupport.OngoingProviding;
 
 public interface AkkaStreamSupport extends StreamSupport {
 
