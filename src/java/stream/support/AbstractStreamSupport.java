@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package stream.testing;
+package stream.support;
 
 import java.util.function.Supplier;
 
@@ -16,7 +16,6 @@ import stream.ReactStream;
 import stream.ReactStreams;
 import stream.StreamId;
 import stream.impl.SimplePool;
-import stream.support.StreamSupport;
 
 /**
  * @author kfuchsbe
@@ -29,13 +28,6 @@ public class AbstractStreamSupport implements StreamSupport {
     private ProvidingService providingService;
     @Autowired
     private LazyProvidingService lazyProvidingService;
-
-    /**
-     * 
-     */
-    public AbstractStreamSupport() {
-        super();
-    }
 
     public void unregisterAllStreams() {
         ((SimplePool) discoveryService).clearPool();

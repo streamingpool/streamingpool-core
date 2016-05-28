@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import conf.InProcessPoolConfiguration;
+import stream.support.AbstractStreamSupport;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = InProcessPoolConfiguration.class, loader = AnnotationConfigContextLoader.class)

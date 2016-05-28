@@ -11,6 +11,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import conf.AkkaStreamingConfiguration;
 import conf.InProcessPoolConfiguration;
+import stream.support.AbstractAkkaStreamSupport;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { InProcessPoolConfiguration.class,

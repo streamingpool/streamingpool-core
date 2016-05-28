@@ -2,14 +2,13 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package stream.testing;
+package stream.support;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import akka.stream.ActorMaterializer;
 import akka.stream.Materializer;
 import stream.akka.AkkaSourceProvidingService;
-import stream.support.AkkaStreamSupport;
 
 /**
  * @author kfuchsbe
