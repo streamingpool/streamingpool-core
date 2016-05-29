@@ -53,4 +53,9 @@ public class AbstractStreamSupport implements StreamSupport {
         return ReactStreams.publisherFrom(discover(id));
     }
 
+    @Override
+    public ProvidingService providingService() {
+        return providingService;
+    }
+
 }

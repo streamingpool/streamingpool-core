@@ -58,7 +58,7 @@ public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements 
 
     @Test
     public void provideAndDiscoverAkkaStream() {
-        provideMaterialized(RANGE_SOURCE_AKKA.via(DELAY_FLOW)).as(BUFFERED_ID);
+        provide(RANGE_SOURCE_AKKA.via(DELAY_FLOW)).materialized().as(BUFFERED_ID);
 
         publisherFrom(BUFFERED_ID).subscribe(subscriber);
 
@@ -69,7 +69,7 @@ public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements 
 
     @Test
     public void provideAsAkkaAndDiscoverAsRx() {
-        provideMaterialized(RANGE_SOURCE_AKKA).as(SOURCE_ID);
+        provide(RANGE_SOURCE_AKKA).materialized().as(SOURCE_ID);
 
         List<Integer> streamValues = rxFrom(SOURCE_ID).toList().toBlocking().single();
 

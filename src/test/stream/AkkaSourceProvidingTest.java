@@ -47,7 +47,7 @@ public class AkkaSourceProvidingTest extends AbstractAkkaStreamTest implements S
 
     @Test
     public void provideMaterializedIsRunningFromTheBeginning() {
-        provideMaterialized(COUNTER_50_HZ).as(STREAM_ID);
+        provide(COUNTER_50_HZ).materialized().as(STREAM_ID);
 
         waitFor(1, SECONDS);
 
@@ -85,7 +85,7 @@ public class AkkaSourceProvidingTest extends AbstractAkkaStreamTest implements S
 
     @Test
     public void subscribeTwiceOnMaterializedProvidedIsPossible() {
-        provideMaterialized(COUNTER_50_HZ).as(STREAM_ID);
+        provide(COUNTER_50_HZ).materialized().as(STREAM_ID);
         assertSubscribeTwiceIsPossible();
     }
 

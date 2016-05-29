@@ -23,6 +23,8 @@ public interface StreamSupport {
 
     <T> Publisher<T> publisherFrom(StreamId<T> id);
 
+    ProvidingService providingService();
+
     class OngoingProviding<T> {
         private final ReactStream<T> reactStream;
         private final ProvidingService providingService;
