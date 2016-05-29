@@ -17,6 +17,7 @@ dependencies {
 
     compile "org.reactivestreams:reactive-streams:1.0.0.final"
     compile "io.reactivex:rxjava:1.1.5"
+    compile "io.reactivex:rxjava-math:1.0.0"
     compile "io.reactivex:rxjava-reactive-streams:1.0.1"
     compile "com.typesafe.akka:akka-stream_2.11:2.4.5"
 

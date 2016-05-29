@@ -4,11 +4,12 @@
 
 package stream.support;
 
-import static akka.stream.javadsl.AsPublisher.WITHOUT_FANOUT;
+import static akka.stream.javadsl.AsPublisher.WITH_FANOUT;
 
 import org.reactivestreams.Publisher;
 
 import akka.NotUsed;
+import akka.stream.Attributes;
 import akka.stream.Materializer;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
@@ -36,7 +37,7 @@ public interface AkkaStreamSupport extends StreamSupport {
     }
 
     default <T, U> Publisher<T> publisherFrom(Source<T, U> source) {
-        Sink<T, Publisher<T>> akkaSink = Sink.asPublisher(WITHOUT_FANOUT);
+        Sink<T, Publisher<T>> akkaSink = Sink.<T> asPublisher(WITH_FANOUT).withAttributes(Attributes.inputBuffer(1, 1));
         return source.runWith(akkaSink, materializer());
     }
 
