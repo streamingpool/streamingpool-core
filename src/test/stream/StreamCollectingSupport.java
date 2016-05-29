@@ -5,10 +5,6 @@
 package stream;
 
 import static java.util.Objects.requireNonNull;
-import static stream.util.Latches.awaitUnchecked;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
 
 import stream.support.RxStreamSupport;
 

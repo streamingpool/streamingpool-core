@@ -4,7 +4,6 @@
 
 package stream.akka;
 
-import static akka.stream.javadsl.AsPublisher.WITHOUT_FANOUT;
 import static akka.stream.javadsl.AsPublisher.WITH_FANOUT;
 import static java.util.Objects.requireNonNull;
 
@@ -15,7 +14,6 @@ import java.util.concurrent.ConcurrentMap;
 import org.reactivestreams.Publisher;
 
 import akka.stream.Materializer;
-import akka.stream.javadsl.AsPublisher;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import stream.ReactStream;

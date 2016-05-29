@@ -5,15 +5,10 @@
 package stream;
 
 import static akka.stream.ThrottleMode.shaping;
-import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
-import static stream.util.Latches.awaitUnchecked;
 import static stream.util.UncheckedWaits.waitFor;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.BeforeClass;
@@ -25,11 +20,7 @@ import akka.stream.Attributes;
 import akka.stream.OverflowStrategy;
 import akka.stream.javadsl.Source;
 import scala.concurrent.duration.Duration;
-import stream.ReactStreams;
-import stream.StreamId;
-import stream.support.RxStreamSupport;
 import stream.testing.AbstractAkkaStreamTest;
-import stream.util.Latches;
 
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 public class AkkaSourceProvidingTest extends AbstractAkkaStreamTest implements StreamCollectingSupport {
