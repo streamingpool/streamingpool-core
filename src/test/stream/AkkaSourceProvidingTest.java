@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 
 import akka.NotUsed;
-import akka.stream.Attributes;
 import akka.stream.OverflowStrategy;
 import akka.stream.javadsl.Source;
 import scala.concurrent.duration.Duration;
