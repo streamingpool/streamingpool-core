@@ -26,8 +26,7 @@ import stream.testing.AbstractAkkaStreamTest;
 public class AkkaSourceProvidingTest extends AbstractAkkaStreamTest implements StreamCollectingSupport {
 
     private static final Source<Integer, NotUsed> COUNTER_50_HZ = Source.range(1, 100)
-            .throttle(50, Duration.create(1, SECONDS), 1, shaping()).buffer(1, OverflowStrategy.dropBuffer())
-            .withAttributes(Attributes.inputBuffer(1, 1));
+            .throttle(50, Duration.create(1, SECONDS), 1, shaping()).buffer(1, OverflowStrategy.dropBuffer());
 
     private static final StreamId<Integer> STREAM_ID = ReactStreams.namedId("ticker");
 
