@@ -59,8 +59,8 @@ public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements 
     @Test
     public void provideAndDiscoverAkkaStream() {
         provide(RANGE_SOURCE_AKKA.via(DELAY_FLOW)).materialized().as(BUFFERED_ID);
-
         publisherFrom(BUFFERED_ID).subscribe(subscriber);
+        
 
         subscriber.await();
         assertThat(subscriber.getValues()).hasSize(SOURCE_STREAM_ELEMENT_NUM);
