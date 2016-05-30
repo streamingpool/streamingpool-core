@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Subscription;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 import stream.ReactStreams;

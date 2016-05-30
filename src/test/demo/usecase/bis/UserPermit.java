@@ -4,8 +4,6 @@
 
 package demo.usecase.bis;
 
-import stream.StreamId;
-
 /**
  * Represents a user permit from the BIS
  * 
