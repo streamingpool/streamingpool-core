@@ -28,9 +28,13 @@ public class BisRegisterFlowTest extends AbstractStreamTest {
 
     @Before
     public void setup() {
-        provide(ReactStreams.fromRx(Observable.from(someValues()).observeOn(Schedulers.newThread())
-                .delay(10, TimeUnit.MILLISECONDS).limit(SOURCE_STREAM_ELEMENTS).map(l -> Long.valueOf(l).intValue())))
-                        .as(SOURCE_ID);
+        //@formatter:off
+        provide(ReactStreams.fromRx(Observable.from(someValues())
+            .observeOn(Schedulers.newThread())
+            .delay(10, TimeUnit.MILLISECONDS).limit(SOURCE_STREAM_ELEMENTS)
+            .map(l -> Long.valueOf(l).intValue())))
+            .as(SOURCE_ID);
+        //@formatter:on
     }
 
     @Test
