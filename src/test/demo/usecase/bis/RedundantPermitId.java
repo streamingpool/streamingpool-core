@@ -4,7 +4,9 @@
 
 package demo.usecase.bis;
 
-enum RedundantPermitId {
+import stream.StreamId;
+
+enum RedundantPermitId implements StreamId<UserPermit>{
     USER_PERMIT_1_A(0),
     USER_PERMIT_1_B(16),
     USER_PERMIT_2_A(1),

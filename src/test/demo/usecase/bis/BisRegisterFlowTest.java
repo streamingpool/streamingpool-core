@@ -52,8 +52,8 @@ public class BisRegisterFlowTest extends AbstractStreamTest {
 
         sync.await();
 
-        Observable<UserPermit> userPermit10AStream = getUserPermitStream(RedundantPermitId.USER_PERMIT_1_A);
-        Observable<UserPermit> userPermit10BStream = getUserPermitStream(RedundantPermitId.USER_PERMIT_1_B);
+        Observable<UserPermit> userPermit10AStream = ReactStreams.rxFrom(discover(RedundantPermitId.USER_PERMIT_1_A));
+        Observable<UserPermit> userPermit10BStream = ReactStreams.rxFrom(discover(RedundantPermitId.USER_PERMIT_1_B));
 
         //@formatter:off        
         Observable
@@ -61,10 +61,6 @@ public class BisRegisterFlowTest extends AbstractStreamTest {
                     (a, b) -> a.isGiven() & b.isGiven())
             .subscribe(value -> System.out.println("User Permit 1 : " + value));
         //@formatter:on
-    }
-
-    private Observable<UserPermit> getUserPermitStream(RedundantPermitId redundantPermitId) {
-        return ReactStreams.rxFrom(discover(new NamedStreamId<>(redundantPermitId.toString())));
     }
 
     private Observable<UserPermit> mapBitsToUserPermits(Integer register) {
@@ -78,7 +74,7 @@ public class BisRegisterFlowTest extends AbstractStreamTest {
 
     private void provideStreams(GroupedObservable<RedundantPermitId, UserPermit> groupedObservable) {
         RedundantPermitId key = groupedObservable.getKey();
-        provide(ReactStreams.fromRx(groupedObservable)).as(new NamedStreamId<>(key.toString()));
+        provide(ReactStreams.fromRx(groupedObservable)).as(key);
     }
 
     private List<Integer> someValues() {
