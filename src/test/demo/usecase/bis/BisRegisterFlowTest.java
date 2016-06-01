@@ -20,7 +20,7 @@ import stream.ReactStreams;
 import stream.StreamId;
 import stream.impl.NamedStreamId;
 import stream.support.RxStreamSupport;
-import stream.testing.AbstractStreamTest;
+import stream.support.test.AbstractStreamTest;
 
 public class BisRegisterFlowTest extends AbstractStreamTest implements RxStreamSupport {
 
