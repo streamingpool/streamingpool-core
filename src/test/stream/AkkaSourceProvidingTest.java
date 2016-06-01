@@ -19,7 +19,7 @@ import akka.NotUsed;
 import akka.stream.OverflowStrategy;
 import akka.stream.javadsl.Source;
 import scala.concurrent.duration.Duration;
-import stream.support.test.AbstractAkkaStreamTest;
+import stream.test.AbstractAkkaStreamTest;
 
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 public class AkkaSourceProvidingTest extends AbstractAkkaStreamTest implements StreamCollectingSupport {

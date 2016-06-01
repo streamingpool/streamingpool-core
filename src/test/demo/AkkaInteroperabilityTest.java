@@ -28,7 +28,7 @@ import scala.concurrent.duration.Duration;
 import stream.StreamId;
 import stream.support.AkkaStreamSupport;
 import stream.support.RxStreamSupport;
-import stream.support.test.AbstractAkkaStreamTest;
+import stream.test.AbstractAkkaStreamTest;
 
 public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements AkkaStreamSupport, RxStreamSupport {
 

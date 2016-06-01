@@ -17,7 +17,7 @@ import org.junit.Test;
 import rx.Observable;
 import stream.impl.NamedStreamId;
 import stream.support.RxStreamSupport;
-import stream.support.test.AbstractStreamTest;
+import stream.test.AbstractStreamTest;
 
 public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupport {
 
