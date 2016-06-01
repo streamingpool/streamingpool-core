@@ -22,13 +22,13 @@ import akka.stream.javadsl.Flow;
 import akka.stream.javadsl.Keep;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
-import demo.subscriber.BlockingTestSubscriber;
 import rx.Observable;
 import scala.concurrent.duration.Duration;
 import stream.StreamId;
 import stream.support.AkkaStreamSupport;
 import stream.support.RxStreamSupport;
 import stream.test.AbstractAkkaStreamTest;
+import stream.util.subscriber.BlockingTestSubscriber;
 
 public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements AkkaStreamSupport, RxStreamSupport {
 

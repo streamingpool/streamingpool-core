@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package demo.subscriber;
+package stream.util.subscriber;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
