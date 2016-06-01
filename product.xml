@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <products>
-	<product name="streaming-pool" version="0.0.1" directory="org/streaming-pool">
-		<jar>streaming-pool.jar</jar>
+	<product name="streaming-pool-core" version="0.0.1" directory="streaming-pool/streaming-pool-core">
+		<jar>streaming-pool-core.jar</jar>
 		<desc />
 		<dependencies>
 			<!-- Deps in build.gradle! -->
