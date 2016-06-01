@@ -10,12 +10,8 @@ repositories {
     mavenCentral()
 }
 
-configurations.compile {
-	transitive = true
-}
-
 dependencies {
-    compile "log4j:log4j:1.2.17"
+	compile group: 'log4j', name: 'log4j', version: '1.2.17' 
     compile "org.slf4j:slf4j-api:1.7.21"
     compile "org.slf4j:slf4j-log4j12:1.7.21"
 
