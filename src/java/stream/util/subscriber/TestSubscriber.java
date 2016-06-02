@@ -13,14 +13,14 @@ import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestSubscriber <T> implements Subscriber<T> {
+public class TestSubscriber<T> implements Subscriber<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestSubscriber.class);
 
     private final List<T> values;
     private final String name;
     private final long consumingDurationMs;
     private Subscription subscription;
-    private boolean isVerbose;
+    private boolean verbose;
 
     private int requestedItems;
 
@@ -28,7 +28,7 @@ public class TestSubscriber <T> implements Subscriber<T> {
         this.name = name;
         this.consumingDurationMs = consumingDurationMs;
         this.values = new LinkedList<>();
-        this.isVerbose = false;
+        this.verbose = false;
         this.requestedItems = 1;
     }
 
@@ -36,7 +36,7 @@ public class TestSubscriber <T> implements Subscriber<T> {
         this.name = name;
         this.consumingDurationMs = consumingDurationMs;
         this.values = new LinkedList<>();
-        this.isVerbose = verbose;
+        this.verbose = verbose;
         this.requestedItems = 1;
     }
 
@@ -71,7 +71,7 @@ public class TestSubscriber <T> implements Subscriber<T> {
     }
 
     private void log(String format, Object... args) {
-        if (isVerbose) {
+        if (verbose) {
             LOGGER.info(format, args);
         }
     }
@@ -85,7 +85,7 @@ public class TestSubscriber <T> implements Subscriber<T> {
     }
 
     public void setVerbose(boolean verbose) {
-        isVerbose = verbose;
+        this.verbose = verbose;
     }
 
     public List<T> getValues() {
@@ -94,5 +94,13 @@ public class TestSubscriber <T> implements Subscriber<T> {
 
     public String getName() {
         return name;
+    }
+
+    public long getConsumingDurationMs() {
+        return consumingDurationMs;
+    }
+
+    public boolean isVerbose() {
+        return this.verbose;
     }
 }

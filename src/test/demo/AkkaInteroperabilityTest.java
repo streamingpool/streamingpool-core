@@ -48,7 +48,8 @@ public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements 
 
     @Before
     public void setUp() {
-        subscriber = new BlockingTestSubscriber<Integer>("Test Subscriber", CONSUMING_DURATION_MS);
+        subscriber = BlockingTestSubscriber.<Integer> ofName("Test Subscriber")
+                .withConsumingdelayInMs(CONSUMING_DURATION_MS);
     }
 
     @After
@@ -60,7 +61,6 @@ public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements 
     public void provideAndDiscoverAkkaStream() {
         provide(RANGE_SOURCE_AKKA.via(DELAY_FLOW)).materialized().as(BUFFERED_ID);
         publisherFrom(BUFFERED_ID).subscribe(subscriber);
-        
 
         subscriber.await();
         assertThat(subscriber.getValues()).hasSize(SOURCE_STREAM_ELEMENT_NUM);
