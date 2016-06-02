@@ -8,8 +8,9 @@ public interface StreamFactory {
 
     /***
      * @param id the id of the stream to create
+     * @param discoveryService TODO
      * @return the new stream or {@code null} if this factory cannot create the stream of the given id
      */
-    <T> ReactStream<T> create(StreamId<T> id);
+    <T> ReactStream<T> create(StreamId<T> id, DiscoveryService discoveryService);
 
 }

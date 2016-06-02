@@ -32,13 +32,7 @@ public class LazyPool extends SimplePool {
     }
 
     private <T> ReactStream<T> create(StreamId<T> newId) {
-        for (StreamFactory factory : factories) {
-            ReactStream<T> stream = factory.create(newId);
-            if (stream != null) {
-                return stream;
-            }
-        }
-        return null;
+        return new TrackKeepingDiscoveryService(factories).discover(newId);
     }
 
 }

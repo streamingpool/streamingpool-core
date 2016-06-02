@@ -16,6 +16,7 @@ import org.reactivestreams.Publisher;
 import akka.stream.Materializer;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
+import stream.DiscoveryService;
 import stream.ReactStream;
 import stream.ReactStreams;
 import stream.StreamFactory;
@@ -32,7 +33,7 @@ public class AkkaStreamFactory implements AkkaSourceProvidingService, StreamFact
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> ReactStream<T> create(StreamId<T> newId) {
+    public <T> ReactStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
         Source<T, ?> source = (Source<T, ?>) suppliers.get(newId);
         if (source == null) {
             return null;

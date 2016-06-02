@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
+import stream.DiscoveryService;
 import stream.LazyProvidingService;
 import stream.ReactStream;
 import stream.StreamFactory;
@@ -21,7 +22,7 @@ public class LazyStreamFactory implements LazyProvidingService, StreamFactory {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> ReactStream<T> create(StreamId<T> newId) {
+    public <T> ReactStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
         return (ReactStream<T>) suppliers.get(newId).get();
     }
 
