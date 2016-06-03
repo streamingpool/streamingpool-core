@@ -4,13 +4,11 @@
 
 package stream.support;
 
-import java.util.function.Supplier;
-
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import stream.DiscoveryService;
 import stream.CreatorProvidingService;
+import stream.DiscoveryService;
 import stream.ProvidingService;
 import stream.ReactStream;
 import stream.ReactStreams;

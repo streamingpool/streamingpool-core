@@ -50,7 +50,7 @@ public class AkkaSourceProvidingTest extends AbstractAkkaStreamTest implements S
          * The second observed value should be higher than 50 after the wait, because the source starts ticking on
          * registration (=materialization)
          */
-        assertThat(secondEmittedItem()).isGreaterThan(50);
+        assertThat(secondEmittedItem()).isGreaterThanOrEqualTo(50);
     }
 
     @Test

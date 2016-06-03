@@ -6,6 +6,7 @@ package stream.impl;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -18,6 +19,17 @@ import stream.StreamId;
 public class CreatorStreamFactory implements CreatorProvidingService, StreamFactory {
 
     private ConcurrentMap<StreamId<?>, StreamCreator<?>> suppliers = new ConcurrentHashMap<>();
+
+    public CreatorStreamFactory(Iterable<IdentifiedStreamCreator<?>> identifiedCreators) {
+        Objects.requireNonNull(identifiedCreators, "identifiedStreamCreators must not be null.");
+        for (IdentifiedStreamCreator<?> identifiedCreator : identifiedCreators) {
+            provide(identifiedCreator);
+        }
+    }
+
+    private <T> void provide(IdentifiedStreamCreator<T> identifiedCreator) {
+        suppliers.put(identifiedCreator.id(), identifiedCreator.creator());
+    }
 
     @Override
     @SuppressWarnings("unchecked")

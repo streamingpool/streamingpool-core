@@ -4,6 +4,8 @@
 
 package conf;
 
+import static stream.util.MoreCollections.emptyIfNull;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,22 +13,26 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import stream.StreamFactory;
-import stream.impl.LazyPool;
 import stream.impl.CreatorStreamFactory;
+import stream.impl.IdentifiedStreamCreator;
+import stream.impl.LazyPool;
 
 @Configuration
 public class InProcessPoolConfiguration {
 
-    @Autowired
+    @Autowired(required = false)
     private List<StreamFactory> streamFactories;
+
+    @Autowired(required = false)
+    private List<IdentifiedStreamCreator<?>> identifiedStreamCreators;
 
     @Bean
     public LazyPool pool() {
-        return new LazyPool(streamFactories);
+        return new LazyPool(emptyIfNull(streamFactories));
     }
 
     @Bean
     public CreatorStreamFactory lazyStreamFactory() {
-        return new CreatorStreamFactory();
+        return new CreatorStreamFactory(emptyIfNull(identifiedStreamCreators));
     }
 }
