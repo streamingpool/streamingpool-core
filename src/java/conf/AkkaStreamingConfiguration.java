@@ -16,12 +16,12 @@ import stream.akka.AkkaStreamFactory;
 public class AkkaStreamingConfiguration {
 
     @Bean(destroyMethod = "terminate")
-    public ActorSystem createActorSystem() {
+    public ActorSystem actorSystem() {
         return ActorSystem.create("sys");
     }
 
     @Bean(destroyMethod = "shutdown")
-    public ActorMaterializer createActorMaterializer(ActorSystem actorSystem) {
+    public ActorMaterializer actorMaterializer(ActorSystem actorSystem) {
         return ActorMaterializer.create(actorSystem);
     }
 

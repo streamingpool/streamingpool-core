@@ -34,7 +34,11 @@ public class CreatorStreamFactory implements CreatorProvidingService, StreamFact
     @Override
     @SuppressWarnings("unchecked")
     public <T> ReactStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
-        return (ReactStream<T>) suppliers.get(newId).createWith(discoveryService);
+        StreamCreator<?> streamCreator = suppliers.get(newId);
+        if (streamCreator == null) {
+            return null;
+        }
+        return (ReactStream<T>) streamCreator.createWith(discoveryService);
     }
 
     @Override

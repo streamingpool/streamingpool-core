@@ -32,7 +32,7 @@ public class InProcessPoolConfiguration {
     }
 
     @Bean
-    public CreatorStreamFactory lazyStreamFactory() {
+    public CreatorStreamFactory creatorStreamFactory() {
         return new CreatorStreamFactory(emptyIfNull(identifiedStreamCreators));
     }
 }
