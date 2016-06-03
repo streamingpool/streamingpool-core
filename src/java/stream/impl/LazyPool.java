@@ -20,19 +20,7 @@ public class LazyPool extends SimplePool {
 
     @Override
     public <T> ReactStream<T> discover(StreamId<T> id) {
-        /* This cast is safe, because we only allow to add the right types into the map */
-        @SuppressWarnings("unchecked")
-        ReactStream<T> activeStream = (ReactStream<T>) activeStreams().computeIfAbsent(id, this::create);
-
-        if (activeStream == null) {
-            throw new IllegalArgumentException(
-                    "The stream for id " + id + "is neither present nor can it be created by any factory.");
-        }
-        return activeStream;
-    }
-
-    private <T> ReactStream<T> create(StreamId<T> newId) {
-        return new TrackKeepingDiscoveryService(factories).discover(newId);
+        return new TrackKeepingDiscoveryService(factories, activeStreams()).discover(id);
     }
 
 }
