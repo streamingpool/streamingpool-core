@@ -10,11 +10,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import conf.AkkaStreamingConfiguration;
-import conf.InProcessPoolConfiguration;
+import conf.EmbeddedPoolConfiguration;
 import stream.support.AbstractAkkaStreamSupport;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { InProcessPoolConfiguration.class,
+@ContextConfiguration(classes = { EmbeddedPoolConfiguration.class,
         AkkaStreamingConfiguration.class }, loader = AnnotationConfigContextLoader.class)
 public abstract class AbstractAkkaStreamTest extends AbstractAkkaStreamSupport {
     /* Nothing to do here. Only the contexts and the test runner */

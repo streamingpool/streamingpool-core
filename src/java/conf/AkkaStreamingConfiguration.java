@@ -10,8 +10,16 @@ import org.springframework.context.annotation.Configuration;
 import akka.actor.ActorSystem;
 import akka.stream.ActorMaterializer;
 import akka.stream.Materializer;
+import stream.akka.AkkaSourceProvidingService;
 import stream.akka.AkkaStreamFactory;
 
+/**
+ * This spring configuration provides the beans which are required to provide akka streams (sources) into the streaming
+ * pool. The core bean to use here is the {@link AkkaSourceProvidingService} on which akka sources can be registered
+ * which either are materialized directly, or at discovery time.
+ * 
+ * @author kfuchsbe
+ */
 @Configuration
 public class AkkaStreamingConfiguration {
 
