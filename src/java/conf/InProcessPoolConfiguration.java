@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 import stream.StreamFactory;
 import stream.impl.LazyPool;
-import stream.impl.LazyStreamFactory;
+import stream.impl.CreatorStreamFactory;
 
 @Configuration
 public class InProcessPoolConfiguration {
@@ -26,7 +26,7 @@ public class InProcessPoolConfiguration {
     }
 
     @Bean
-    public LazyStreamFactory lazyStreamFactory() {
-        return new LazyStreamFactory();
+    public CreatorStreamFactory lazyStreamFactory() {
+        return new CreatorStreamFactory();
     }
 }

@@ -10,12 +10,13 @@ import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import stream.DiscoveryService;
-import stream.LazyProvidingService;
+import stream.CreatorProvidingService;
 import stream.ProvidingService;
 import stream.ReactStream;
 import stream.ReactStreams;
 import stream.StreamId;
 import stream.impl.SimplePool;
+import stream.impl.StreamCreator;
 
 /**
  * @author kfuchsbe
@@ -27,7 +28,7 @@ public class AbstractStreamSupport implements StreamSupport {
     @Autowired
     private ProvidingService providingService;
     @Autowired
-    private LazyProvidingService lazyProvidingService;
+    private CreatorProvidingService lazyProvidingService;
 
     public void unregisterAllStreams() {
         ((SimplePool) discoveryService).clearPool();
@@ -44,7 +45,7 @@ public class AbstractStreamSupport implements StreamSupport {
     }
 
     @Override
-    public <T> StreamSupport.OngoingLazyProviding<T> provide(Supplier<ReactStream<T>> reactStream) {
+    public <T> StreamSupport.OngoingLazyProviding<T> provide(StreamCreator<T> reactStream) {
         return new StreamSupport.OngoingLazyProviding<>(lazyProvidingService, reactStream);
     }
 

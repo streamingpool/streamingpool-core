@@ -4,14 +4,13 @@
 
 package stream.support;
 
-import java.util.function.Supplier;
-
 import org.reactivestreams.Publisher;
 
-import stream.LazyProvidingService;
+import stream.CreatorProvidingService;
 import stream.ProvidingService;
 import stream.ReactStream;
 import stream.StreamId;
+import stream.impl.StreamCreator;
 
 public interface StreamSupport {
 
@@ -19,7 +18,7 @@ public interface StreamSupport {
 
     <T> OngoingProviding<T> provide(ReactStream<T> reactStream);
 
-    <T> OngoingLazyProviding<T> provide(Supplier<ReactStream<T>> reactStream);
+    <T> OngoingLazyProviding<T> provide(StreamCreator<T> reactStream);
 
     <T> Publisher<T> publisherFrom(StreamId<T> id);
 
@@ -41,10 +40,10 @@ public interface StreamSupport {
     }
 
     class OngoingLazyProviding<T> {
-        private final Supplier<ReactStream<T>> reactStream;
-        private final LazyProvidingService providingService;
+        private final StreamCreator<T> reactStream;
+        private final CreatorProvidingService providingService;
 
-        public OngoingLazyProviding(LazyProvidingService providingService, Supplier<ReactStream<T>> reactStream) {
+        public OngoingLazyProviding(CreatorProvidingService providingService, StreamCreator<T> reactStream) {
             this.providingService = providingService;
             this.reactStream = reactStream;
         }

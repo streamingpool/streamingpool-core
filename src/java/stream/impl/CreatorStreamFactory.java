@@ -8,31 +8,30 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.Supplier;
 
+import stream.CreatorProvidingService;
 import stream.DiscoveryService;
-import stream.LazyProvidingService;
 import stream.ReactStream;
 import stream.StreamFactory;
 import stream.StreamId;
 
-public class LazyStreamFactory implements LazyProvidingService, StreamFactory {
+public class CreatorStreamFactory implements CreatorProvidingService, StreamFactory {
 
-    private ConcurrentMap<StreamId<?>, Supplier<? extends ReactStream<?>>> suppliers = new ConcurrentHashMap<>();
+    private ConcurrentMap<StreamId<?>, StreamCreator<?>> suppliers = new ConcurrentHashMap<>();
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> ReactStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
-        return (ReactStream<T>) suppliers.get(newId).get();
+        return (ReactStream<T>) suppliers.get(newId).createWith(discoveryService);
     }
 
     @Override
-    public <T> void provide(StreamId<T> id, Supplier<ReactStream<T>> streamSupplier) {
+    public <T> void provide(StreamId<T> id, StreamCreator<T> streamSupplier) {
         requireNonNull(id, "id must not be null!");
         requireNonNull(streamSupplier, "stream suplier must not be null!");
 
-        Supplier<?> existingSupplier = suppliers.putIfAbsent(id, streamSupplier);
-        if (existingSupplier != null) {
+        StreamCreator<?> existingCreator = suppliers.putIfAbsent(id, streamSupplier);
+        if (existingCreator != null) {
             throw new IllegalArgumentException("Id " + id + " already registered! Cannot register twice.");
         }
     }
