@@ -28,7 +28,7 @@ import stream.StreamId;
 import stream.support.AkkaStreamSupport;
 import stream.support.RxStreamSupport;
 import stream.test.AbstractAkkaStreamTest;
-import stream.util.subscriber.BlockingTestSubscriber;
+import testing.subscriber.BlockingTestSubscriber;
 
 public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements AkkaStreamSupport, RxStreamSupport {
 

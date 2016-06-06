@@ -6,26 +6,17 @@ package stream;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static stream.ReactStreams.fromRx;
 import static stream.ReactStreams.rxFrom;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
-import rx.Observable;
 import stream.impl.CycleInStreamDiscoveryDetectedException;
 import stream.impl.LazyPool;
+import testing.StreamFactoryMock;
 
 /**
  * Test for the discovery of Streams using {@link StreamFactory} and {@link LazyPool}.
@@ -113,51 +104,5 @@ public class DiscoveryTest {
 
     private List<String> toList(ReactStream<String> result) {
         return rxFrom(result).toList().toBlocking().single();
-    }
-
-    /**
-     * Very simple StreamFactory mock builder to simplify the test code.
-     */
-    private static class StreamFactoryMock<T> {
-        private final Multimap<StreamId<T>, StreamId<T>> withIdDiscover = HashMultimap.create();
-        private final Map<StreamId<T>, T> withIdProvideStreamWithValue = new HashMap<>();
-
-        private StreamFactoryMock() {
-        }
-
-        public static <T> StreamFactoryMock<T> newFactory() {
-            return new StreamFactoryMock<>();
-        }
-
-        public StreamFactoryMock<T> withIdDiscoverAnother(StreamId<T> id, StreamId<T> idToDiscover) {
-            withIdDiscover.put(id, idToDiscover);
-            return this;
-        }
-
-        public StreamFactoryMock<T> withIdProvideStreamWithValue(StreamId<T> id, T value) {
-            withIdProvideStreamWithValue.put(id, value);
-            return this;
-        }
-
-        public StreamFactory build() {
-            final StreamFactory factoryMock = mock(StreamFactory.class);
-            when(factoryMock.create(any(), any())).thenAnswer((args) -> {
-                @SuppressWarnings("unchecked")
-                StreamId<T> streamId = args.getArgumentAt(0, StreamId.class);
-                DiscoveryService discovery = args.getArgumentAt(1, DiscoveryService.class);
-
-                if (withIdDiscover.containsKey(streamId)) {
-                    return fromRx(Observable.merge(withIdDiscover.get(streamId).stream().map(discovery::discover)
-                            .map(ReactStreams::rxFrom).collect(Collectors.toList())));
-                }
-
-                if (withIdProvideStreamWithValue.containsKey(streamId)) {
-                    return fromRx(Observable.just(withIdProvideStreamWithValue.get(streamId)));
-                }
-
-                return null;
-            });
-            return factoryMock;
-        }
     }
 }

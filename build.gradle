@@ -27,7 +27,9 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.4.1'
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
+    
+    /* TODO: Until we have a separate testing project */
+    compile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
 
 }
 
