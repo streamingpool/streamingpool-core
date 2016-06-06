@@ -7,6 +7,8 @@
 			<!-- Deps in build.gradle! -->
 			<dep product="reactive-streams" version="1.0.0" />
 			
+			<dep product="guava" />
+			
 			<dep product="rxjava" />
 			<dep product="rxjava-math" version="1.0.0"/>
 			<dep product="rxjava-reactive-streams" version="1.0.1" />
