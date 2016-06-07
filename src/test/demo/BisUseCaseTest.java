@@ -41,6 +41,6 @@ public class BisUseCaseTest {
     }
 
     private void print(String x) {
-        System.out.println(x);
+       System.out.println(x);
     }
 }

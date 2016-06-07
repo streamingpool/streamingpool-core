@@ -11,13 +11,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import conf.EmbeddedPoolConfiguration;
+import conf.StreamCreatorFactoryConfiguration;
 import stream.support.AbstractStreamSupport;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = EmbeddedPoolConfiguration.class, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = { EmbeddedPoolConfiguration.class,
+        StreamCreatorFactoryConfiguration.class }, loader = AnnotationConfigContextLoader.class)
 public abstract class AbstractStreamTest extends AbstractStreamSupport {
     /* Nothing to do here, only the context configuration */
-    
+
     @Before
     public void clean() {
         super.unregisterAllStreams();

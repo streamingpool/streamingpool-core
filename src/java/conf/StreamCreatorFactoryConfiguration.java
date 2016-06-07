@@ -4,6 +4,8 @@
 
 package conf;
 
+import static stream.util.MoreCollections.emptyIfNull;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 
 import stream.impl.CreatorStreamFactory;
 import stream.impl.IdentifiedStreamCreator;
+import stream.util.MoreCollections;
 
 public class StreamCreatorFactoryConfiguration {
 
@@ -19,12 +22,12 @@ public class StreamCreatorFactoryConfiguration {
      * careful here, because it can happen that there is none, in which case spring would set this to null.
      */
     /* */
-    @Autowired
+    @Autowired(required = false)
     private List<IdentifiedStreamCreator<?>> identifiedStreamCreators;
 
     @Bean
     public CreatorStreamFactory creatorStreamFactory() {
-        return new CreatorStreamFactory(identifiedStreamCreators);
+        return new CreatorStreamFactory(emptyIfNull(identifiedStreamCreators));
     }
 
 }

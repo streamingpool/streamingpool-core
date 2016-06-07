@@ -12,6 +12,7 @@ import static stream.ReactStreams.rxFrom;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import stream.impl.CycleInStreamDiscoveryDetectedException;

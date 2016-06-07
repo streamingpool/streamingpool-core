@@ -4,6 +4,8 @@
 
 package conf;
 
+import static stream.util.MoreCollections.emptyIfNull;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 
 import stream.StreamFactory;
 import stream.impl.LazyPool;
+import stream.util.MoreCollections;
 
 /**
  * The spring configuration which shall be used in any application that will have the spring pool embedded. It provides
@@ -30,12 +33,12 @@ public class EmbeddedPoolConfiguration {
      * A list of stream factories which will be automatically collected by Spring. Since there will be at least one (the
      * below created factory) we can keep the required=true (default).
      */
-    @Autowired
+    @Autowired(required = false)
     private List<StreamFactory> streamFactories;
 
     @Bean
     public LazyPool pool() {
-        return new LazyPool(streamFactories);
+        return new LazyPool(emptyIfNull(streamFactories));
     }
 
 }
