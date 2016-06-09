@@ -14,9 +14,6 @@ import akka.stream.Attributes;
 import akka.stream.Materializer;
 import akka.stream.javadsl.Source;
 import cern.streaming.pool.core.incubation.akka.IdBasedSource;
-import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactStreams;
-import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.SimplePool;
 import rx.Observable;
 

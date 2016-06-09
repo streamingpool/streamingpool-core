@@ -14,8 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import cern.streaming.pool.core.service.ReactStream;
-import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.NamedStreamId;
 import cern.streaming.pool.core.service.support.RxStreamSupport;
 import cern.streaming.pool.core.service.test.AbstractStreamTest;

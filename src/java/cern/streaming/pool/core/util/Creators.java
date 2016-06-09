@@ -2,13 +2,15 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.impl;
+package cern.streaming.pool.core.util;
 
 import java.util.Objects;
 import java.util.function.Supplier;
 
 import cern.streaming.pool.core.service.ReactStream;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
+import cern.streaming.pool.core.service.impl.StreamCreator;
 
 public class Creators {
 

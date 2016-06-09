@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.impl.LazyPool;
-import cern.streaming.pool.core.util.MoreCollections;
 
 /**
  * The spring configuration which shall be used in any application that will have the spring pool embedded. It provides

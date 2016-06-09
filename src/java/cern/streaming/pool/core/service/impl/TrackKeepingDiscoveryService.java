@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
+import cern.streaming.pool.core.exception.CycleInStreamDiscoveryDetectedException;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactStream;
 import cern.streaming.pool.core.service.StreamFactory;

@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Bean;
 
 import cern.streaming.pool.core.service.impl.CreatorStreamFactory;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
-import cern.streaming.pool.core.util.MoreCollections;
 
 public class StreamCreatorFactoryConfiguration {
 

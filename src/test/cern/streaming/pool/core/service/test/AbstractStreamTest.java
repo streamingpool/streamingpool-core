@@ -4,8 +4,10 @@
 
 package cern.streaming.pool.core.service.test;
 
-import org.junit.Before;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
+
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
@@ -16,12 +18,8 @@ import cern.streaming.pool.core.service.support.AbstractStreamSupport;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { EmbeddedPoolConfiguration.class,
-        StreamCreatorFactoryConfiguration.class }, loader = AnnotationConfigContextLoader.class)
+		StreamCreatorFactoryConfiguration.class }, loader = AnnotationConfigContextLoader.class)
+@DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 public abstract class AbstractStreamTest extends AbstractStreamSupport {
-    /* Nothing to do here, only the context configuration */
-
-    @Before
-    public void clean() {
-        super.unregisterAllStreams();
-    }
+	/* Nothing to do here, only the context configuration */
 }
