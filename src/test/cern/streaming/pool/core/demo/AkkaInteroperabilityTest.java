@@ -4,7 +4,7 @@
 
 package cern.streaming.pool.core.demo;
 
-import static cern.streaming.pool.core.service.ReactStreams.namedId;
+import static cern.streaming.pool.core.util.ReactStreams.namedId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;

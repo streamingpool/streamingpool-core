@@ -9,8 +9,8 @@ import org.reactivestreams.Publisher;
 import cern.streaming.pool.core.service.CreatorProvidingService;
 import cern.streaming.pool.core.service.ProvidingService;
 import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.impl.StreamCreator;
 
 public interface StreamSupport {
 

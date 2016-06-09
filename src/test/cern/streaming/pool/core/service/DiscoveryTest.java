@@ -4,7 +4,7 @@
 
 package cern.streaming.pool.core.service;
 
-import static cern.streaming.pool.core.service.ReactStreams.rxFrom;
+import static cern.streaming.pool.core.util.ReactStreams.rxFrom;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

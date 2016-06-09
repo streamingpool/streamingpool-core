@@ -4,8 +4,6 @@
 
 package cern.streaming.pool.core.service;
 
-import cern.streaming.pool.core.service.impl.StreamCreator;
-
 public interface CreatorProvidingService {
 
     <T> void provide(StreamId<T> id, StreamCreator<T> streamSupplier);

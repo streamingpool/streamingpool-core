@@ -14,11 +14,11 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 
-import cern.streaming.pool.core.service.ReactStreams;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.NamedStreamId;
 import cern.streaming.pool.core.service.support.RxStreamSupport;
 import cern.streaming.pool.core.service.test.AbstractStreamTest;
+import cern.streaming.pool.core.util.ReactStreams;
 import rx.Observable;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;

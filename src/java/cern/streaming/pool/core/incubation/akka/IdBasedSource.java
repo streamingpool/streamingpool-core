@@ -14,8 +14,8 @@ import akka.stream.stage.GraphStage;
 import akka.stream.stage.GraphStageLogic;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactStream;
-import cern.streaming.pool.core.service.ReactStreams;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.util.ReactStreams;
 
 /**
  * Created by mgalilee on 26/05/2016.

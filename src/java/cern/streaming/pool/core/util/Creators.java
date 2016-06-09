@@ -8,9 +8,9 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
-import cern.streaming.pool.core.service.impl.StreamCreator;
 
 public class Creators {
 

@@ -5,10 +5,10 @@ import java.util.Random;
 import org.junit.Test;
 
 import cern.streaming.pool.core.service.ReactStream;
-import cern.streaming.pool.core.service.ReactStreams;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.NamedStreamId;
 import cern.streaming.pool.core.service.impl.SimplePool;
+import cern.streaming.pool.core.util.ReactStreams;
 import rx.Observable;
 
 /**

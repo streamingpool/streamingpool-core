@@ -15,6 +15,7 @@ import akka.stream.Materializer;
 import akka.stream.javadsl.Source;
 import cern.streaming.pool.core.incubation.akka.IdBasedSource;
 import cern.streaming.pool.core.service.impl.SimplePool;
+import cern.streaming.pool.core.util.ReactStreams;
 import rx.Observable;
 
 public class AkkaIdSourceTest {

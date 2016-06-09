@@ -4,7 +4,7 @@
 
 package cern.streaming.pool.core.service;
 
-import static cern.streaming.pool.core.service.ReactStreams.fromRx;
+import static cern.streaming.pool.core.util.ReactStreams.fromRx;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;

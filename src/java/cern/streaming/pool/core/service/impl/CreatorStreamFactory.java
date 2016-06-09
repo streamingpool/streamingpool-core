@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentMap;
 import cern.streaming.pool.core.service.CreatorProvidingService;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 

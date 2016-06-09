@@ -18,9 +18,9 @@ import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactStream;
-import cern.streaming.pool.core.service.ReactStreams;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.util.ReactStreams;
 
 public class AkkaStreamFactory implements AkkaSourceProvidingService, StreamFactory {
 

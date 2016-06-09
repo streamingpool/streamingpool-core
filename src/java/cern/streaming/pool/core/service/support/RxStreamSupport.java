@@ -7,8 +7,8 @@ package cern.streaming.pool.core.service.support;
 import org.reactivestreams.Publisher;
 
 import cern.streaming.pool.core.service.ReactStream;
-import cern.streaming.pool.core.service.ReactStreams;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.util.ReactStreams;
 import rx.Observable;
 
 public interface RxStreamSupport extends StreamSupport {

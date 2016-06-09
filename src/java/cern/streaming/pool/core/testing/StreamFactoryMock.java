@@ -4,7 +4,7 @@
 
 package cern.streaming.pool.core.testing;
 
-import static cern.streaming.pool.core.service.ReactStreams.fromRx;
+import static cern.streaming.pool.core.util.ReactStreams.fromRx;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -17,9 +17,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactStreams;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.util.ReactStreams;
 import rx.Observable;
 
 /**

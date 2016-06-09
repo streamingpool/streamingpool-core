@@ -2,12 +2,14 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service;
+package cern.streaming.pool.core.util;
 
 import org.reactivestreams.Publisher;
 
 import akka.NotUsed;
 import akka.stream.javadsl.Source;
+import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.NamedStreamId;
 import cern.streaming.pool.core.service.impl.SimpleReactStream;
 import rx.Observable;

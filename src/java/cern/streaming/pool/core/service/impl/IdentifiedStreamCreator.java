@@ -6,6 +6,7 @@ package cern.streaming.pool.core.service.impl;
 
 import static java.util.Objects.requireNonNull;
 
+import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamId;
 
 public class IdentifiedStreamCreator<T> {
