@@ -7,11 +7,14 @@ package cern.streaming.pool.core.examples.factory;
 import static cern.streaming.pool.core.util.ReactStreams.fromRx;
 import static rx.Observable.range;
 
+import org.springframework.stereotype.Component;
+
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 
+@Component
 public class IntegerStreamFactory implements StreamFactory {
 
     @Override

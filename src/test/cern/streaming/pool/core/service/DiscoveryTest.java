@@ -87,7 +87,7 @@ public class DiscoveryTest {
 
 		assertThat(toList(result)).hasSize(2).containsExactly(ANY_VALUE, ANY_VALUE);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	private <T> StreamId<T> mockStreamId() {
 		return mock(StreamId.class);

@@ -11,12 +11,14 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import cern.streaming.pool.core.service.DiscoveryService;
+import cern.streaming.pool.core.service.ReactStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.util.ReactStreams;
@@ -28,6 +30,7 @@ import rx.Observable;
 public class StreamFactoryMock<T> {
     private final Multimap<StreamId<T>, StreamId<T>> withIdDiscover = HashMultimap.create();
     private final Map<StreamId<T>, T> withIdProvideStreamWithValue = new HashMap<>();
+    private final Map<StreamId<T>, BiFunction<StreamId<T>, DiscoveryService, ReactStream<T>>> withIdInvoke = new HashMap<>();
 
     private StreamFactoryMock() {
     }
@@ -45,6 +48,11 @@ public class StreamFactoryMock<T> {
         withIdProvideStreamWithValue.put(id, value);
         return this;
     }
+    
+    public StreamFactoryMock<T> withIdInvoke(StreamId<T> id, BiFunction<StreamId<T>, DiscoveryService, ReactStream<T>> bifunction) {
+        withIdInvoke.put(id, bifunction);
+        return this;
+    }
 
     public StreamFactory build() {
         final StreamFactory factoryMock = mock(StreamFactory.class);
@@ -60,6 +68,10 @@ public class StreamFactoryMock<T> {
 
             if (withIdProvideStreamWithValue.containsKey(streamId)) {
                 return fromRx(Observable.just(withIdProvideStreamWithValue.get(streamId)));
+            }
+            
+            if(withIdInvoke.containsKey(streamId)) {
+                return withIdInvoke.get(streamId).apply(streamId, discovery);
             }
 
             return null;
