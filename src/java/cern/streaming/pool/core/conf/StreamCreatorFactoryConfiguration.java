@@ -11,8 +11,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
-import cern.streaming.pool.core.service.StreamCreator;
-import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.impl.CreatorStreamFactory;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
 
@@ -26,7 +24,6 @@ import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
  * for lookups from then on. This mechanism provides a simple way to organize (lazy initializing) streams in spring
  * configurations.
  * </ul>
- *  
  * @author kfuchsbe
  */
 public class StreamCreatorFactoryConfiguration {
