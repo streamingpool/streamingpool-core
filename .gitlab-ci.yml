@@ -1,5 +1,3 @@
-before_script:
-    - chmod +x gradlew
 build:
   script:
-    - ./gradlew build
+    - gradle javadoc asciidoc
