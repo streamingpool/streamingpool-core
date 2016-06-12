@@ -1,0 +1,17 @@
+= Streaming Pool Quickstart
+Kajetan Fuchsberger <kajetan.fuchsberger@cern.ch>
+:icons: font
+:sectanchors:
+:experimental:
+:source-highlighter: highlightjs
+:examplesource: src/examples/org/tensorics/core/examples
+:sourcecodedir: src/java/org/tensorics/core
+:javadoc-baseurl: http://tensorics.github.io/tensorics-core/javadoc/org/tensorics
+
+== Introduction
+Streaming Pool is aimed to be a small framework which makes it very simple to provide reactive streams,
+chain them together and discover them from where they are needed. Hereby, different technologies can be 
+freely mixed and combined as long as they implement the reactive streams specification: http://www.reactive-streams.org/
+
+
+Last built:		{localdatetime}
