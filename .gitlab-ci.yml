@@ -3,5 +3,3 @@ before_script:
 build:
   script:
     - ./gradlew build
-  tags:
-    - try
