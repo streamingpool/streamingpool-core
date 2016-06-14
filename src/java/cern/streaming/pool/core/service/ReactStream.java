@@ -5,5 +5,5 @@
 package cern.streaming.pool.core.service;
 
 public interface ReactStream<T> {
-
+    /* Marker interface */
 }

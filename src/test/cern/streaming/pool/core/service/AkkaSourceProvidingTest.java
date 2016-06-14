@@ -9,15 +9,11 @@ import static cern.streaming.pool.core.util.UncheckedWaits.waitFor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
-
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
 
 import akka.NotUsed;
 import akka.stream.OverflowStrategy;

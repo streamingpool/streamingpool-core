@@ -4,6 +4,10 @@
 
 package cern.streaming.pool.core.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
@@ -27,7 +31,7 @@ public class AkkaIdSourceTest {
         }
     };
 
-    private  static final SimplePool SIMPLE_POOL = new SimplePool();
+    private static final SimplePool SIMPLE_POOL = new SimplePool();
 
     static {
         SIMPLE_POOL.provide(STREAM_ID, ReactStreams.fromRx(Observable.range(0, 1000)));
@@ -54,12 +58,16 @@ public class AkkaIdSourceTest {
 
         IdBasedSource<Integer> sourceGraph = new TestIdBasedSource();
 
-        Source.fromGraph(sourceGraph)
-                .runForeach(i -> {
-                    System.out.println(i);
-                    latch.countDown();
-                }, materializer);
+        List<Integer> results = new ArrayList<>(1000);
+        Source.fromGraph(sourceGraph).runForeach(i -> {
+            results.add(i);
+            latch.countDown();
+        }, materializer);
 
         latch.await();
+
+        List<Integer> expected = Observable.range(0, 1000).toList().toBlocking().first();
+
+        assertThat(results).hasSize(1000).containsExactlyElementsOf(expected);
     }
 }

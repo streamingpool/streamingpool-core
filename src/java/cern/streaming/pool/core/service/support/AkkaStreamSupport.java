@@ -42,15 +42,15 @@ public interface AkkaStreamSupport extends StreamSupport {
         return source.runWith(akkaSink, materializer());
     }
 
-    public static <T> Sink<T, Publisher<T>> defaultPublisherSink() {
-        return Sink.<T> asPublisher(WITH_FANOUT).withAttributes(Attributes.inputBuffer(1, 1));
-    }
-
     default <T> Source<T, NotUsed> sourceFrom(StreamId<T> id) {
         return ReactStreams.sourceFrom(discover(id));
     }
 
-    public class OngoingAkkaSourceProviding<Out, Mat> {
+    static <T> Sink<T, Publisher<T>> defaultPublisherSink() {
+        return Sink.<T> asPublisher(WITH_FANOUT).withAttributes(Attributes.inputBuffer(1, 1));
+    }
+
+    class OngoingAkkaSourceProviding<Out, Mat> {
         private final Source<Out, Mat> akkaSource;
         private final AkkaSourceProvidingService sourceProvidingService;
         private final ProvidingService providingService;
@@ -77,7 +77,7 @@ public interface AkkaStreamSupport extends StreamSupport {
         }
     }
 
-    public class OngoingUnmaterializedAkkaSourceProviding<Out> {
+    class OngoingUnmaterializedAkkaSourceProviding<Out> {
         private final Source<Out, ?> akkaSource;
         private final AkkaSourceProvidingService sourceProvidingService;
 
@@ -92,7 +92,7 @@ public interface AkkaStreamSupport extends StreamSupport {
         }
     }
 
-    public class OngoingMaterializedAkkaSourceProviding<Out, Mat> {
+    class OngoingMaterializedAkkaSourceProviding<Out, Mat> {
 
         private final ProvidingService providingService;
         private final Source<Out, Mat> akkaSource;

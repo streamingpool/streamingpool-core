@@ -41,10 +41,10 @@ public class TestSubscriber<T> implements Subscriber<T> {
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
+    public void onSubscribe(Subscription newSubscription) {
         log("[{}] onSubscribe", name);
-        this.subscription = s;
-        s.request(requestedItems);
+        this.subscription = newSubscription;
+        newSubscription.request(requestedItems);
     }
 
     @Override
@@ -56,8 +56,8 @@ public class TestSubscriber<T> implements Subscriber<T> {
     }
 
     @Override
-    public void onError(Throwable t) {
-        log("[{}] onError", name, t);
+    public void onError(Throwable error) {
+        log("[{}] onError", name, error);
         subscription.cancel();
     }
 
@@ -80,7 +80,7 @@ public class TestSubscriber<T> implements Subscriber<T> {
         try {
             Thread.sleep(consumingDurationMs);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.error("Error while simulating expensive operation using Thread.sleep", e);
         }
     }
 

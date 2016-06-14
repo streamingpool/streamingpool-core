@@ -2,8 +2,6 @@ package cern.streaming.pool.core.demo;
 
 import java.util.Random;
 
-import org.junit.Test;
-
 import cern.streaming.pool.core.service.ReactStream;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.NamedStreamId;
@@ -14,11 +12,9 @@ import rx.Observable;
 /**
  * Created by garnierj on 20/05/2016.
  */
-public class BisUseCaseTest {
+public class TryBisUseCase {
 
-    @Test
-    /* (KF) removed sleeps for the moment */
-    public void doNotKnowWhatThisTestDoes() {
+    public static void main(String[] args) {
         System.out.println("Here it begins");
         SimplePool streamPool = new SimplePool();
 
@@ -40,7 +36,7 @@ public class BisUseCaseTest {
         // TimeUnit.SECONDS.sleep(3);
     }
 
-    private void print(String x) {
+    private static void print(String x) {
        System.out.println(x);
     }
 }

@@ -8,6 +8,8 @@ import static cern.streaming.pool.core.examples.creators.InjectionIds.INJECTION_
 import static cern.streaming.pool.core.util.ReactStreams.fromRx;
 import static cern.streaming.pool.core.util.ReactStreams.publisherFrom;
 import static cern.streaming.pool.core.util.ReactStreams.rxFrom;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,22 +25,25 @@ import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes= {EmbeddedPoolConfiguration.class, StreamCreatorFactoryConfiguration.class, InjectionConfiguration.class})
+@ContextConfiguration(classes = { EmbeddedPoolConfiguration.class, StreamCreatorFactoryConfiguration.class,
+        InjectionConfiguration.class })
 public class InjectionExampleTest {
 
     @Autowired
     private DiscoveryService discovery;
-    
+
     @Test
     public void testInjectionUsingStreamCreator() {
-        
+
         BlockingTestSubscriber<InjectionDomainObject> subscriber = BlockingTestSubscriber.ofName("Subscriber");
-        
+
         publisherFrom(fromRx(rxFrom(discovery.discover(INJECTION_CONTROL_SYSTEM)).limit(2))).subscribe(subscriber);
-        
+
         subscriber.await(5, TimeUnit.SECONDS);
-        
-        System.out.println(subscriber.getValues());
+
+        assertThat(subscriber.getValues()).hasSize(2);
+        assertThat(subscriber.getValues().stream().map(injDomain -> injDomain.getInjectionName()).collect(toList()))
+                .contains("Injection number 0", "Injection number 1");
     }
 
 }

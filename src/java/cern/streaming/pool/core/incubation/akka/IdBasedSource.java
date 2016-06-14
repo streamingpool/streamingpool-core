@@ -87,19 +87,19 @@ public class IdBasedSource<T> extends GraphStage<SourceShape<T>> {
         private boolean live = false;
 
         @Override
-        public void onSubscribe(Subscription subscription) {
-            this.subscription = subscription;
-            subscription.request(1);
+        public void onSubscribe(Subscription newSubscription) {
+            this.subscription = newSubscription;
+            newSubscription.request(1);
             live = true;
         }
 
         @Override
-        public void onNext(T t) {
-            latestValue = t;
+        public void onNext(T value) {
+            latestValue = value;
         }
 
         @Override
-        public void onError(Throwable t) {
+        public void onError(Throwable error) {
             // TODO check reactive streams behavior, probably just log
             live = false;
         }

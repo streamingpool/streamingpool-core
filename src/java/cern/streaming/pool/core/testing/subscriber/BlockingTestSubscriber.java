@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BlockingTestSubscriber<T> extends TestSubscriber<T> {
 
-    private CountDownLatch sync = new CountDownLatch(1);
+    private final CountDownLatch sync = new CountDownLatch(1);
 
     private BlockingTestSubscriber(String name, long consumingDurationMs) {
         super(name, consumingDurationMs);
@@ -42,8 +42,8 @@ public class BlockingTestSubscriber<T> extends TestSubscriber<T> {
     }
 
     @Override
-    public void onError(Throwable t) {
-        super.onError(t);
+    public void onError(Throwable error) {
+        super.onError(error);
         sync.countDown();
     }
 

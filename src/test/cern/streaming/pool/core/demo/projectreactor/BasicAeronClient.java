@@ -13,6 +13,7 @@ import reactor.io.buffer.Buffer;
 */
 public class BasicAeronClient {
 
+    /*
     private final String publisherName;
     private final String senderChannel;
     private final String receiverChannel;
@@ -22,7 +23,6 @@ public class BasicAeronClient {
         this.senderChannel = senderChannel;
         this.receiverChannel = receiverChannel;
     }
-/*
     public Flux<String> discover(int streamId) {
         Context context = Context.create().name(publisherName).autoCancel(true).ringBufferSize(2).streamId(streamId)
                 .serviceRequestStreamId(streamId + 3).receiverChannel(receiverChannel).senderChannel(senderChannel);

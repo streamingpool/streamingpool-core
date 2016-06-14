@@ -5,5 +5,5 @@
 package cern.streaming.pool.core.service;
 
 public interface StreamId<T> {
-
+    /* Marker interface */
 }

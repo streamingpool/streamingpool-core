@@ -23,11 +23,11 @@ public class IdentifiedStreamCreator<T> {
         return new IdentifiedStreamCreator<T>(id, creator);
     }
 
-    public StreamId<T> id() {
+    public StreamId<T> getId() {
         return id;
     }
 
-    public StreamCreator<T> creator() {
+    public StreamCreator<T> getCreator() {
         return creator;
     }
 }

@@ -40,6 +40,7 @@ public final class ReactStreams {
         return Source.fromPublisher(publisherFrom(stream));
     }
 
+    @SuppressWarnings("unused")
     public static <T> Source<T, NotUsed> sourceFrom(StreamId<T> streamId) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }

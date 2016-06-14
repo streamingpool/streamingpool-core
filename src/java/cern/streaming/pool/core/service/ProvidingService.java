@@ -6,6 +6,6 @@ package cern.streaming.pool.core.service;
 
 public interface ProvidingService {
 
-    <T> void provide(StreamId<T> id, ReactStream<T> obs);
+    <T> void provide(StreamId<T> id, ReactStream<T> stream);
     
 }

@@ -19,7 +19,7 @@ import cern.streaming.pool.core.service.StreamId;
 
 public class CreatorStreamFactory implements CreatorProvidingService, StreamFactory {
 
-    private ConcurrentMap<StreamId<?>, StreamCreator<?>> suppliers = new ConcurrentHashMap<>();
+    private final ConcurrentMap<StreamId<?>, StreamCreator<?>> suppliers = new ConcurrentHashMap<>();
 
     public CreatorStreamFactory(Iterable<IdentifiedStreamCreator<?>> identifiedCreators) {
         Objects.requireNonNull(identifiedCreators, "identifiedStreamCreators must not be null.");
@@ -29,8 +29,8 @@ public class CreatorStreamFactory implements CreatorProvidingService, StreamFact
     }
 
     private <T> void provide(IdentifiedStreamCreator<T> identifiedCreator) {
-        suppliers.put(identifiedCreator.id(), identifiedCreator.creator());
-    }
+        suppliers.put(identifiedCreator.getId(), identifiedCreator.getCreator());
+    }   
 
     @Override
     @SuppressWarnings("unchecked")

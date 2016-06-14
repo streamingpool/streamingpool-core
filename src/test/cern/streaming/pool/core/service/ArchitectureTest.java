@@ -7,6 +7,7 @@ package cern.streaming.pool.core.service;
 import static cern.streaming.pool.core.util.ReactStreams.fromRx;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -67,12 +68,14 @@ public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupp
         // finishes
         CountDownLatch counter = new CountDownLatch(1);
 
+        List<Long> results = new ArrayList<>();
+        
         Observable.interval(100, TimeUnit.MILLISECONDS) // Generate a value every 100 milliseconds
                 .filter(value -> value % 2 == 0) // Pass down only the values that are even
                 .limit(3) // Just accept 3 values
                 .doAfterTerminate(counter::countDown) // When the stream ends (or there is an error) tell the counter to
                                                       // decrease
-                .subscribe(System.out::println); // Subscribe to the stream in order to get the values (in this case
+                .subscribe(results::add); // Subscribe to the stream in order to get the values (in this case
                                                  // print them)
 
         // The counter works like this: it is initiated with a value (1 in this case) and this value can be decreased.
@@ -80,6 +83,8 @@ public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupp
         // unblock
         // the calling thread (the main in this case)
         counter.await();
+        
+        assertThat(results).hasSize(3).allMatch(value -> value %2 == 0);
     }
 
     private static <T> Observable<T> prepareRxStreamWith(List<T> items) {

@@ -6,6 +6,8 @@ package cern.streaming.pool.core.service.impl;
 
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
+
 import cern.streaming.pool.core.service.ReactStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
@@ -15,7 +17,7 @@ public class LazyPool extends SimplePool {
     private final List<StreamFactory> factories;
 
     public LazyPool(List<StreamFactory> factories) {
-        this.factories = factories;
+        this.factories = ImmutableList.copyOf(factories);
     }
 
     @Override

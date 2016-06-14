@@ -4,8 +4,8 @@ import rx.Observable;
 
 public class RxStreams {
 
-	public static final <T> T awaitNext(Observable<T> rxStream) {
-		return rxStream.cache().toBlocking().first();
-	}
+    public static final <T> T awaitNext(Observable<T> rxStream) {
+        return rxStream.cache().toBlocking().first();
+    }
 
 }
