@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -38,6 +39,7 @@ public class AkkaSourceProvidingTest extends AbstractAkkaStreamTest implements S
 		BasicConfigurator.configure();
 	}
 
+	@Ignore
 	@Test
 	public void provideMaterializedIsRunningFromTheBeginning() {
 		provide(COUNTER_50_HZ).materialized().as(STREAM_ID);
@@ -57,6 +59,7 @@ public class AkkaSourceProvidingTest extends AbstractAkkaStreamTest implements S
 		assertThat(secondEmittedItem()).isGreaterThanOrEqualTo(50);
 	}
 
+	@Ignore
 	@Test
 	public void provideUnmaterializedStartsRunningOnLookup() {
 		provide(COUNTER_50_HZ).as(STREAM_ID);
