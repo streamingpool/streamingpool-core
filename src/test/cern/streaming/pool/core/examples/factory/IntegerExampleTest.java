@@ -29,7 +29,7 @@ public class IntegerExampleTest {
     
     @Test
     public void test() {
-        IntegerId streamId = new IntegerId(0, 10);
+        IntegerRangeId streamId = new IntegerRangeId(0, 10);
         
         BlockingTestSubscriber<Integer> subscriber = BlockingTestSubscriber.ofName("subscriber");        
         

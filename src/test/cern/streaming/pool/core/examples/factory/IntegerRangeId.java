@@ -6,12 +6,12 @@ package cern.streaming.pool.core.examples.factory;
 
 import cern.streaming.pool.core.service.StreamId;
 
-public class IntegerId implements StreamId<Integer> {
+public class IntegerRangeId implements StreamId<Integer> {
 
     private final int from;
     private final int to;
 
-    public IntegerId(int from, int to) {
+    public IntegerRangeId(int from, int to) {
         this.from = from;
         this.to = to;
     }

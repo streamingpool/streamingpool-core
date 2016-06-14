@@ -20,11 +20,11 @@ public class IntegerStreamFactory implements StreamFactory {
     @Override
     @SuppressWarnings("unchecked")
     public <T> ReactStream<T> create(StreamId<T> id, DiscoveryService discoveryService) {
-        if (!(id instanceof IntegerId)) {
+        if (!(id instanceof IntegerRangeId)) {
             return null;
         }
         
-        IntegerId integerId = (IntegerId) id;
+        IntegerRangeId integerId = (IntegerRangeId) id;
         int from = integerId.getFrom();
         int to = integerId.getTo();
   
