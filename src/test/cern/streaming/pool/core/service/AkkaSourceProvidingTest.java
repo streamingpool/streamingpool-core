@@ -19,7 +19,7 @@ import akka.NotUsed;
 import akka.stream.OverflowStrategy;
 import akka.stream.javadsl.Source;
 import cern.streaming.pool.core.service.support.StreamCollectingSupport;
-import cern.streaming.pool.core.service.test.AbstractAkkaStreamTest;
+import cern.streaming.pool.core.testing.AbstractAkkaStreamTest;
 import cern.streaming.pool.core.util.ReactStreams;
 import scala.concurrent.duration.Duration;
 

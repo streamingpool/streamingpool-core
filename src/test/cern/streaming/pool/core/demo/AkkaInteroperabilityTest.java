@@ -24,7 +24,7 @@ import akka.stream.javadsl.Source;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.support.AkkaStreamSupport;
 import cern.streaming.pool.core.service.support.RxStreamSupport;
-import cern.streaming.pool.core.service.test.AbstractAkkaStreamTest;
+import cern.streaming.pool.core.testing.AbstractAkkaStreamTest;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import rx.Observable;
 import scala.concurrent.duration.Duration;

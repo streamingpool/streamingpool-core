@@ -17,7 +17,7 @@ import org.junit.Test;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.NamedStreamId;
 import cern.streaming.pool.core.service.support.RxStreamSupport;
-import cern.streaming.pool.core.service.test.AbstractStreamTest;
+import cern.streaming.pool.core.testing.AbstractStreamTest;
 import cern.streaming.pool.core.util.ReactStreams;
 import rx.Observable;
 import rx.observables.GroupedObservable;
