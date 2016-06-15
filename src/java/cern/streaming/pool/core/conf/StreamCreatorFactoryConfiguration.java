@@ -17,11 +17,17 @@ import cern.streaming.pool.core.service.impl.CreatorStreamFactory;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
 
 /**
- * Spring configuration for using {@link IdentifiedStreamCreator} and {@link StreamCreator}. For each
- * {@link IdentifiedStreamCreator} a new {@link StreamFactory} is registered. It is necessary to include the
- * {@link EmbeddedPoolConfiguration} configuration in order to use this configuration, if not the created factories will
- * not be used to produce streams.
- * 
+ * This configuration can be used together with a pool configuration and provides and additional factory for streams
+ * which is based on so-called creators. A stream-creator is useful, if streams shall be created only on the first
+ * lookup time and not at the start time of the application context. While creators can be registered at runtime into,
+ * this configuration picks up the following beans automatically on startup:
+ * <ul>
+ * <li>All instances of {@link IdentifiedStreamCreator}. These are passed on the the created factory and are available
+ * for lookups from then on. This mechanism provides a simple way to organize (lazy initializing) streams in spring
+ * configurations.
+ * </ul>
+ *  
+ * @author kfuchsbe
  */
 public class StreamCreatorFactoryConfiguration {
 
