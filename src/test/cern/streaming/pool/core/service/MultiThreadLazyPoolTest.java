@@ -14,7 +14,7 @@ import java.util.concurrent.Future;
 import org.junit.Test;
 
 import cern.streaming.pool.core.service.impl.LazyPool;
-import cern.streaming.pool.core.service.test.AbstractStreamTest;
+import cern.streaming.pool.core.testing.AbstractStreamTest;
 import cern.streaming.pool.core.testing.StreamFactoryMock;
 
 /**
