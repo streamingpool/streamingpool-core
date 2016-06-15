@@ -13,6 +13,15 @@ import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Reactive Streams {@link Subscriber} for testing purposes. It keeps track of every value that is received and exposes
+ * them as {@link List}. If enabled, it will log every reactive streams interaction. It is possible to set a consuming
+ * delay for creating slow and fast subscribers. A consuming delay is the time elapsed between the
+ * {@link Subscriber#onNext(Object)} call and the {@link Subscription#request(long)} call.
+ * 
+ * @author acalia
+ * @param <T> type of the data that the subscriber will receive from the stream 
+ */
 public class TestSubscriber<T> implements Subscriber<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestSubscriber.class);
 

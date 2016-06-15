@@ -30,7 +30,7 @@ public class MultiThreadLazyPoolTest extends AbstractStreamTest {
         final StreamId<String> idA = mock(StreamId.class);
         final StreamId<String> idB = mock(StreamId.class);
 
-        StreamFactory multiThreadFactory = StreamFactoryMock.<String> newFactory()
+        StreamFactory multiThreadFactory = StreamFactoryMock.newFactory(String.class)
                 .withIdInvoke(idA, (streamId, recoursiveDiscoveryService) -> {
                     ExecutorService shouldNotDoAnExecutor = Executors.newSingleThreadExecutor();
                     Future<ReactStream<String>> submission = shouldNotDoAnExecutor.submit(() -> {
@@ -44,7 +44,7 @@ public class MultiThreadLazyPoolTest extends AbstractStreamTest {
                     }
                 }).build();
 
-        StreamFactory factoryForAnyValue = StreamFactoryMock.<String> newFactory()
+        StreamFactory factoryForAnyValue = StreamFactoryMock.newFactory(String.class)
                 .withIdProvideStreamWithValue(idB, ANY_VALUE).build();
 
         prepareDiscoveryService(multiThreadFactory, factoryForAnyValue).discover(idA);

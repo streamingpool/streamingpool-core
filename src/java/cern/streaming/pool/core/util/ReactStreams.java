@@ -4,6 +4,9 @@
 
 package cern.streaming.pool.core.util;
 
+import static rx.RxReactiveStreams.toObservable;
+import static rx.RxReactiveStreams.toPublisher;
+
 import org.reactivestreams.Publisher;
 
 import akka.NotUsed;
@@ -13,19 +16,23 @@ import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.NamedStreamId;
 import cern.streaming.pool.core.service.impl.SimpleReactStream;
 import rx.Observable;
-import rx.RxReactiveStreams;
 
+/**
+ * Utility methods for working with {@link ReactStream}s.
+ * 
+ */
 public final class ReactStreams {
 
     private ReactStreams() {
+        /* static methods only */
     }
 
     public static <T> Observable<T> rxFrom(ReactStream<T> stream) {
-        return RxReactiveStreams.toObservable(publisherFrom(stream));
+        return toObservable(publisherFrom(stream));
     }
 
     public static <T> ReactStream<T> fromRx(Observable<T> source) {
-        return fromPublisher(RxReactiveStreams.toPublisher(source));
+        return fromPublisher(toPublisher(source));
     }
 
     public static <T> Publisher<T> publisherFrom(ReactStream<T> stream) {

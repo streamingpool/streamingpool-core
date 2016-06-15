@@ -2,11 +2,14 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.util;
+package cern.streaming.pool.core.testing.util;
 
 import java.util.concurrent.CountDownLatch;
 
-public class Latches {
+/**
+ * Utility class when dealing with Latches-like objects.
+ */
+public final class Latches {
 
     private Latches() {
         /* Only static methods */

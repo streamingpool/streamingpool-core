@@ -35,25 +35,57 @@ public class StreamFactoryMock<T> {
     private StreamFactoryMock() {
     }
 
-    public static <T> StreamFactoryMock<T> newFactory() {
+    /**
+     * Start the creation of a new {@link StreamFactoryMock}.
+     * 
+     * @param factoryOfType the type of the values that this factory will deal with. This is only useful for the
+     *            compiler to be able to infer the correct type of the {@link StreamFactoryMock}
+     */
+    public static <T> StreamFactoryMock<T> newFactory(Class<T> factoryOfType) {
         return new StreamFactoryMock<>();
     }
 
+    /**
+     * When the factory is asked to create {@code id}, it will use the {@link DiscoveryService} to discover
+     * {@code idToDiscover}.
+     * 
+     * @param id the id that triggers the discovery
+     * @param idToDiscover the id that will be discovered
+     */
     public StreamFactoryMock<T> withIdDiscoverAnother(StreamId<T> id, StreamId<T> idToDiscover) {
         withIdDiscover.put(id, idToDiscover);
         return this;
     }
 
+    /**
+     * When the factory is asked to create {@code id}, a {@link ReactStream} that contains the {@code value} will be
+     * provided.
+     * 
+     * @param id the id that triggers the stream creation
+     * @param value the value that the created stream will contain
+     */
     public StreamFactoryMock<T> withIdProvideStreamWithValue(StreamId<T> id, T value) {
         withIdProvideStreamWithValue.put(id, value);
         return this;
     }
-    
-    public StreamFactoryMock<T> withIdInvoke(StreamId<T> id, BiFunction<StreamId<T>, DiscoveryService, ReactStream<T>> bifunction) {
+
+    /**
+     * When the factory is asked to create {@code id}, it will invoke the specified {@link BiFunction}. This gives the
+     * power to provide custom behavior in tests, the {@link BiFunction} will receive the {@link StreamId} and a
+     * {@link DiscoveryService} and must produce a {@link ReactStream}.
+     * 
+     * @param id the id that triggers the bifuction invocation
+     * @param bifunction the function that will be invoked
+     */
+    public StreamFactoryMock<T> withIdInvoke(StreamId<T> id,
+            BiFunction<StreamId<T>, DiscoveryService, ReactStream<T>> bifunction) {
         withIdInvoke.put(id, bifunction);
         return this;
     }
 
+    /**
+     * End method that will actually create the mocked {@link StreamFactory}
+     */
     public StreamFactory build() {
         final StreamFactory factoryMock = mock(StreamFactory.class);
         when(factoryMock.create(any(), any())).thenAnswer((args) -> {
@@ -69,8 +101,8 @@ public class StreamFactoryMock<T> {
             if (withIdProvideStreamWithValue.containsKey(streamId)) {
                 return fromRx(Observable.just(withIdProvideStreamWithValue.get(streamId)));
             }
-            
-            if(withIdInvoke.containsKey(streamId)) {
+
+            if (withIdInvoke.containsKey(streamId)) {
                 return withIdInvoke.get(streamId).apply(streamId, discovery);
             }
 

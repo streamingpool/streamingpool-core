@@ -8,6 +8,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Utility methods for collections
+ */
 public final class MoreCollections {
 
     private MoreCollections() {

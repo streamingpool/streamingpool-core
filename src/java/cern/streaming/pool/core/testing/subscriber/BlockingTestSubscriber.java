@@ -7,6 +7,16 @@ package cern.streaming.pool.core.testing.subscriber;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.reactivestreams.Subscriber;
+
+/**
+ * This subscriber extends {@link TestSubscriber} and provides the ability to await the termination of the stream. A
+ * stream is considered terminated when either {@link Subscriber#onComplete()} or {@link Subscriber#onError(Throwable)}
+ * is called.
+ * 
+ * @author acalia
+ * @param <T> type of the data that the subscriber will receive from the stream
+ */
 public class BlockingTestSubscriber<T> extends TestSubscriber<T> {
 
     private final CountDownLatch sync = new CountDownLatch(1);
@@ -20,7 +30,7 @@ public class BlockingTestSubscriber<T> extends TestSubscriber<T> {
     }
 
     public static final <T1> BlockingTestSubscriber<T1> ofName(String name) {
-        return new BlockingTestSubscriber<>(name, 0);
+        return new BlockingTestSubscriber<>(name, 0, false);
     }
 
     public <T1> BlockingTestSubscriber<T1> withConsumingdelayInMs(long consumingDelayInMs) {
