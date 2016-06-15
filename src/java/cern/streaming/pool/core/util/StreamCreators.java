@@ -12,9 +12,9 @@ import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
 
-public class Creators {
+public final class StreamCreators {
 
-    private Creators() {
+    private StreamCreators() {
         /* Only static methods */
     }
 

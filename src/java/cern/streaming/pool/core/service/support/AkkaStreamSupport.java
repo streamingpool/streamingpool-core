@@ -10,6 +10,7 @@ import org.reactivestreams.Publisher;
 
 import akka.NotUsed;
 import akka.japi.Pair;
+import akka.stream.ActorMaterializer;
 import akka.stream.Attributes;
 import akka.stream.Materializer;
 import akka.stream.javadsl.Keep;
@@ -22,6 +23,13 @@ import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.akka.AkkaSourceProvidingService;
 import cern.streaming.pool.core.util.ReactStreams;
 
+/**
+ * Support interface for working with Akka streams. It is preferable to use {@link AbstractAkkaStreamSupport} because it
+ * provides automatic discovery of {@link ActorMaterializer} and {@link AkkaSourceProvidingService}.
+ * 
+ * @see AbstractAkkaStreamSupport
+ * @author acalia
+ */
 public interface AkkaStreamSupport extends StreamSupport {
 
     Materializer materializer();

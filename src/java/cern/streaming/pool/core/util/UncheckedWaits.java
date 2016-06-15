@@ -7,14 +7,14 @@ package cern.streaming.pool.core.util;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class UncheckedWaits {
+public final class UncheckedWaits {
 
     private UncheckedWaits() {
         /* Only static methods */
     }
 
     public static final void waitFor(long duration, TimeUnit timeUnit) {
-        Objects.requireNonNull("timeUnit must not be null");
+        Objects.requireNonNull(timeUnit, "timeUnit must not be null");
         try {
             timeUnit.sleep(duration);
         } catch (InterruptedException e) {

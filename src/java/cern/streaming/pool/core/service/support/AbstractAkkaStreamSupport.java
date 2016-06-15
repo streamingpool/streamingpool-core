@@ -11,6 +11,15 @@ import akka.stream.Materializer;
 import cern.streaming.pool.core.service.akka.AkkaSourceProvidingService;
 
 /**
+ * Support class for working with Akka streams. It automatically discovers {@link AkkaSourceProvidingService} and
+ * {@link ActorMaterializer} in order to fulfill the requirements of {@link AkkaStreamSupport}.
+ * </p>
+ * Dependency injection:
+ * <ul>
+ * <li>{@link AkkaSourceProvidingService}</li>
+ * <li>{@link ActorMaterializer}</li>
+ * </ul>
+ * 
  * @author kfuchsbe
  */
 public abstract class AbstractAkkaStreamSupport extends AbstractStreamSupport implements AkkaStreamSupport {

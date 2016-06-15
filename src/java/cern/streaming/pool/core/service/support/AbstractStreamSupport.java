@@ -13,10 +13,18 @@ import cern.streaming.pool.core.service.ProvidingService;
 import cern.streaming.pool.core.service.ReactStream;
 import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.impl.SimplePool;
 import cern.streaming.pool.core.util.ReactStreams;
 
 /**
+ * This class provides support for the discovery and for providing streams.
+ * </p>
+ * Dependency injection:
+ * <ul>
+ * <li>{@link DiscoveryService}</li>
+ * <li>{@link ProvidingService}</li>
+ * <li>{@link CreatorProvidingService}</li>
+ * </ul>
+ * 
  * @author kfuchsbe
  */
 public class AbstractStreamSupport implements StreamSupport {
@@ -27,10 +35,6 @@ public class AbstractStreamSupport implements StreamSupport {
     private ProvidingService providingService;
     @Autowired
     private CreatorProvidingService lazyProvidingService;
-
-    public void unregisterAllStreams() {
-        ((SimplePool) discoveryService).clearPool();
-    }
 
     @Override
     public <T> ReactStream<T> discover(StreamId<T> id) {

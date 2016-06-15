@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class MoreCollections {
+public final class MoreCollections {
 
     private MoreCollections() {
         /* only static methods */

@@ -4,8 +4,21 @@
 
 package cern.streaming.pool.core.service;
 
+/**
+ * Interface used for providing a stream using a {@link StreamCreator}.
+ * 
+ * @see StreamCreator
+ */
+@FunctionalInterface
 public interface CreatorProvidingService {
 
+    /**
+     * Provides a {@link StreamCreator} associated to the specified id.
+     * 
+     * @param id the identifier of the stream that the {@link StreamCreator} will create
+     * @param streamSupplier the {@link StreamCreator} that is able to create the {@link ReactStream} specified using
+     *            the given id
+     */
     <T> void provide(StreamId<T> id, StreamCreator<T> streamSupplier);
 
 }

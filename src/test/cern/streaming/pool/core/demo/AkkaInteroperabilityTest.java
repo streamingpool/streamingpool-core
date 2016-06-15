@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,11 +49,6 @@ public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements 
     public void setUp() {
         subscriber = BlockingTestSubscriber.<Integer> ofName("Test Subscriber")
                 .withConsumingdelayInMs(CONSUMING_DURATION_MS);
-    }
-
-    @After
-    public void teardown() {
-        unregisterAllStreams();
     }
 
     @Test

@@ -14,18 +14,22 @@ import cern.streaming.pool.core.service.akka.AkkaSourceProvidingService;
 import cern.streaming.pool.core.service.akka.AkkaStreamFactory;
 
 /**
- * This spring configuration provides the beans which are required to provide akka streams (sources) into the streaming
- * pool. The core bean to use here is the {@link AkkaSourceProvidingService} on which akka sources can be registered
+ * This spring configuration provides the beans which are required to provide Akka streams (sources) into the streaming
+ * pool. The core bean to use here is the {@link AkkaSourceProvidingService} on which Akka sources can be registered
  * which either are materialized directly, or at discovery time.
+ * 
+ * The {@link ActorSystem} is created with the name {@link AkkaStreamingConfiguration#DEFAULT_ACTOR_SYSTEM_NAME}
  * 
  * @author kfuchsbe
  */
 @Configuration
 public class AkkaStreamingConfiguration {
 
+    private static final String DEFAULT_ACTOR_SYSTEM_NAME = "sys";
+
     @Bean(destroyMethod = "terminate")
     public ActorSystem actorSystem() {
-        return ActorSystem.create("sys");
+        return ActorSystem.create(DEFAULT_ACTOR_SYSTEM_NAME);
     }
 
     @Bean(destroyMethod = "shutdown")

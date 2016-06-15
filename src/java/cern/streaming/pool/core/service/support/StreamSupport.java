@@ -12,6 +12,11 @@ import cern.streaming.pool.core.service.ReactStream;
 import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamId;
 
+/**
+ * Support interface for working with {@link ReactStream}s. Provides convenience and fluid methods. 
+ * 
+ * @author acalia
+ */
 public interface StreamSupport {
 
     <T> ReactStream<T> discover(StreamId<T> id);

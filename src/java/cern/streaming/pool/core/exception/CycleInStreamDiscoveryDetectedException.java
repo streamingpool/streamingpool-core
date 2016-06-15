@@ -4,6 +4,11 @@
 
 package cern.streaming.pool.core.exception;
 
+/**
+ * Specific exception that indicates that a dependency cycle is detected when discovering a stream.
+ * 
+ * @author acalia
+ */
 public class CycleInStreamDiscoveryDetectedException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
