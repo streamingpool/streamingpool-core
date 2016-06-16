@@ -2,9 +2,13 @@ package cern.streaming.pool.core.util;
 
 import rx.Observable;
 
-public class RxStreams {
+public final class RxStreams {
+    
+    private RxStreams() {
+        /* only static methods */
+    }
 
-    public static final <T> T awaitNext(Observable<T> rxStream) {
+    public static <T> T awaitNext(Observable<T> rxStream) {
         return rxStream.cache().toBlocking().first();
     }
 

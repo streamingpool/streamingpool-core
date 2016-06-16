@@ -13,7 +13,7 @@ public final class UncheckedWaits {
         /* Only static methods */
     }
 
-    public static final void waitFor(long duration, TimeUnit timeUnit) {
+    public static void waitFor(long duration, TimeUnit timeUnit) {
         Objects.requireNonNull(timeUnit, "timeUnit must not be null");
         try {
             timeUnit.sleep(duration);

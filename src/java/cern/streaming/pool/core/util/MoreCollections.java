@@ -17,14 +17,14 @@ public final class MoreCollections {
         /* only static methods */
     }
 
-    public static final <T> List<T> emptyIfNull(List<T> list) {
+    public static <T> List<T> emptyIfNull(List<T> list) {
         if (list == null) {
             return Collections.emptyList();
         }
         return list;
     }
 
-    public static final <T> Set<T> emptyIfNull(Set<T> set) {
+    public static <T> Set<T> emptyIfNull(Set<T> set) {
         if (set == null) {
             return Collections.emptySet();
         }

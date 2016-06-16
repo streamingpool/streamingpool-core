@@ -18,8 +18,8 @@ import cern.streaming.pool.core.service.support.AbstractStreamSupport;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { EmbeddedPoolConfiguration.class,
-		StreamCreatorFactoryConfiguration.class }, loader = AnnotationConfigContextLoader.class)
+        StreamCreatorFactoryConfiguration.class }, loader = AnnotationConfigContextLoader.class)
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 public abstract class AbstractStreamTest extends AbstractStreamSupport {
-	/* Nothing to do here, only the context configuration */
+    /* Nothing to do here, only the context configuration */
 }

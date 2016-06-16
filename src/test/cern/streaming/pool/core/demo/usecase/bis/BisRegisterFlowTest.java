@@ -4,6 +4,9 @@
 
 package cern.streaming.pool.core.demo.usecase.bis;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static rx.Observable.from;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,7 @@ import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.NamedStreamId;
 import cern.streaming.pool.core.service.support.RxStreamSupport;
 import cern.streaming.pool.core.testing.AbstractStreamTest;
+import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import cern.streaming.pool.core.util.ReactStreams;
 import rx.Observable;
 import rx.observables.GroupedObservable;
@@ -28,13 +32,17 @@ public class BisRegisterFlowTest extends AbstractStreamTest implements RxStreamS
 	private static final int USER_PERMIT_1_A_AND_B_TRUE = 65537;
 	private static final int SOURCE_STREAM_ELEMENTS = 20;
 	private static final NamedStreamId<Integer> SOURCE_ID = new NamedStreamId<>("BisUserPermitsStream");
-
+	private static final List<Integer> DEMO_VALUES = someValues();
+	
 	@Before
 	public void setup() {
 		// @formatter:off
-		provide(Observable.from(someValues()).observeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-				.delay(10, TimeUnit.MILLISECONDS).limit(SOURCE_STREAM_ELEMENTS).map(l -> Long.valueOf(l).intValue()))
-						.as(SOURCE_ID);
+        provide(from(DEMO_VALUES)
+		        .observeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
+				.delay(10, TimeUnit.MILLISECONDS)
+				.limit(SOURCE_STREAM_ELEMENTS)
+				.map(l -> Long.valueOf(l).intValue()))
+				.as(SOURCE_ID);
 		// @formatter:on
 	}
 
@@ -44,8 +52,11 @@ public class BisRegisterFlowTest extends AbstractStreamTest implements RxStreamS
 		CountDownLatch sync = new CountDownLatch(1);
 
 		// @formatter:off
-		rxFrom(SOURCE_ID).flatMap(this::mapBitsToUserPermits).groupBy(UserPermit::getPermitId)
-				.doAfterTerminate(sync::countDown).subscribe(this::provideStreams);
+		rxFrom(SOURCE_ID)
+		    .flatMap(this::mapBitsToUserPermits)
+		    .groupBy(UserPermit::getPermitId)
+			.doAfterTerminate(sync::countDown)
+			.subscribe(this::provideStreams);
 		// @formatter:on
 
 		sync.await();
@@ -55,7 +66,12 @@ public class BisRegisterFlowTest extends AbstractStreamTest implements RxStreamS
 				rxFrom(RedundantPermitId.USER_PERMIT_1_B), (a, b) -> a.isGiven() & b.isGiven());
 		provide(userPermit1Stream).as(userPermit1Id);
 
-		rxFrom(userPermit1Id).subscribe(value -> System.out.println("User Permit 1 : " + value));
+		BlockingTestSubscriber<Boolean> subscriber = BlockingTestSubscriber.ofName("subscriber");
+        publisherFrom(userPermit1Id).subscribe(subscriber);
+        
+        subscriber.await();
+        
+        assertThat(subscriber.getValues()).hasSize(SOURCE_STREAM_ELEMENTS).contains(true, false);
 	}
 
 	private Observable<UserPermit> mapBitsToUserPermits(Integer register) {
@@ -72,7 +88,7 @@ public class BisRegisterFlowTest extends AbstractStreamTest implements RxStreamS
 		provide(ReactStreams.fromRx(groupedObservable)).as(key);
 	}
 
-	private List<Integer> someValues() {
+	private static List<Integer> someValues() {
 		ArrayList<Integer> values = new ArrayList<>();
 		for (int i = 0; i < SOURCE_STREAM_ELEMENTS; ++i) {
 			values.add(i % 4 == 0 ? 0 : USER_PERMIT_1_A_AND_B_TRUE);

@@ -19,8 +19,8 @@ import cern.streaming.pool.core.service.support.AbstractAkkaStreamSupport;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { EmbeddedPoolConfiguration.class, AkkaStreamingConfiguration.class,
-		StreamCreatorFactoryConfiguration.class }, loader = AnnotationConfigContextLoader.class)
+        StreamCreatorFactoryConfiguration.class }, loader = AnnotationConfigContextLoader.class)
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 public abstract class AbstractAkkaStreamTest extends AbstractAkkaStreamSupport {
-	/* Nothing to do here. Only the contexts and the test runner */
+    /* Nothing to do here. Only the contexts and the test runner */
 }

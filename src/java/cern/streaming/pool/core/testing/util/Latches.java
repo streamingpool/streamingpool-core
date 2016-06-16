@@ -15,7 +15,7 @@ public final class Latches {
         /* Only static methods */
     }
 
-    public static final void awaitUnchecked(CountDownLatch finished) {
+    public static void awaitUnchecked(CountDownLatch finished) {
         try {
             finished.await();
         } catch (InterruptedException e) {

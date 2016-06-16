@@ -18,11 +18,11 @@ public final class StreamCreators {
         /* Only static methods */
     }
 
-    public static final <T> OngoingCreatorCreation<T> create(StreamCreator<T> creator) {
+    public static <T> OngoingCreatorCreation<T> create(StreamCreator<T> creator) {
         return new OngoingCreatorCreation<>(creator);
     }
 
-    public static final <T> OngoingCreatorCreation<T> create(Supplier<ReactStream<T>> supplier) {
+    public static <T> OngoingCreatorCreation<T> create(Supplier<ReactStream<T>> supplier) {
         return new OngoingCreatorCreation<T>(discovery -> supplier.get());
     }
 
