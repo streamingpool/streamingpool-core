@@ -72,6 +72,9 @@ public class CreatorStreamFactoryTest {
     @Test
     public void provideNewSupplier() {
         factory.provide(ID_B, discovery -> STREAM_B);
+        ReactStream<?> stream = factory.create(ID_B, discoveryService);
+        
+        assertEquals(STREAM_B, stream);
     }
 
     private CreatorStreamFactory createLoopCreatorStreamFactory() {
