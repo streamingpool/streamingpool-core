@@ -13,9 +13,9 @@ import akka.stream.stage.AbstractOutHandler;
 import akka.stream.stage.GraphStage;
 import akka.stream.stage.GraphStageLogic;
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.util.ReactStreams;
+import cern.streaming.pool.core.service.util.ReactiveStreams;
 
 /**
  * Created by mgalilee on 26/05/2016.
@@ -66,8 +66,8 @@ public class IdBasedSource<T> extends GraphStage<SourceShape<T>> {
 
     private SourceSubscriber getSourceSubscriber(Attributes inheritedAttributes) {
         DiscoveryService service = getDiscoveryService(inheritedAttributes);
-        ReactStream<T> stream = service.discover(streamId);
-        Publisher<T> publisher = ReactStreams.publisherFrom(stream);
+        ReactiveStream<T> stream = service.discover(streamId);
+        Publisher<T> publisher = ReactiveStreams.publisherFrom(stream);
         SourceSubscriber subscriber = new SourceSubscriber();
         publisher.subscribe(subscriber);
         return subscriber;

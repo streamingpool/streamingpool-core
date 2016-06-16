@@ -2,12 +2,12 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.support;
+package cern.streaming.pool.core.support;
 
 import static java.util.Objects.requireNonNull;
 
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.util.RxStreams;
+import cern.streaming.pool.core.service.rx.RxStreams;
 
 /**
  * Support interface that provides convenience methods for working with streams.

@@ -2,11 +2,11 @@ package cern.streaming.pool.core.demo;
 
 import java.util.Random;
 
-import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.impl.NamedStreamId;
-import cern.streaming.pool.core.service.impl.SimplePool;
-import cern.streaming.pool.core.util.ReactStreams;
+import cern.streaming.pool.core.service.impl.LocalPool;
+import cern.streaming.pool.core.service.util.ReactiveStreams;
+import cern.streaming.pool.core.testing.NamedStreamId;
 import rx.Observable;
 
 /**
@@ -16,7 +16,7 @@ public class TryBisUseCase {
 
     public static void main(String[] args) {
         System.out.println("Here it begins");
-        SimplePool streamPool = new SimplePool();
+        LocalPool streamPool = new LocalPool();
 
         StreamId<Boolean> bisBeamPermitId = new NamedStreamId<>("bisBeamPermit");
         rx.Observable<Boolean> rxBisBeamPermitStream = rx.Observable.fromCallable(() -> {
@@ -25,11 +25,11 @@ public class TryBisUseCase {
             return new Random().nextBoolean();
         });
 
-        ReactStream<Boolean> bisBeamPermit = ReactStreams.fromRx(rxBisBeamPermitStream);
+        ReactiveStream<Boolean> bisBeamPermit = ReactiveStreams.fromRx(rxBisBeamPermitStream);
         streamPool.provide(bisBeamPermitId, bisBeamPermit);
 
-        ReactStream<Boolean> bisBeamPermitStream = streamPool.discover(bisBeamPermitId);
-        Observable<Boolean> discoveredRxStream = ReactStreams.rxFrom(bisBeamPermitStream);
+        ReactiveStream<Boolean> bisBeamPermitStream = streamPool.discover(bisBeamPermitId);
+        Observable<Boolean> discoveredRxStream = ReactiveStreams.rxFrom(bisBeamPermitStream);
         discoveredRxStream.map(beamPermit -> beamPermit ? "Given" : "interlocked").forEach(x -> print(x));
 
         System.out.println("Here it ends");

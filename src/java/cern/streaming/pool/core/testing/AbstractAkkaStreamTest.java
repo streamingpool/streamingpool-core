@@ -15,7 +15,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import cern.streaming.pool.core.conf.AkkaStreamingConfiguration;
 import cern.streaming.pool.core.conf.EmbeddedPoolConfiguration;
 import cern.streaming.pool.core.conf.StreamCreatorFactoryConfiguration;
-import cern.streaming.pool.core.service.support.AbstractAkkaStreamSupport;
+import cern.streaming.pool.core.support.AbstractAkkaStreamSupport;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { EmbeddedPoolConfiguration.class, AkkaStreamingConfiguration.class,

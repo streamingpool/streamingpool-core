@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 import org.junit.Before;
 import org.junit.Test;
 
-import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
 
 /**
@@ -19,19 +19,19 @@ import cern.streaming.pool.core.service.StreamId;
  * @author mgalilee
  */
 @SuppressWarnings("unchecked")
-public class SimplePoolTest {
+public class LocalPoolTest {
 
     private static final StreamId<Object> ID_A = mock(StreamId.class);
     private static final StreamId<Object> ID_B = mock(StreamId.class);
     private static final StreamId<Object> ID_NOT_PROVIDED = mock(StreamId.class);
-    private static final ReactStream<Object> STREAM_A = mock(ReactStream.class);
-    private static final ReactStream<Object> STREAM_B = mock(ReactStream.class);
+    private static final ReactiveStream<Object> STREAM_A = mock(ReactiveStream.class);
+    private static final ReactiveStream<Object> STREAM_B = mock(ReactiveStream.class);
 
-    private SimplePool pool;
+    private LocalPool pool;
 
     @Before
     public void setUp() {
-        pool = new SimplePool();
+        pool = new LocalPool();
         pool.provide(ID_A, STREAM_A);
     }
 
@@ -53,7 +53,7 @@ public class SimplePoolTest {
     @Test
     public void provideNewSupplier() {
         pool.provide(ID_B, STREAM_B);
-        ReactStream<Object> stream = pool.discover(ID_B);
+        ReactiveStream<Object> stream = pool.discover(ID_B);
 
         assertEquals(STREAM_B, stream);
     }
@@ -70,7 +70,7 @@ public class SimplePoolTest {
 
     @Test
     public void discoverAvailableStream() {
-        ReactStream<Object> stream = pool.discover(ID_A);
+        ReactiveStream<Object> stream = pool.discover(ID_A);
 
         assertEquals(STREAM_A, stream);
     }

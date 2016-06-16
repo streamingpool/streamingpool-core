@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import cern.streaming.pool.core.service.StreamFactory;
-import cern.streaming.pool.core.service.impl.LazyPool;
+import cern.streaming.pool.core.service.impl.LocalPool;
 
 /**
  * The spring configuration which shall be used in any application that will have the spring pool embedded. It provides
@@ -38,8 +38,8 @@ public class EmbeddedPoolConfiguration {
     private List<StreamFactory> streamFactories;
 
     @Bean
-    public LazyPool pool() {
-        return new LazyPool(emptyIfNull(streamFactories));
+    public LocalPool pool() {
+        return new LocalPool(emptyIfNull(streamFactories));
     }
 
 }

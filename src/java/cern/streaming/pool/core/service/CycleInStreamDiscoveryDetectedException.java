@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.exception;
+package cern.streaming.pool.core.service;
 
 /**
  * Specific exception that indicates that a dependency cycle is detected when discovering a stream.

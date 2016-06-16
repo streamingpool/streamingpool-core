@@ -5,7 +5,7 @@
 package cern.streaming.pool.core.service;
 
 import static akka.stream.ThrottleMode.shaping;
-import static cern.streaming.pool.core.util.UncheckedWaits.waitFor;
+import static cern.streaming.pool.core.testing.util.UncheckedWaits.waitFor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,9 +18,9 @@ import org.junit.Test;
 import akka.NotUsed;
 import akka.stream.OverflowStrategy;
 import akka.stream.javadsl.Source;
-import cern.streaming.pool.core.service.support.StreamCollectingSupport;
+import cern.streaming.pool.core.support.StreamCollectingSupport;
 import cern.streaming.pool.core.testing.AbstractAkkaStreamTest;
-import cern.streaming.pool.core.util.ReactStreams;
+import cern.streaming.pool.core.testing.NamedStreamId;
 import scala.concurrent.duration.Duration;
 
 public class AkkaSourceProvidingTest extends AbstractAkkaStreamTest implements StreamCollectingSupport {
@@ -28,7 +28,7 @@ public class AkkaSourceProvidingTest extends AbstractAkkaStreamTest implements S
 	private static final Source<Integer, NotUsed> COUNTER_50_HZ = Source.range(1, 100)
 			.throttle(50, Duration.create(1, SECONDS), 1, shaping()).buffer(1, OverflowStrategy.dropBuffer());
 
-	private static final StreamId<Integer> STREAM_ID = ReactStreams.namedId("ticker");
+	private static final StreamId<Integer> STREAM_ID = NamedStreamId.ofName("ticker");
 
 	@BeforeClass
 	public static final void setUpBeforeClass() {

@@ -23,8 +23,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <class id="3" language="java" name="cern.streaming.pool.core.service.impl.LazyPool" project="streaming-pool-core" 
-    file="/streaming-pool-core/src/java/cern/streaming/pool/core/service/impl/LazyPool.java" binary="false" 
+  <class id="3" language="java" name="cern.streaming.pool.core.service.impl.LocalPool" project="streaming-pool-core" 
+    file="/streaming-pool-core/src/java/cern/streaming/pool/core/service/impl/LocalPool.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="332" y="446"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -87,36 +87,32 @@
     </display>  
   </interface>  
   <realization id="9">    
-    <end type="SOURCE" refId="4"/>    
-    <end type="TARGET" refId="2"/>  
-  </realization>  
-  <realization id="10">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="8"/>  
-  </realization>  
-  <generalization id="11">    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="4"/>  
-  </generalization>  
-  <realization id="12">    
     <end type="SOURCE" refId="7"/>    
     <end type="TARGET" refId="5"/>  
   </realization>  
-  <realization id="13">    
+  <realization id="10">    
     <end type="SOURCE" refId="6"/>    
     <end type="TARGET" refId="5"/>  
   </realization>  
-  <association id="14">    
+  <realization id="11">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="8"/>  
+  </realization>  
+  <realization id="12">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="1"/>  
+  </realization>  
+  <association id="13">    
     <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="15" name="factories"/>      
-      <multiplicity id="16" minimum="0" maximum="2147483647"/>    
+      <attribute id="14" name="factories"/>      
+      <multiplicity id="15" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <realization id="17">    
+  <realization id="16">    
     <end type="SOURCE" refId="4"/>    
-    <end type="TARGET" refId="1"/>  
+    <end type="TARGET" refId="2"/>  
   </realization>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     accessors="true" visibility="true">    

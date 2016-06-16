@@ -4,7 +4,7 @@
 
 package cern.streaming.pool.core.service;
 
-import static cern.streaming.pool.core.util.ReactStreams.rxFrom;
+import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -14,13 +14,12 @@ import java.util.List;
 
 import org.junit.Test;
 
-import cern.streaming.pool.core.exception.CycleInStreamDiscoveryDetectedException;
-import cern.streaming.pool.core.service.impl.LazyPool;
+import cern.streaming.pool.core.service.impl.LocalPool;
+import cern.streaming.pool.core.service.rx.RxStreams;
 import cern.streaming.pool.core.testing.StreamFactoryMock;
-import cern.streaming.pool.core.util.RxStreams;
 
 /**
- * Test for the discovery of Streams using {@link StreamFactory} and {@link LazyPool}.
+ * Test for the discovery of Streams using {@link StreamFactory} and {@link LocalPool}.
  * 
  * @author acalia
  */
@@ -45,7 +44,7 @@ public class DiscoveryTest {
         StreamFactory factoryB = StreamFactoryMock.newFactory(String.class).withIdProvideStreamWithValue(id, ANY_VALUE)
                 .build();
 
-        ReactStream<String> result = prepareDiscoveryService(Arrays.asList(factoryA, factoryB)).discover(id);
+        ReactiveStream<String> result = prepareDiscoveryService(Arrays.asList(factoryA, factoryB)).discover(id);
 
         assertThat(toList(result)).hasSize(1).contains(ANY_VALUE);
     }
@@ -61,7 +60,7 @@ public class DiscoveryTest {
         StreamFactory factoryB = StreamFactoryMock.newFactory(String.class).withIdDiscoverAnother(idX, idY)
                 .withIdProvideStreamWithValue(idZ, ANY_VALUE).build();
 
-        ReactStream<String> result = prepareDiscoveryService(Arrays.asList(factoryA, factoryB)).discover(idX);
+        ReactiveStream<String> result = prepareDiscoveryService(Arrays.asList(factoryA, factoryB)).discover(idX);
 
         assertThat(toList(result)).containsExactly(ANY_VALUE);
     }
@@ -82,7 +81,7 @@ public class DiscoveryTest {
         StreamFactory factoryC = StreamFactoryMock.newFactory(String.class).withIdProvideStreamWithValue(idZ, ANY_VALUE)
                 .build();
 
-        ReactStream<String> result = prepareDiscoveryService(Arrays.asList(factoryA, factoryB, factoryC)).discover(idX);
+        ReactiveStream<String> result = prepareDiscoveryService(Arrays.asList(factoryA, factoryB, factoryC)).discover(idX);
 
         assertThat(toList(result)).hasSize(2).containsExactly(ANY_VALUE, ANY_VALUE);
     }
@@ -93,10 +92,10 @@ public class DiscoveryTest {
     }
 
     private DiscoveryService prepareDiscoveryService(final List<StreamFactory> factories) {
-        return new LazyPool(factories);
+        return new LocalPool(factories);
     }
 
-    private List<String> toList(ReactStream<String> result) {
+    private List<String> toList(ReactiveStream<String> result) {
         return RxStreams.awaitNext(rxFrom(result).toList());
     }
 }

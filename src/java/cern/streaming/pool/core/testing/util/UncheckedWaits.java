@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.util;
+package cern.streaming.pool.core.testing.util;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;

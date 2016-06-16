@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.impl;
+package cern.streaming.pool.core.testing;
 
 import cern.streaming.pool.core.service.StreamId;
 
@@ -11,8 +11,11 @@ public class NamedStreamId<T> implements StreamId<T> {
     private final String id;
 
     public NamedStreamId(String id) {
-        super();
         this.id = id;
+    }
+
+    public final static <T> NamedStreamId<T> ofName(String name) {
+        return new NamedStreamId<>(name);
     }
 
     @Override

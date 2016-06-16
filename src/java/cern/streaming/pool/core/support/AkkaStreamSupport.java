@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.support;
+package cern.streaming.pool.core.support;
 
 import static akka.stream.javadsl.AsPublisher.WITH_FANOUT;
 
@@ -18,10 +18,10 @@ import akka.stream.javadsl.RunnableGraph;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import cern.streaming.pool.core.service.ProvidingService;
-import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.akka.AkkaSourceProvidingService;
-import cern.streaming.pool.core.util.ReactStreams;
+import cern.streaming.pool.core.service.util.ReactiveStreams;
 
 /**
  * Support interface for working with Akka streams. It is preferable to use {@link AbstractAkkaStreamSupport} because it
@@ -36,8 +36,8 @@ public interface AkkaStreamSupport extends StreamSupport {
 
     AkkaSourceProvidingService sourceProvidingService();
 
-    default <Out, Mat> ReactStream<Out> streamFrom(Source<Out, Mat> akkaSource) {
-        return ReactStreams.fromPublisher(publisherFrom(akkaSource));
+    default <Out, Mat> ReactiveStream<Out> streamFrom(Source<Out, Mat> akkaSource) {
+        return ReactiveStreams.fromPublisher(publisherFrom(akkaSource));
     }
 
     default <Out, Mat> OngoingAkkaSourceProviding<Out, Mat> provide(Source<Out, Mat> akkaSource) {
@@ -51,7 +51,7 @@ public interface AkkaStreamSupport extends StreamSupport {
     }
 
     default <T> Source<T, NotUsed> sourceFrom(StreamId<T> id) {
-        return ReactStreams.sourceFrom(discover(id));
+        return ReactiveStreams.sourceFrom(discover(id));
     }
 
     static <T> Sink<T, Publisher<T>> defaultPublisherSink() {
@@ -117,7 +117,7 @@ public interface AkkaStreamSupport extends StreamSupport {
         public Mat as(StreamId<Out> id) {
             RunnableGraph<Pair<Mat, Publisher<Out>>> graph = akkaSource.toMat(defaultPublisherSink(), Keep.both());
             Pair<Mat, Publisher<Out>> materializedPair = graph.run(materializer);
-            providingService.provide(id, ReactStreams.fromPublisher(materializedPair.second()));
+            providingService.provide(id, ReactiveStreams.fromPublisher(materializedPair.second()));
             return materializedPair.first();
         }
 

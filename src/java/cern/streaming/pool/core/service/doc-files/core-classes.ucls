@@ -11,8 +11,8 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="2" language="java" name="cern.streaming.pool.core.service.ReactStream" project="streaming-pool-core" 
-    file="/streaming-pool-core/src/java/cern/streaming/pool/core/service/ReactStream.java" binary="false" 
+  <interface id="2" language="java" name="cern.streaming.pool.core.service.ReactiveStream" project="streaming-pool-core" 
+    file="/streaming-pool-core/src/java/cern/streaming/pool/core/service/ReactiveStream.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="314" y="47"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 

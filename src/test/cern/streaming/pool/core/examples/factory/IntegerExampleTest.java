@@ -4,7 +4,7 @@
 
 package cern.streaming.pool.core.examples.factory;
 
-import static cern.streaming.pool.core.util.ReactStreams.publisherFrom;
+import static cern.streaming.pool.core.service.util.ReactiveStreams.publisherFrom;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;

@@ -4,18 +4,18 @@
 
 package cern.streaming.pool.core.examples.creators;
 
-import static cern.streaming.pool.core.util.ReactStreams.fromRx;
+import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static rx.Observable.interval;
 
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamCreator;
 
 public class InjectionStreamCreator implements StreamCreator<InjectionDomainObject> {
 
     @Override
-    public ReactStream<InjectionDomainObject> createWith(DiscoveryService discoveryService) {
+    public ReactiveStream<InjectionDomainObject> createWith(DiscoveryService discoveryService) {
         return fromRx(interval(1, SECONDS).map(num -> new InjectionDomainObject("Injection number " + num)));
     }
 

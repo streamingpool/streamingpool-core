@@ -4,7 +4,6 @@
 
 package cern.streaming.pool.core.demo;
 
-import static cern.streaming.pool.core.util.ReactStreams.namedId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
@@ -22,17 +21,18 @@ import akka.stream.javadsl.Keep;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.support.AkkaStreamSupport;
-import cern.streaming.pool.core.service.support.RxStreamSupport;
+import cern.streaming.pool.core.support.AkkaStreamSupport;
+import cern.streaming.pool.core.support.RxStreamSupport;
 import cern.streaming.pool.core.testing.AbstractAkkaStreamTest;
+import cern.streaming.pool.core.testing.NamedStreamId;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import rx.Observable;
 import scala.concurrent.duration.Duration;
 
 public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements AkkaStreamSupport, RxStreamSupport {
 
-    private static final StreamId<Integer> SOURCE_ID = namedId("SourceStream");
-    private static final StreamId<Integer> BUFFERED_ID = namedId("BufferedSourceStream");
+    private static final StreamId<Integer> SOURCE_ID = NamedStreamId.ofName("SourceStream");
+    private static final StreamId<Integer> BUFFERED_ID = NamedStreamId.ofName("BufferedSourceStream");
 
     private static final int SOURCE_STREAM_ELEMENT_NUM = 20;
     private static final int SOURCE_INTERVAL_MS = 5;

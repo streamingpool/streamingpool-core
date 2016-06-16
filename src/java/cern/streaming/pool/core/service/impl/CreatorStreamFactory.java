@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import cern.streaming.pool.core.service.CreatorProvidingService;
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
@@ -34,12 +34,12 @@ public class CreatorStreamFactory implements CreatorProvidingService, StreamFact
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> ReactStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
+    public <T> ReactiveStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
         StreamCreator<?> streamCreator = suppliers.get(newId);
         if (streamCreator == null) {
             return null;
         }
-        return (ReactStream<T>) streamCreator.createWith(discoveryService);
+        return (ReactiveStream<T>) streamCreator.createWith(discoveryService);
     }
 
     @Override

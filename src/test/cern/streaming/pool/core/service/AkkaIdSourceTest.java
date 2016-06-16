@@ -18,8 +18,8 @@ import akka.stream.Attributes;
 import akka.stream.Materializer;
 import akka.stream.javadsl.Source;
 import cern.streaming.pool.core.incubation.akka.IdBasedSource;
-import cern.streaming.pool.core.service.impl.SimplePool;
-import cern.streaming.pool.core.util.ReactStreams;
+import cern.streaming.pool.core.service.impl.LocalPool;
+import cern.streaming.pool.core.service.util.ReactiveStreams;
 import rx.Observable;
 
 public class AkkaIdSourceTest {
@@ -31,10 +31,10 @@ public class AkkaIdSourceTest {
         }
     };
 
-    private static final SimplePool SIMPLE_POOL = new SimplePool();
+    private static final LocalPool SIMPLE_POOL = new LocalPool();
 
     static {
-        SIMPLE_POOL.provide(STREAM_ID, ReactStreams.fromRx(Observable.range(0, 1000)));
+        SIMPLE_POOL.provide(STREAM_ID, ReactiveStreams.fromRx(Observable.range(0, 1000)));
     }
 
     private static class TestIdBasedSource extends IdBasedSource<Integer> {

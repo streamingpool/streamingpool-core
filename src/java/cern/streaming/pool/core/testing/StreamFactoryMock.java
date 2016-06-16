@@ -4,7 +4,7 @@
 
 package cern.streaming.pool.core.testing;
 
-import static cern.streaming.pool.core.util.ReactStreams.fromRx;
+import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -18,10 +18,10 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.util.ReactStreams;
+import cern.streaming.pool.core.service.util.ReactiveStreams;
 import rx.Observable;
 
 /**
@@ -30,7 +30,7 @@ import rx.Observable;
 public class StreamFactoryMock<T> {
     private final Multimap<StreamId<T>, StreamId<T>> withIdDiscover = HashMultimap.create();
     private final Map<StreamId<T>, T> withIdProvideStreamWithValue = new HashMap<>();
-    private final Map<StreamId<T>, BiFunction<StreamId<T>, DiscoveryService, ReactStream<T>>> withIdInvoke = new HashMap<>();
+    private final Map<StreamId<T>, BiFunction<StreamId<T>, DiscoveryService, ReactiveStream<T>>> withIdInvoke = new HashMap<>();
 
     private StreamFactoryMock() {
     }
@@ -58,7 +58,7 @@ public class StreamFactoryMock<T> {
     }
 
     /**
-     * When the factory is asked to create {@code id}, a {@link ReactStream} that contains the {@code value} will be
+     * When the factory is asked to create {@code id}, a {@link ReactiveStream} that contains the {@code value} will be
      * provided.
      * 
      * @param id the id that triggers the stream creation
@@ -72,13 +72,13 @@ public class StreamFactoryMock<T> {
     /**
      * When the factory is asked to create {@code id}, it will invoke the specified {@link BiFunction}. This gives the
      * power to provide custom behavior in tests, the {@link BiFunction} will receive the {@link StreamId} and a
-     * {@link DiscoveryService} and must produce a {@link ReactStream}.
+     * {@link DiscoveryService} and must produce a {@link ReactiveStream}.
      * 
      * @param id the id that triggers the bifuction invocation
      * @param bifunction the function that will be invoked
      */
     public StreamFactoryMock<T> withIdInvoke(StreamId<T> id,
-            BiFunction<StreamId<T>, DiscoveryService, ReactStream<T>> bifunction) {
+            BiFunction<StreamId<T>, DiscoveryService, ReactiveStream<T>> bifunction) {
         withIdInvoke.put(id, bifunction);
         return this;
     }
@@ -95,7 +95,7 @@ public class StreamFactoryMock<T> {
 
             if (withIdDiscover.containsKey(streamId)) {
                 return fromRx(Observable.merge(withIdDiscover.get(streamId).stream().map(discovery::discover)
-                        .map(ReactStreams::rxFrom).collect(Collectors.toList())));
+                        .map(ReactiveStreams::rxFrom).collect(Collectors.toList())));
             }
 
             if (withIdProvideStreamWithValue.containsKey(streamId)) {

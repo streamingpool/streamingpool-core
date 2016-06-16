@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.support;
+package cern.streaming.pool.core.support;
 
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cern.streaming.pool.core.service.CreatorProvidingService;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ProvidingService;
-import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.util.ReactStreams;
+import cern.streaming.pool.core.service.util.ReactiveStreams;
 
 /**
  * This class provides support for the discovery and for providing streams.
@@ -37,12 +37,12 @@ public class AbstractStreamSupport implements StreamSupport {
     private CreatorProvidingService lazyProvidingService;
 
     @Override
-    public <T> ReactStream<T> discover(StreamId<T> id) {
+    public <T> ReactiveStream<T> discover(StreamId<T> id) {
         return discoveryService.discover(id);
     }
 
     @Override
-    public <T> StreamSupport.OngoingProviding<T> provide(ReactStream<T> reactStream) {
+    public <T> StreamSupport.OngoingProviding<T> provide(ReactiveStream<T> reactStream) {
         return new StreamSupport.OngoingProviding<>(providingService, reactStream);
     }
 
@@ -53,7 +53,7 @@ public class AbstractStreamSupport implements StreamSupport {
 
     @Override
     public <T> Publisher<T> publisherFrom(StreamId<T> id) {
-        return ReactStreams.publisherFrom(discover(id));
+        return ReactiveStreams.publisherFrom(discover(id));
     }
 
     @Override

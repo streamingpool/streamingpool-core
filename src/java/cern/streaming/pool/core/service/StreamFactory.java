@@ -20,7 +20,7 @@ package cern.streaming.pool.core.service;
 public interface StreamFactory {
 
     /***
-     * Given a {@link StreamId} and a {@link DiscoveryService} this methods attempt to create a {@link ReactStream}. If
+     * Given a {@link StreamId} and a {@link DiscoveryService} this methods attempt to create a {@link ReactiveStream}. If
      * the implementation of this interface does not know how to create a stream using the given {@link StreamId}, it
      * must return the {@code null}. The provided {@link DiscoveryService} can be used to discover other streams that
      * are needed in the creation process (stream combination, transformation, etc.)
@@ -33,6 +33,6 @@ public interface StreamFactory {
      *            ('upstream' of the one it will create)
      * @return the newly created stream or {@code null} if this factory cannot create the stream of the given id
      */
-    <T> ReactStream<T> create(StreamId<T> id, DiscoveryService discoveryService);
+    <T> ReactiveStream<T> create(StreamId<T> id, DiscoveryService discoveryService);
 
 }

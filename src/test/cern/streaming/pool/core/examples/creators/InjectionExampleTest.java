@@ -5,9 +5,9 @@
 package cern.streaming.pool.core.examples.creators;
 
 import static cern.streaming.pool.core.examples.creators.InjectionIds.INJECTION_CONTROL_SYSTEM;
-import static cern.streaming.pool.core.util.ReactStreams.fromRx;
-import static cern.streaming.pool.core.util.ReactStreams.publisherFrom;
-import static cern.streaming.pool.core.util.ReactStreams.rxFrom;
+import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
+import static cern.streaming.pool.core.service.util.ReactiveStreams.publisherFrom;
+import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 

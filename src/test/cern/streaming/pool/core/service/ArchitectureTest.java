@@ -4,7 +4,7 @@
 
 package cern.streaming.pool.core.service;
 
-import static cern.streaming.pool.core.util.ReactStreams.fromRx;
+import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import cern.streaming.pool.core.service.impl.NamedStreamId;
-import cern.streaming.pool.core.service.support.RxStreamSupport;
+import cern.streaming.pool.core.support.RxStreamSupport;
 import cern.streaming.pool.core.testing.AbstractStreamTest;
+import cern.streaming.pool.core.testing.NamedStreamId;
 import rx.Observable;
 
 public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupport {
@@ -29,7 +29,7 @@ public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupp
     public void testElementsAreSentAndReceived() {
         final StreamId<Integer> id = new NamedStreamId<Integer>(ANY_NAME);
 
-        ReactStream<Integer> reactStream = fromRx(prepareRxStreamWith(INTEGER_SOURCE_ITEMS));
+        ReactiveStream<Integer> reactStream = fromRx(prepareRxStreamWith(INTEGER_SOURCE_ITEMS));
         provide(reactStream).as(id);
 
         final int result = rxFrom(id).reduce(Math::addExact).toBlocking().single();
@@ -45,11 +45,11 @@ public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupp
 
         // Original stream
         Observable<Integer> sourceStream = prepareRxStreamWith(INTEGER_SOURCE_ITEMS);
-        ReactStream<Integer> reactSourceStream = fromRx(sourceStream);
+        ReactiveStream<Integer> reactSourceStream = fromRx(sourceStream);
         provide(reactSourceStream).as(idA);
 
         // Discover + re-provide
-        ReactStream<Integer> reactStreamB = fromRx(rxFrom(idA).map(value -> value * 2));
+        ReactiveStream<Integer> reactStreamB = fromRx(rxFrom(idA).map(value -> value * 2));
         provide(reactStreamB).as(idB);
 
         // Discover

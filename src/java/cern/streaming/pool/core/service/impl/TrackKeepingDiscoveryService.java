@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
-import cern.streaming.pool.core.exception.CycleInStreamDiscoveryDetectedException;
+import cern.streaming.pool.core.service.CycleInStreamDiscoveryDetectedException;
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 
@@ -29,11 +29,11 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
     private final Set<StreamId<?>> idsOfStreamsUnderCreation;
     private final List<StreamFactory> factories;
-    private final ConcurrentMap<StreamId<?>, ReactStream<?>> activeStreams;
+    private final ConcurrentMap<StreamId<?>, ReactiveStream<?>> activeStreams;
     private final Thread contextOfExecution;
 
     public TrackKeepingDiscoveryService(List<StreamFactory> factories,
-            ConcurrentMap<StreamId<?>, ReactStream<?>> activeStreams) {
+            ConcurrentMap<StreamId<?>, ReactiveStream<?>> activeStreams) {
         this.factories = requireNonNull(factories, "factories must not be null");
         this.activeStreams = requireNonNull(activeStreams, "activeStreams must not be null");
         this.idsOfStreamsUnderCreation = new HashSet<>();
@@ -41,7 +41,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
     }
 
     public TrackKeepingDiscoveryService(List<StreamFactory> factories,
-            ConcurrentMap<StreamId<?>, ReactStream<?>> activeStreams, Set<StreamId<?>> idsOfStreamsUnderCreation,
+            ConcurrentMap<StreamId<?>, ReactiveStream<?>> activeStreams, Set<StreamId<?>> idsOfStreamsUnderCreation,
             Thread contextOfExecution) {
         this.factories = requireNonNull(factories, "factories must not be null");
         this.activeStreams = requireNonNull(activeStreams, "activeStreams must not be null");
@@ -50,7 +50,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
     }
 
     @Override
-    public <T> ReactStream<T> discover(StreamId<T> id) {
+    public <T> ReactiveStream<T> discover(StreamId<T> id) {
         checkSameContexOfExecution();
         checkForRecursiveCycles(id);
 
@@ -59,10 +59,10 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         return getStreamWithIdOrElseThrow(id);
     }
 
-    private <T> ReactStream<T> getStreamWithIdOrElseThrow(StreamId<T> id) {
+    private <T> ReactiveStream<T> getStreamWithIdOrElseThrow(StreamId<T> id) {
         /* This cast is safe, because we only allow to add the right types into the map */
         @SuppressWarnings("unchecked")
-        ReactStream<T> activeStream = (ReactStream<T>) activeStreams.get(id);
+        ReactiveStream<T> activeStream = (ReactiveStream<T>) activeStreams.get(id);
 
         if (activeStream == null) {
             throw new IllegalArgumentException(
@@ -75,7 +75,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         if (!activeStreams.containsKey(id)) {
             synchronized (activeStreams) {
                 if (!activeStreams.containsKey(id)) {
-                    ReactStream<T> reactStream = createFromFactories(id);
+                    ReactiveStream<T> reactStream = createFromFactories(id);
                     if (reactStream != null) {
                         activeStreams.put(id, reactStream);
                     }
@@ -107,9 +107,9 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         return new TrackKeepingDiscoveryService(factories, activeStreams, newSet, contextOfExecution);
     }
 
-    private <T> ReactStream<T> createFromFactories(StreamId<T> newId) {
+    private <T> ReactiveStream<T> createFromFactories(StreamId<T> newId) {
         for (StreamFactory factory : factories) {
-            ReactStream<T> stream = factory.create(newId, cloneTrackKeepingDiscoveryServiceIncluding(newId));
+            ReactiveStream<T> stream = factory.create(newId, cloneTrackKeepingDiscoveryServiceIncluding(newId));
             if (stream != null) {
                 return stream;
             }

@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
 
 import org.junit.Test;
 
-import cern.streaming.pool.core.service.impl.LazyPool;
+import cern.streaming.pool.core.service.impl.LocalPool;
 import cern.streaming.pool.core.testing.AbstractStreamTest;
 import cern.streaming.pool.core.testing.StreamFactoryMock;
 
@@ -33,7 +33,7 @@ public class MultiThreadLazyPoolTest extends AbstractStreamTest {
         StreamFactory multiThreadFactory = StreamFactoryMock.newFactory(String.class)
                 .withIdInvoke(idA, (streamId, recoursiveDiscoveryService) -> {
                     ExecutorService shouldNotDoAnExecutor = Executors.newSingleThreadExecutor();
-                    Future<ReactStream<String>> submission = shouldNotDoAnExecutor.submit(() -> {
+                    Future<ReactiveStream<String>> submission = shouldNotDoAnExecutor.submit(() -> {
                         return recoursiveDiscoveryService.discover(idB);
                     });
 
@@ -50,7 +50,7 @@ public class MultiThreadLazyPoolTest extends AbstractStreamTest {
         prepareDiscoveryService(multiThreadFactory, factoryForAnyValue).discover(idA);
     }
 
-    private LazyPool prepareDiscoveryService(StreamFactory markerIdFactory, StreamFactory factoryForAnyValue) {
-        return new LazyPool(Arrays.asList(markerIdFactory, factoryForAnyValue));
+    private LocalPool prepareDiscoveryService(StreamFactory markerIdFactory, StreamFactory factoryForAnyValue) {
+        return new LocalPool(Arrays.asList(markerIdFactory, factoryForAnyValue));
     }
 }

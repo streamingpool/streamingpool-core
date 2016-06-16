@@ -14,7 +14,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import cern.streaming.pool.core.conf.EmbeddedPoolConfiguration;
 import cern.streaming.pool.core.conf.StreamCreatorFactoryConfiguration;
-import cern.streaming.pool.core.service.support.AbstractStreamSupport;
+import cern.streaming.pool.core.support.AbstractStreamSupport;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { EmbeddedPoolConfiguration.class,

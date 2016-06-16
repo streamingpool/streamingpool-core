@@ -1,4 +1,4 @@
-package cern.streaming.pool.core.util;
+package cern.streaming.pool.core.service.rx;
 
 import rx.Observable;
 

@@ -18,11 +18,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.impl.NamedStreamId;
-import cern.streaming.pool.core.service.support.RxStreamSupport;
+import cern.streaming.pool.core.service.util.ReactiveStreams;
+import cern.streaming.pool.core.support.RxStreamSupport;
 import cern.streaming.pool.core.testing.AbstractStreamTest;
+import cern.streaming.pool.core.testing.NamedStreamId;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
-import cern.streaming.pool.core.util.ReactStreams;
 import rx.Observable;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
@@ -85,7 +85,7 @@ public class BisRegisterFlowTest extends AbstractStreamTest implements RxStreamS
 
 	private void provideStreams(GroupedObservable<RedundantPermitId, UserPermit> groupedObservable) {
 		RedundantPermitId key = groupedObservable.getKey();
-		provide(ReactStreams.fromRx(groupedObservable)).as(key);
+		provide(ReactiveStreams.fromRx(groupedObservable)).as(key);
 	}
 
 	private static List<Integer> someValues() {

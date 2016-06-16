@@ -4,14 +4,14 @@
 
 package cern.streaming.pool.core.examples.creators;
 
-import static cern.streaming.pool.core.util.ReactStreams.namedId;
-
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.testing.NamedStreamId;
 
 public final class InjectionIds {
 
     private InjectionIds() {
     }
-    
-    public static final StreamId<InjectionDomainObject> INJECTION_CONTROL_SYSTEM = namedId("Injection control system 1");
+
+    public static final StreamId<InjectionDomainObject> INJECTION_CONTROL_SYSTEM = NamedStreamId
+            .ofName("Injection control system 1");
 }

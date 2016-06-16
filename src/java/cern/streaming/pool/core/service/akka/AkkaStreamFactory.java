@@ -17,10 +17,10 @@ import akka.stream.Materializer;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactStream;
+import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.util.ReactStreams;
+import cern.streaming.pool.core.service.util.ReactiveStreams;
 
 public class AkkaStreamFactory implements AkkaSourceProvidingService, StreamFactory {
 
@@ -33,13 +33,13 @@ public class AkkaStreamFactory implements AkkaSourceProvidingService, StreamFact
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> ReactStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
+    public <T> ReactiveStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
         Source<T, ?> source = (Source<T, ?>) suppliers.get(newId);
         if (source == null) {
             return null;
         }
         Sink<T, Publisher<T>> akkaSink = Sink.asPublisher(WITH_FANOUT);
-        return ReactStreams.fromPublisher(source.runWith(akkaSink, materializer));
+        return ReactiveStreams.fromPublisher(source.runWith(akkaSink, materializer));
     }
 
     @Override
