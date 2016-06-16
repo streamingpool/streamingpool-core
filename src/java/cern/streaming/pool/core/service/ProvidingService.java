@@ -15,8 +15,8 @@ package cern.streaming.pool.core.service;
 public interface ProvidingService {
 
     /**
-     * Provides in the streaming-pool system the stream with the specified id. From the moment the stream is provided,
-     * it will be accessed from {@link DiscoveryService} usign the same {@link StreamId}
+     * Provides the stream with the specified id. From the moment the stream is provided, it can be accessed from
+     * {@link DiscoveryService} using the same {@link StreamId}.
      * 
      * @param id the {@link StreamId} that identifies the specified stream
      * @param stream the {@link ReactStream} to be provided

@@ -8,6 +8,12 @@ import org.reactivestreams.Publisher;
 
 import cern.streaming.pool.core.service.ReactStream;
 
+/**
+ * Primitive implementation of a {@link ReactStream}.
+ * 
+ * @author acalia 
+ * @param <T> the type of the data that the stream contains
+ */
 public class SimpleReactStream <T> implements ReactStream <T> {
     
     private final Publisher<T> source;

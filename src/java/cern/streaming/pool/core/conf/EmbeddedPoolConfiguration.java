@@ -18,9 +18,11 @@ import cern.streaming.pool.core.service.impl.LazyPool;
 /**
  * The spring configuration which shall be used in any application that will have the spring pool embedded. It provides
  * a pool which will pick up the following beans automatically:
+ * </p>
+ * Dependency injection:
  * <ul>
- * <li>Any additional Stream factory (class implementing the interface {@link StreamFactory}) will be automatically
- * plugged into the pool to be used for stream discovery.
+ * <li>{@link StreamFactory}: Any additional Stream factory will be automatically plugged into the pool to be used for
+ * stream discovery.
  * </ul>
  * 
  * @author kfuchsbe

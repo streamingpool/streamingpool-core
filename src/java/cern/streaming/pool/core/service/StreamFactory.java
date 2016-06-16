@@ -10,8 +10,8 @@ package cern.streaming.pool.core.service;
  * streams. This allow the possibility to create streams that merge other streams while performing transformations.
  * </p>
  * <strong>NOTE</strong>: it is not allowed to discover other streams using the provided {@link DiscoveryService} in
- * multiple threads. In other words, do not use multiple threads inside the stream creation. The provided
- * {@link DiscoveryService} checks that subsequent discoveries are performed on the same threads, otherwise an exception
+ * multiple threads. In other words, do not use new threads inside the stream creation. The provided
+ * {@link DiscoveryService} checks that subsequent discoveries are performed on the same thread, otherwise an exception
  * is rose. It is not possible to enforce the single thread execution in the {@link #create(StreamId, DiscoveryService)}
  * method, but using the {@link DiscoveryService} from different threads may lead to unpredictable behavior and can
  * cause deadlocks.
@@ -26,7 +26,7 @@ public interface StreamFactory {
      * are needed in the creation process (stream combination, transformation, etc.)
      * </p>
      * <strong>NOTE</strong>: it is strongly discouraged the use of multiple threads inside this method (see
-     * {@link StreamFactory} interface documentation).
+     * {@link StreamFactory} documentation).
      * 
      * @param id the id of the stream to create
      * @param discoveryService {@link DiscoveryService} which can be used by the factory to look up other streams

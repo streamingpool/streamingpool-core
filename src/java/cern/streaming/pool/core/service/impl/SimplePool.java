@@ -14,6 +14,12 @@ import cern.streaming.pool.core.service.ProvidingService;
 import cern.streaming.pool.core.service.ReactStream;
 import cern.streaming.pool.core.service.StreamId;
 
+/**
+ * Primitive implementation of a local container of {@link ReactStream}s. It is both {@link DiscoveryService} and
+ * {@link ProvidingService}.
+ * 
+ * @author acalia
+ */
 public class SimplePool implements DiscoveryService, ProvidingService {
 
     private final ConcurrentMap<StreamId<?>, ReactStream<?>> activeStreams = new ConcurrentHashMap<>();
@@ -39,10 +45,6 @@ public class SimplePool implements DiscoveryService, ProvidingService {
             throw new IllegalArgumentException("Stream of id '" + id + "' does not exist.");
         }
         return stream;
-    }
-
-    public void clearPool() {
-        activeStreams().clear();
     }
 
     protected ConcurrentMap<StreamId<?>, ReactStream<?>> activeStreams() {
