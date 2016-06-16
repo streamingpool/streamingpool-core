@@ -1,0 +1,33 @@
+= Streaming Pool Ideas
+Kajetan Fuchsberger <kajetan.fuchsberger@cern.ch>
+:icons: font
+:sectanchors:
+:experimental:
+:source-highlighter: highlightjs
+:examplesource: src/examples/org/tensorics/core/examples
+:sourcecodedir: src/java/org/tensorics/core
+:javadoc-baseurl: http://tensorics.github.io/tensorics-core/javadoc/org/tensorics
+
+== Introduction
+This page is used to store ideas and possible improvements for streaming-pool project.
+
+== Ideas
+
+* link:{javadoc-baseurl}/streaming-pool-core/src/java/cern/streaming/pool/core/service/impl/SimplePool.html[SimplePool] now uses ConcurrentMap for storing the provided streams.
+It could be interesting to have a Guava Cache (https://github.com/google/guava/wiki/CachesExplained[CachesExplained]). This would simplify the code, specially in the link:{javadoc-baseurl}/streaming-pool-core/src/java/cern/streaming/pool/core/service/impl/TrackKeepingDiscoveryService.html[TrackKeepingDiscoveryService].
+Also, this prevents the possibility that the stream is created more then once in highly-concurrent scenario. When doing a `get(K, Callable<V>)` with a loader (`Callable`), Guava Cache performs the creation atomically.  
+
+* Add a method in the link:{javadoc-baseurl}/streaming-pool-core/src/java/cern/streaming/pool/core/service/StreamFactory.html[StreamFactory] interface in order to ask a factory if it is able to create a certain link:{javadoc-baseurl}/streaming-pool-core/src/java/cern/streaming/pool/core/service/StreamId.html[StreamId]. The signature of the method can be `<T> boolean canCreate(StreamId<T> id)`.
+This would simplify the code of custom StreamFactories and also the stream creation in the TrackKeepingDiscoveryService:
+[source,java]
+----
+private <T> ReactStream<T> createFromFactories(StreamId<T> newId) {
+	return factories.stream()
+		.filter(factory -> factory.canCreate(newId))
+		.findAny()
+		.map(factory -> factory.create(newId, ...))
+		.orElse(null);
+}
+----
+
+Last built:		{localdatetime}
