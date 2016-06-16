@@ -12,10 +12,6 @@ public class CycleInStreamDiscoveryDetectedException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public CycleInStreamDiscoveryDetectedException() {
-        super();
-    }
-
     public CycleInStreamDiscoveryDetectedException(String message, Throwable cause) {
         super(message, cause);
     }
