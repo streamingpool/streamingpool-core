@@ -20,7 +20,7 @@ public class IdentifiedStreamCreator<T> {
     }
 
     public static <T> IdentifiedStreamCreator<T> of(StreamId<T> id, StreamCreator<T> creator) {
-        return new IdentifiedStreamCreator<T>(id, creator);
+        return new IdentifiedStreamCreator<>(id, creator);
     }
 
     public StreamId<T> getId() {
