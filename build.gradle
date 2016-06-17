@@ -1,10 +1,14 @@
 buildscript {
 	repositories {
-		mavenCentral()
-		jcenter()
-		maven {
-		    url 'http://artifactory/development'
-	    }
+		if (System.getenv('BUILD_SERVER')) {
+			maven {
+			    url 'http://artifactory.cern.ch/repo'
+			    url 'http://artifactory.cern.ch/jcenter'
+		    }
+		} else {
+			mavenCentral()
+			jcenter()
+        }
 	}
 
 	dependencies {
