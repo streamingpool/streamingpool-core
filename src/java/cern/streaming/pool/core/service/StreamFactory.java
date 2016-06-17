@@ -20,8 +20,8 @@ package cern.streaming.pool.core.service;
 public interface StreamFactory {
 
     /***
-     * Given a {@link StreamId} and a {@link DiscoveryService} this methods attempt to create a {@link ReactiveStream}. If
-     * the implementation of this interface does not know how to create a stream using the given {@link StreamId}, it
+     * Given a {@link StreamId} and a {@link DiscoveryService} this methods attempt to create a {@link ReactiveStream}.
+     * If the implementation of this interface does not know how to create a stream using the given {@link StreamId}, it
      * must return the {@code null}. The provided {@link DiscoveryService} can be used to discover other streams that
      * are needed in the creation process (stream combination, transformation, etc.)
      * </p>

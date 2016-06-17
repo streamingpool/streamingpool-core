@@ -9,6 +9,13 @@ import static java.util.Objects.requireNonNull;
 import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamId;
 
+/**
+ * Class that associates a {@link StreamId} with a {@link StreamCreator}.
+ * 
+ * @see StreamId
+ * @see StreamCreator
+ * @param <T> the type of the data that the stream created using the {@link StreamCreator} will have
+ */
 public class IdentifiedStreamCreator<T> {
 
     private final StreamId<T> id;

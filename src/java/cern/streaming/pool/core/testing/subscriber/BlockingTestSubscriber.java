@@ -30,7 +30,7 @@ public class BlockingTestSubscriber<T> extends TestSubscriber<T> {
     }
 
     public static final <T1> BlockingTestSubscriber<T1> ofName(String name) {
-        return new BlockingTestSubscriber<>(name, 0, false);
+        return new BlockingTestSubscriber<>(name, 0);
     }
 
     public <T1> BlockingTestSubscriber<T1> withConsumingdelayInMs(long consumingDelayInMs) {

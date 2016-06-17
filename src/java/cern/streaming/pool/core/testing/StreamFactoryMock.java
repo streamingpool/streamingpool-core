@@ -28,11 +28,14 @@ import rx.Observable;
  * Very simple StreamFactory mock builder to simplify the test code.
  */
 public class StreamFactoryMock<T> {
-    private final Multimap<StreamId<T>, StreamId<T>> withIdDiscover = HashMultimap.create();
-    private final Map<StreamId<T>, T> withIdProvideStreamWithValue = new HashMap<>();
-    private final Map<StreamId<T>, BiFunction<StreamId<T>, DiscoveryService, ReactiveStream<T>>> withIdInvoke = new HashMap<>();
+    private final Multimap<StreamId<T>, StreamId<T>> withIdDiscover;
+    private final Map<StreamId<T>, T> withIdProvideStreamWithValue;
+    private final Map<StreamId<T>, BiFunction<StreamId<T>, DiscoveryService, ReactiveStream<T>>> withIdInvoke;
 
     private StreamFactoryMock() {
+        this.withIdDiscover = HashMultimap.create();
+        this.withIdProvideStreamWithValue = new HashMap<>();
+        this.withIdInvoke = new HashMap<>();
     }
 
     /**

@@ -9,9 +9,8 @@ import cern.streaming.pool.core.service.ProvidingService;
 import cern.streaming.pool.core.service.StreamId;
 
 /**
- * Specific providing service for Akka streams. The main difference from {@link ProvidingService} is that it accepts directly the {@link Source} to be used 
- * 
- * @author acalia
+ * Specific providing service for Akka streams. The main difference from {@link ProvidingService} is that it accepts
+ * directly the {@link Source} to be used to create the stream.
  */
 public interface AkkaSourceProvidingService {
 

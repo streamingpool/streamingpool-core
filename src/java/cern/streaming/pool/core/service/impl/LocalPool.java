@@ -19,14 +19,12 @@ import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 
 /**
- * Local poll for the providing and discovery of {@link ReactiveStream} (this class is both {@link DiscoveryService} and
- * {@link ProvidingService}). The most important feature of the {@link LocalPool} is that it supports the lazy creation
- * of the streams, specifically, they are created when discovered using {@link StreamFactory}s. When a {@link StreamId}
- * is discovered, the discovery is delegated to a new instance of {@link TrackKeepingDiscoveryService}. The
- * {@link TrackKeepingDiscoveryService} then tries to create the stream using the provided {@link StreamFactory}s if no
- * matching {@link StreamId} has already been provided.
- * 
- * @author acalia
+ * Local poll for the providing and discovery of {@link ReactiveStream} (this class is both a {@link DiscoveryService}
+ * and a {@link ProvidingService}). The most important feature of the {@link LocalPool} is that it supports the lazy
+ * creation of the streams, specifically, they are created when discovered using {@link StreamFactory}s. When a
+ * {@link StreamId} is discovered, the discovery is delegated to a new instance of {@link TrackKeepingDiscoveryService}.
+ * The {@link TrackKeepingDiscoveryService} then tries to create the stream using the provided {@link StreamFactory}s if
+ * no matching {@link StreamId} has already been provided.
  */
 public class LocalPool implements DiscoveryService, ProvidingService {
 

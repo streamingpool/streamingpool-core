@@ -11,7 +11,6 @@ import cern.streaming.pool.core.service.ReactiveStream;
 /**
  * Primitive implementation of a {@link ReactiveStream}.
  * 
- * @author acalia 
  * @param <T> the type of the data that the stream contains
  */
 public class SimpleReactStream <T> implements ReactiveStream <T> {

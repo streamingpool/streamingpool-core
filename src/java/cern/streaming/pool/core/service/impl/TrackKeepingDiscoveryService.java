@@ -22,8 +22,6 @@ import cern.streaming.pool.core.service.StreamId;
 /**
  * Special implementation of a {@link DiscoveryService}. It is able to discover streams recursively while preventing
  * cycles. Also, it is able to detect recursive discoveries from multiple threads, which is not allowed.
- * 
- * @author acalia
  */
 public class TrackKeepingDiscoveryService implements DiscoveryService {
 

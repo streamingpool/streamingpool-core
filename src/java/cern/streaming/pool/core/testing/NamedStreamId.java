@@ -14,7 +14,7 @@ public class NamedStreamId<T> implements StreamId<T> {
         this.id = id;
     }
 
-    public final static <T> NamedStreamId<T> ofName(String name) {
+    public static final <T> NamedStreamId<T> ofName(String name) {
         return new NamedStreamId<>(name);
     }
 

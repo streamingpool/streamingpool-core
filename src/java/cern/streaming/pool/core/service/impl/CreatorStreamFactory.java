@@ -6,7 +6,6 @@ package cern.streaming.pool.core.service.impl;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -17,20 +16,23 @@ import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 
+/**
+ * {@link StreamFactory} specifically designed to create {@link ReactiveStream}s using {@link StreamCreator}s. In order
+ * to use the right {@link StreamCreator} for creating the {@link ReactiveStream}, it uses
+ * {@link IdentifiedStreamCreator} to map a specific {@link StreamId} to the correspondent {@link StreamCreator}.
+ * 
+ * @see StreamCreator
+ * @see IdentifiedStreamCreator
+ */
 public class CreatorStreamFactory implements CreatorProvidingService, StreamFactory {
 
     private final ConcurrentMap<StreamId<?>, StreamCreator<?>> suppliers = new ConcurrentHashMap<>();
 
     public CreatorStreamFactory(Iterable<IdentifiedStreamCreator<?>> identifiedCreators) {
-        Objects.requireNonNull(identifiedCreators, "identifiedStreamCreators must not be null.");
-        for (IdentifiedStreamCreator<?> identifiedCreator : identifiedCreators) {
-            provide(identifiedCreator);
-        }
-    }
+        requireNonNull(identifiedCreators, "identifiedStreamCreators must not be null.");
 
-    private <T> void provide(IdentifiedStreamCreator<T> identifiedCreator) {
-        suppliers.put(identifiedCreator.getId(), identifiedCreator.getCreator());
-    }   
+        identifiedCreators.forEach(this::register);
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -53,4 +55,7 @@ public class CreatorStreamFactory implements CreatorProvidingService, StreamFact
         }
     }
 
+    private <T> void register(IdentifiedStreamCreator<T> identifiedCreator) {
+        suppliers.put(identifiedCreator.getId(), identifiedCreator.getCreator());
+    }
 }
