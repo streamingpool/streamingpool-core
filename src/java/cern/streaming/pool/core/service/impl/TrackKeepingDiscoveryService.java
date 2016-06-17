@@ -34,10 +34,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
     public TrackKeepingDiscoveryService(List<StreamFactory> factories,
             ConcurrentMap<StreamId<?>, ReactiveStream<?>> activeStreams) {
-        this.factories = requireNonNull(factories, "factories must not be null");
-        this.activeStreams = requireNonNull(activeStreams, "activeStreams must not be null");
-        this.idsOfStreamsUnderCreation = new HashSet<>();
-        this.contextOfExecution = Thread.currentThread();
+        this(factories, activeStreams, new HashSet<>(), Thread.currentThread());
     }
 
     public TrackKeepingDiscoveryService(List<StreamFactory> factories,
