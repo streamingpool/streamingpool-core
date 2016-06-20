@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import cern.streaming.pool.core.service.StreamFactory;
+import cern.streaming.pool.core.service.impl.DerivedStreamIdStreamFactory;
 import cern.streaming.pool.core.service.impl.LocalPool;
 
 /**
@@ -36,7 +37,7 @@ public class EmbeddedPoolConfiguration {
      */
     @Autowired(required = false)
     private List<StreamFactory> streamFactories;
-
+    
     @Bean
     public LocalPool pool() {
         return new LocalPool(emptyIfNull(streamFactories));

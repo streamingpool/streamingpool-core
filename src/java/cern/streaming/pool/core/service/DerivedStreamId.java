@@ -53,7 +53,7 @@ public class DerivedStreamId<S, T> implements StreamId<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        DerivedStreamId other = (DerivedStreamId) obj;
+        DerivedStreamId<?, ?> other = (DerivedStreamId<?, ?>) obj;
         if (conversion == null) {
             if (other.conversion != null) {
                 return false;

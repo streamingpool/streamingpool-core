@@ -61,7 +61,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
         if (activeStream == null) {
             throw new IllegalArgumentException(
-                    "The stream for id " + id + "is neither present nor can it be created by any factory.");
+                    "The stream for id '" + id + "' is neither present nor can it be created by any factory.");
         }
         return activeStream;
     }
