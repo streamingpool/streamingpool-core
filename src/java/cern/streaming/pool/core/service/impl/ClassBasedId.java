@@ -10,8 +10,12 @@ public class ClassBasedId <T> implements StreamId<T> {
     
     private final Class<?> targetClass;
 
-    public ClassBasedId(Class<?> targetClass) {
+    private ClassBasedId(Class<?> targetClass) {
         this.targetClass = targetClass;
+    }
+    
+    public static <T> ClassBasedId<T> of(Class<?> targetClass) {
+        return new ClassBasedId<>(targetClass);
     }
 
     @Override
