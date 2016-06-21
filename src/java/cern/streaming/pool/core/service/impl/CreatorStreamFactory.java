@@ -19,10 +19,10 @@ import cern.streaming.pool.core.service.StreamId;
 /**
  * {@link StreamFactory} specifically designed to create {@link ReactiveStream}s using {@link StreamCreator}s. In order
  * to use the right {@link StreamCreator} for creating the {@link ReactiveStream}, it uses
- * {@link IdentifiedStreamCreator} to map a specific {@link StreamId} to the correspondent {@link StreamCreator}.
+ * {@link ImmutableIdentifiedStreamCreator} to map a specific {@link StreamId} to the correspondent {@link StreamCreator}.
  * 
  * @see StreamCreator
- * @see IdentifiedStreamCreator
+ * @see ImmutableIdentifiedStreamCreator
  */
 public class CreatorStreamFactory implements CreatorProvidingService, StreamFactory {
 

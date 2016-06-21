@@ -11,6 +11,7 @@ import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
+import cern.streaming.pool.core.service.impl.ImmutableIdentifiedStreamCreator;
 
 public final class StreamCreators {
 
@@ -34,7 +35,7 @@ public final class StreamCreators {
         }
 
         public IdentifiedStreamCreator<T> as(StreamId<T> streamId) {
-            return IdentifiedStreamCreator.of(streamId, streamCreator);
+            return ImmutableIdentifiedStreamCreator.of(streamId, streamCreator);
         }
     }
 

@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 
 import cern.streaming.pool.core.service.impl.CreatorStreamFactory;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
+import cern.streaming.pool.core.service.impl.ImmutableIdentifiedStreamCreator;
 
 /**
  * This configuration can be used together with a pool configuration and provides and additional factory for streams
@@ -22,7 +23,7 @@ import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
  * </p>
  * Dependency injection:
  * <ul>
- * <li>All instances of {@link IdentifiedStreamCreator}. These are passed on the the created factory and are available
+ * <li>All instances of {@link ImmutableIdentifiedStreamCreator}. These are passed on the the created factory and are available
  * for lookups from then on. This mechanism provides a simple way to organize (lazy initializing) streams in spring
  * configurations.
  * </ul>

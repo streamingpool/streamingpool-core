@@ -4,37 +4,20 @@
 
 package cern.streaming.pool.core.service.impl;
 
-import static java.util.Objects.requireNonNull;
-
 import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamId;
 
 /**
- * Class that associates a {@link StreamId} with a {@link StreamCreator}.
+ * Interface that associates a {@link StreamId} with a {@link StreamCreator}.
  * 
  * @see StreamId
  * @see StreamCreator
  * @param <T> the type of the data that the stream created using the {@link StreamCreator} will have
  */
-public class IdentifiedStreamCreator<T> {
+public interface IdentifiedStreamCreator<T> {
 
-    private final StreamId<T> id;
-    private final StreamCreator<T> creator;
+    StreamId<T> getId();
 
-    private IdentifiedStreamCreator(StreamId<T> id, StreamCreator<T> creator) {
-        this.id = requireNonNull(id, "id must not be null.");
-        this.creator = requireNonNull(creator, "creator must not be null.");
-    }
+    StreamCreator<T> getCreator();
 
-    public static <T> IdentifiedStreamCreator<T> of(StreamId<T> id, StreamCreator<T> creator) {
-        return new IdentifiedStreamCreator<>(id, creator);
-    }
-
-    public StreamId<T> getId() {
-        return id;
-    }
-
-    public StreamCreator<T> getCreator() {
-        return creator;
-    }
 }

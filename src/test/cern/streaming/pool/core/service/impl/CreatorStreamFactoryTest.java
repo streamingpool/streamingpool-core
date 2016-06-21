@@ -30,7 +30,7 @@ public class CreatorStreamFactoryTest {
     private static final ReactiveStream<Object> STREAM_A = mock(ReactiveStream.class);
     private static final ReactiveStream<Object> STREAM_B = mock(ReactiveStream.class);
     
-    private final IdentifiedStreamCreator<Object> creator = IdentifiedStreamCreator.of(ID_A, discovery -> STREAM_A);
+    private final IdentifiedStreamCreator<Object> creator = ImmutableIdentifiedStreamCreator.of(ID_A, discovery -> STREAM_A);
     private final CreatorStreamFactory factory = new CreatorStreamFactory(Arrays.asList(creator));
     private final DiscoveryService discoveryService = new LocalPool(Arrays.asList(factory));
     
@@ -79,7 +79,7 @@ public class CreatorStreamFactoryTest {
     }
 
     private CreatorStreamFactory createLoopCreatorStreamFactory() {
-        IdentifiedStreamCreator<Object> streamCreatorWithLoop = IdentifiedStreamCreator.of(ID_A, discovery -> {
+        IdentifiedStreamCreator<Object> streamCreatorWithLoop = ImmutableIdentifiedStreamCreator.of(ID_A, discovery -> {
             discovery.discover(ID_A);
             throw new RuntimeException("The test failed, a loop should be detected!");
         });
