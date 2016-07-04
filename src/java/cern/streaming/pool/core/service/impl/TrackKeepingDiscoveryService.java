@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cern.streaming.pool.core.service.CycleInStreamDiscoveryDetectedException;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
@@ -24,6 +27,8 @@ import cern.streaming.pool.core.service.StreamId;
  * cycles. Also, it is able to detect recursive discoveries from multiple threads, which is not allowed.
  */
 public class TrackKeepingDiscoveryService implements DiscoveryService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrackKeepingDiscoveryService.class);
 
     private final Set<StreamId<?>> idsOfStreamsUnderCreation;
     private final List<StreamFactory> factories;
@@ -106,6 +111,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         for (StreamFactory factory : factories) {
             ReactiveStream<T> stream = factory.create(newId, cloneTrackKeepingDiscoveryServiceIncluding(newId));
             if (stream != null) {
+                LOGGER.debug("Stream of id '{}' was created by factory '{}'.", newId, factory);
                 return stream;
             }
         }
