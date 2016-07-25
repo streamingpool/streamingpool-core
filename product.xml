@@ -6,22 +6,22 @@
 		<dependencies>
 			<!-- Deps in build.gradle! -->
 			<dep product="reactive-streams" version="1.0.0" />
-			
+
 			<dep product="guava" />
-			
-			<dep product="rxjava" />
-			<dep product="rxjava-math" version="1.0.0"/>
-			<dep product="rxjava-reactive-streams" version="1.0.1" />
-			
+
+			<dep product="rxjava" version="1.1.8" />
+			<dep product="rxjava-math" version="1.0.0" />
+			<dep product="rxjava-reactive-streams" version="1.1.0" />
+
 			<dep product="akka-stream_2.11" version="2.4.5" />
-			
-			<dep product="spring-core"/>
-			<dep product="spring-context"/>
-			<dep product="spring-test"/>
-			
-			<dep product="log4j"/>
-			<dep product="slf4j-api"/>
-			<dep product="slf4j-log4j12"/>
+
+			<dep product="spring-core" />
+			<dep product="spring-context" />
+			<dep product="spring-test" />
+
+			<dep product="log4j" />
+			<dep product="slf4j-api" />
+			<dep product="slf4j-log4j12" />
 		</dependencies>
 	</product>
 </products>
