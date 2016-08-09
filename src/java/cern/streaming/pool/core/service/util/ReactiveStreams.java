@@ -15,6 +15,7 @@ import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.SimpleReactStream;
 import rx.Observable;
+import rx.RxReactiveStreams;
 
 /**
  * Utility methods for working with {@link ReactiveStream}s.
@@ -36,6 +37,10 @@ public final class ReactiveStreams {
 
     public static <T> Publisher<T> publisherFrom(ReactiveStream<T> stream) {
         return ((SimpleReactStream<T>) stream).getSource();
+    }
+    
+    public static <T> Publisher<T> publisherFrom(Observable<T> source) {
+        return RxReactiveStreams.toPublisher(source);
     }
 
     public static <T> ReactiveStream<T> fromPublisher(Publisher<T> publisher) {
