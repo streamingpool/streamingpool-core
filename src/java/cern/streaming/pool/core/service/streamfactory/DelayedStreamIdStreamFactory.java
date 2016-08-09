@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.impl;
+package cern.streaming.pool.core.service.streamfactory;
 
 import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
@@ -14,6 +14,7 @@ import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.streamid.DelayedStreamId;
 
 /**
  * Factory for {@link DelayedStreamId}

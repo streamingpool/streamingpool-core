@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamIdStreamFactory;
+import cern.streaming.pool.core.service.streamid.CombineWithLatestStreamId;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import rx.Observable;

@@ -2,12 +2,14 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.impl;
+package cern.streaming.pool.core.service.streamid;
 
 import java.util.Objects;
 
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.impl.CombineWithLatestStreamIdStreamFactoryTest;
+import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamIdStreamFactory;
 
 /**
  * Given a data stream and a stream of triggering events, the resulting stream emits the latest element of the data

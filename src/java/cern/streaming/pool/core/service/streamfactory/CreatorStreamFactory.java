@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.impl;
+package cern.streaming.pool.core.service.streamfactory;
 
 import static java.util.Objects.requireNonNull;
 
@@ -15,6 +15,8 @@ import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
+import cern.streaming.pool.core.service.impl.ImmutableIdentifiedStreamCreator;
 
 /**
  * {@link StreamFactory} specifically designed to create {@link ReactiveStream}s using {@link StreamCreator}s. In order

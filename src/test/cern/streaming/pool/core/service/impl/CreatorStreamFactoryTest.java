@@ -15,6 +15,7 @@ import cern.streaming.pool.core.service.CycleInStreamDiscoveryDetectedException;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.streamfactory.CreatorStreamFactory;
 import cern.streaming.pool.core.testing.NamedStreamId;
 
 @SuppressWarnings("unchecked")

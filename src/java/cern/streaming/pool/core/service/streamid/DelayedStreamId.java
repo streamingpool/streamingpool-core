@@ -2,11 +2,12 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.impl;
+package cern.streaming.pool.core.service.streamid;
 
 import java.time.Duration;
 
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.streamfactory.DelayedStreamIdStreamFactory;
 
 /**
  * Delay the items emitted by the stream created with the target {@link StreamId} by the specified {@link Duration}

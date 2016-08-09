@@ -21,6 +21,8 @@ import org.reactivestreams.Publisher;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.streamfactory.DelayedStreamIdStreamFactory;
+import cern.streaming.pool.core.service.streamid.DelayedStreamId;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 

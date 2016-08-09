@@ -2,11 +2,13 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service;
+package cern.streaming.pool.core.service.streamid;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
+
+import cern.streaming.pool.core.service.StreamId;
 
 /**
  * A stream id, which depends on one single other one (called source).

@@ -11,9 +11,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
-import cern.streaming.pool.core.service.impl.CreatorStreamFactory;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
 import cern.streaming.pool.core.service.impl.ImmutableIdentifiedStreamCreator;
+import cern.streaming.pool.core.service.streamfactory.CreatorStreamFactory;
 
 /**
  * This configuration can be used together with a pool configuration and provides and additional factory for streams

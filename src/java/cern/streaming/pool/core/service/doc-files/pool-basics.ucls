@@ -33,17 +33,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="4" language="java" name="cern.streaming.pool.core.service.impl.SimplePool" project="streaming-pool-core" 
-    file="/streaming-pool-core/src/java/cern/streaming/pool/core/service/impl/SimplePool.java" binary="false" 
-    corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="331" y="358"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
-      visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
-      <operations public="false" package="false" protected="false" private="false" static="true"/>    
-    </display>  
-  </class>  
-  <interface id="5" language="java" name="cern.streaming.pool.core.service.StreamFactory" project="streaming-pool-core" 
+  <interface id="4" language="java" name="cern.streaming.pool.core.service.StreamFactory" project="streaming-pool-core" 
     file="/streaming-pool-core/src/java/cern/streaming/pool/core/service/StreamFactory.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="586" y="439"/>    
@@ -53,7 +43,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <class id="6" language="java" name="cern.streaming.pool.core.service.akka.AkkaStreamFactory" 
+  <class id="5" language="java" name="cern.streaming.pool.core.service.akka.AkkaStreamFactory" 
     project="streaming-pool-core" 
     file="/streaming-pool-core/src/java/cern/streaming/pool/core/service/akka/AkkaStreamFactory.java" binary="false" 
     corner="BOTTOM_RIGHT">    
@@ -64,10 +54,10 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="7" language="java" name="cern.streaming.pool.core.service.impl.CreatorStreamFactory" 
+  <class id="6" language="java" name="cern.streaming.pool.core.service.streamfactory.CreatorStreamFactory" 
     project="streaming-pool-core" 
-    file="/streaming-pool-core/src/java/cern/streaming/pool/core/service/impl/CreatorStreamFactory.java" binary="false" 
-    corner="BOTTOM_RIGHT">    
+    file="/streaming-pool-core/src/java/cern/streaming/pool/core/service/streamfactory/CreatorStreamFactory.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="520" y="528"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -75,7 +65,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="8" language="java" name="cern.streaming.pool.core.service.akka.AkkaSourceProvidingService" 
+  <interface id="7" language="java" name="cern.streaming.pool.core.service.akka.AkkaSourceProvidingService" 
     project="streaming-pool-core" 
     file="/streaming-pool-core/src/java/cern/streaming/pool/core/service/akka/AkkaSourceProvidingService.java" 
     binary="false" corner="BOTTOM_RIGHT">    
@@ -86,34 +76,26 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
+  <realization id="8">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="4"/>  
+  </realization>  
   <realization id="9">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="5"/>  
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="4"/>  
   </realization>  
   <realization id="10">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="5"/>  
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="7"/>  
   </realization>  
-  <realization id="11">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="8"/>  
-  </realization>  
-  <realization id="12">    
-    <end type="SOURCE" refId="4"/>    
-    <end type="TARGET" refId="1"/>  
-  </realization>  
-  <association id="13">    
+  <association id="11">    
     <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="14" name="factories"/>      
-      <multiplicity id="15" minimum="0" maximum="2147483647"/>    
+      <attribute id="12" name="factories"/>      
+      <multiplicity id="13" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" refId="5" navigable="true"/>    
+    <end type="TARGET" refId="4" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <realization id="16">    
-    <end type="SOURCE" refId="4"/>    
-    <end type="TARGET" refId="2"/>  
-  </realization>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     accessors="true" visibility="true">    
     <attributes public="true" package="true" protected="true" private="true" static="true"/>    
