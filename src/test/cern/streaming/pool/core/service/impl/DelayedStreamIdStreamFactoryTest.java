@@ -41,10 +41,10 @@ public class DelayedStreamIdStreamFactoryTest {
     
     @Test
     public void testThatTheStreamIsDelayedAtLeastByTheSpecfiedTime() {
-        long initialDelay = 2000;
-        long maxBoundDelay = 2500L;
+        long delay = 2000;
+        long deltaDelay = 500;
 
-        StreamId<Integer> delayedId = DelayedStreamId.of(SOURCE_STREAM_ID, Duration.ofMillis(initialDelay));
+        StreamId<Integer> delayedId = DelayedStreamId.of(SOURCE_STREAM_ID, Duration.ofMillis(delay));
         publisherFrom(delayedId).subscribe(subscriber);
 
         Instant before = Instant.now();
@@ -52,7 +52,7 @@ public class DelayedStreamIdStreamFactoryTest {
         Instant after = Instant.now();
 
         assertThat(subscriber.getValues()).containsOnly(SOURCE_VALUE);
-        assertThat(Duration.between(before, after).toMillis()).isBetween(initialDelay, maxBoundDelay);
+        assertThat(Duration.between(before, after).toMillis()).isBetween(delay - deltaDelay, delay + deltaDelay);
     }
 
     private Publisher<Integer> publisherFrom(StreamId<Integer> delayedId) {
