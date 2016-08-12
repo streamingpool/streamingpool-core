@@ -9,7 +9,6 @@ import java.util.Objects;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamIdStreamFactory;
-import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamIdStreamFactoryTest;
 
 /**
  * Given a data stream and a stream of triggering events, the resulting stream emits the latest element of the data
