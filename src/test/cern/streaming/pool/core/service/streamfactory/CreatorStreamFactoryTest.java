@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.impl;
+package cern.streaming.pool.core.service.streamfactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -15,6 +15,9 @@ import cern.streaming.pool.core.service.CycleInStreamDiscoveryDetectedException;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
+import cern.streaming.pool.core.service.impl.ImmutableIdentifiedStreamCreator;
+import cern.streaming.pool.core.service.impl.LocalPool;
 import cern.streaming.pool.core.service.streamfactory.CreatorStreamFactory;
 import cern.streaming.pool.core.testing.NamedStreamId;
 

@@ -39,4 +39,9 @@ public class DelayedStreamId<T> implements StreamId<T> {
         return delay;
     }
 
+    @Override
+    public String toString() {
+        return "DelayedStreamId [target=" + target + ", delay=" + delay + "]";
+    }
+
 }

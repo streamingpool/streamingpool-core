@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.impl;
+package cern.streaming.pool.core.service.streamfactory;
 
 import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +40,7 @@ public class DelayedStreamIdStreamFactoryTest {
         factory = new DelayedStreamIdStreamFactory();
         subscriber = BlockingTestSubscriber.ofName("Subscriber");
     }
-    
+
     @Test
     public void testThatTheStreamIsDelayedAtLeastByTheSpecfiedTime() {
         long delay = 2000;
@@ -55,6 +55,14 @@ public class DelayedStreamIdStreamFactoryTest {
 
         assertThat(subscriber.getValues()).containsOnly(SOURCE_VALUE);
         assertThat(Duration.between(before, after).toMillis()).isBetween(delay - deltaDelay, delay + deltaDelay);
+    }
+
+    @Test
+    public void testThatStreamFactoryOnlyAcceptsDelayedStreamId() {
+        StreamId<?> anyOtherStreamId = mock(StreamId.class);
+        DiscoveryService anyDiscoveryService = mock(DiscoveryService.class);
+
+        assertThat(factory.create(anyOtherStreamId, anyDiscoveryService)).isNull();
     }
 
     private Publisher<Integer> publisherFrom(StreamId<Integer> delayedId) {

@@ -4,11 +4,29 @@
 
 package cern.streaming.pool.core.conf;
 
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamIdStreamFactory;
+import cern.streaming.pool.core.service.streamfactory.DelayedStreamIdStreamFactory;
+import cern.streaming.pool.core.service.streamfactory.DerivedStreamIdStreamFactory;
+
 @Configuration
-@ComponentScan("cern.streaming.pool.core.service.streamfactory")
-public interface DefaultStreamFactories {
-    /* Just stream factories scan */
+public class DefaultStreamFactories {
+
+    @Bean
+    public CombineWithLatestStreamIdStreamFactory combineWithLatestStreamIdStreamFactory() {
+        return new CombineWithLatestStreamIdStreamFactory();
+    }
+
+    @Bean
+    public DelayedStreamIdStreamFactory delayedStreamIdStreamFactory() {
+        return new DelayedStreamIdStreamFactory();
+    }
+
+    @Bean
+    public DerivedStreamIdStreamFactory derivedStreamIdStreamFactory() {
+        return new DerivedStreamIdStreamFactory();
+    }
+
 }
