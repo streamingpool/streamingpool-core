@@ -8,13 +8,13 @@ import java.util.Objects;
 
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamIdStreamFactory;
+import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFactory;
 
 /**
  * Given a data stream and a stream of triggering events, the resulting stream emits the latest element of the data
  * stream at the moment of each triggering event
  * 
- * @see CombineWithLatestStreamIdStreamFactory
+ * @see CombineWithLatestStreamFactory
  * @see CombineWithLatestStreamIdStreamFactoryTest
  * @author acalia, caguiler
  * @param <D> Type of the original data stream
@@ -42,4 +42,48 @@ public class CombineWithLatestStreamId<D, T> implements StreamId<D> {
     public ReactiveStream<T> triggerStream() {
         return trigger;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((data == null) ? 0 : data.hashCode());
+        result = prime * result + ((trigger == null) ? 0 : trigger.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        CombineWithLatestStreamId<?, ?> other = (CombineWithLatestStreamId<?, ?>) obj;
+        if (data == null) {
+            if (other.data != null) {
+                return false;
+            }
+        } else if (!data.equals(other.data)) {
+            return false;
+        }
+        if (trigger == null) {
+            if (other.trigger != null) {
+                return false;
+            }
+        } else if (!trigger.equals(other.trigger)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "CombineWithLatestStreamId [trigger=" + trigger + ", data=" + data + "]";
+    }
+    
 }

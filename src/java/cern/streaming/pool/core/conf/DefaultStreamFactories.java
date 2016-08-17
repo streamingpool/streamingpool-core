@@ -7,26 +7,38 @@ package cern.streaming.pool.core.conf;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamIdStreamFactory;
-import cern.streaming.pool.core.service.streamfactory.DelayedStreamIdStreamFactory;
-import cern.streaming.pool.core.service.streamfactory.DerivedStreamIdStreamFactory;
+import cern.streaming.pool.core.service.StreamFactory;
+import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFactory;
+import cern.streaming.pool.core.service.streamfactory.DelayedStreamFactory;
+import cern.streaming.pool.core.service.streamfactory.DerivedStreamFactory;
+import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory;
 
+/**
+ * Configuration for including the {@link StreamFactory}s provided in the core project.
+ * 
+ * @author acalia
+ */
 @Configuration
 public class DefaultStreamFactories {
 
     @Bean
-    public CombineWithLatestStreamIdStreamFactory combineWithLatestStreamIdStreamFactory() {
-        return new CombineWithLatestStreamIdStreamFactory();
+    public CombineWithLatestStreamFactory combineWithLatestStreamIdStreamFactory() {
+        return new CombineWithLatestStreamFactory();
     }
 
     @Bean
-    public DelayedStreamIdStreamFactory delayedStreamIdStreamFactory() {
-        return new DelayedStreamIdStreamFactory();
+    public DelayedStreamFactory delayedStreamIdStreamFactory() {
+        return new DelayedStreamFactory();
     }
 
     @Bean
-    public DerivedStreamIdStreamFactory derivedStreamIdStreamFactory() {
-        return new DerivedStreamIdStreamFactory();
+    public DerivedStreamFactory derivedStreamIdStreamFactory() {
+        return new DerivedStreamFactory();
+    }
+    
+    @Bean
+    public OverlapBufferStreamFactory overlapBufferStreamFactory() {
+        return new OverlapBufferStreamFactory();
     }
 
 }

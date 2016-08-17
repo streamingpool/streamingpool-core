@@ -17,9 +17,9 @@ import cern.streaming.pool.core.service.streamid.DerivedStreamId;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import rx.Observable;
 
-public class DerivedStreamIdStreamFactory implements StreamFactory {
+public class DerivedStreamFactory implements StreamFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DerivedStreamIdStreamFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DerivedStreamFactory.class);
 
     @Override
     public <T> ReactiveStream<T> create(StreamId<T> id, DiscoveryService discoveryService) {

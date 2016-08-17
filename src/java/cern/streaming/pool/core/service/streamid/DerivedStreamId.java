@@ -9,10 +9,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.streamfactory.DerivedStreamFactory;
 
 /**
- * A stream id, which depends on one single other one (called source).
+ * A stream id, that applies the provided function to transform the elements of the data stream. It is much like a map
+ * operator, but the operation is specified before the actual stream is created or discovered.
  * 
+ * @see DerivedStreamFactory
  * @author kfuchsbe
  * @param <S> the type of the source stream
  * @param <T> the type of the final stream

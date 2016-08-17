@@ -18,7 +18,15 @@ import cern.streaming.pool.core.service.streamid.OverlapBufferStreamId;
 import rx.Observable;
 import rx.observables.ConnectableObservable;
 
-public class OverlapBufferStreamIdStreamFactory implements StreamFactory {
+/**
+ * Factory for {@link OverlapBufferStreamId}
+ * 
+ * @see OverlapBufferStreamId
+ * @author acalia 
+ * @param <T> type of the stream data items
+ * @param <U> type of the start and stop streams
+ */
+public class OverlapBufferStreamFactory implements StreamFactory {
 
     @SuppressWarnings("unchecked")
     @Override

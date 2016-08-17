@@ -12,25 +12,25 @@ import org.junit.Before;
 import org.junit.Test;
 
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamIdStreamFactory;
+import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFactory;
 import cern.streaming.pool.core.service.streamid.CombineWithLatestStreamId;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import rx.Observable;
 
 /**
- * Unit tests for {@link CombineWithLatestStreamIdStreamFactory}
+ * Unit tests for {@link CombineWithLatestStreamFactory}
  * 
  * @author acalia
  */
 public class CombineWithLatestStreamIdStreamFactoryTest {
 
-    private CombineWithLatestStreamIdStreamFactory factory;
+    private CombineWithLatestStreamFactory factory;
     private BlockingTestSubscriber<Long> subscriber;
 
     @Before
     public void setUp() {
-        factory = new CombineWithLatestStreamIdStreamFactory();
+        factory = new CombineWithLatestStreamFactory();
         subscriber = BlockingTestSubscriber.ofName("Subscriber");
     }
 

@@ -22,7 +22,7 @@ import cern.streaming.pool.core.service.streamid.DelayedStreamId;
  * @see DelayedStreamId
  * @author acalia
  */
-public class DelayedStreamIdStreamFactory implements StreamFactory {
+public class DelayedStreamFactory implements StreamFactory {
 
     @Override
     public <T> ReactiveStream<T> create(StreamId<T> id, DiscoveryService discoveryService) {

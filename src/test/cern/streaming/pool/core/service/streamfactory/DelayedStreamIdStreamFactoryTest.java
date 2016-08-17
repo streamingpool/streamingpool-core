@@ -21,7 +21,7 @@ import org.reactivestreams.Publisher;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.streamfactory.DelayedStreamIdStreamFactory;
+import cern.streaming.pool.core.service.streamfactory.DelayedStreamFactory;
 import cern.streaming.pool.core.service.streamid.DelayedStreamId;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
@@ -32,12 +32,12 @@ public class DelayedStreamIdStreamFactoryTest {
     private static final StreamId<Integer> SOURCE_STREAM_ID = mock(StreamId.class);
     private static final ReactiveStream<Integer> SOURCE_STREAM = fromRx(just(SOURCE_VALUE));
 
-    private DelayedStreamIdStreamFactory factory;
+    private DelayedStreamFactory factory;
     private BlockingTestSubscriber<Integer> subscriber;
 
     @Before
     public void setUp() {
-        factory = new DelayedStreamIdStreamFactory();
+        factory = new DelayedStreamFactory();
         subscriber = BlockingTestSubscriber.ofName("Subscriber");
     }
 

@@ -19,7 +19,7 @@ import rx.Observable;
  * @see CombineWithLatestStreamIdStreamFactoryTest
  * @author acalia
  */
-public class CombineWithLatestStreamIdStreamFactory implements StreamFactory {
+public class CombineWithLatestStreamFactory implements StreamFactory {
 
     @SuppressWarnings("unchecked")
     @Override

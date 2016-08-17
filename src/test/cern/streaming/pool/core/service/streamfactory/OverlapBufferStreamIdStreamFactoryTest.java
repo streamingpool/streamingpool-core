@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.LocalPool;
-import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamIdStreamFactory;
+import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory;
 import cern.streaming.pool.core.service.streamid.OverlapBufferStreamId;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import rx.Observable;
@@ -36,12 +36,12 @@ public class OverlapBufferStreamIdStreamFactoryTest {
     private static final Observable<Long> EVERY_SEC_INTERVAL_10_ELEMENTS = interval(1, SECONDS).take(10);
     private static final Duration NO_TIME_OUT = Duration.ofDays(5);
 
-    private OverlapBufferStreamIdStreamFactory factory;
+    private OverlapBufferStreamFactory factory;
     private LocalPool pool;
 
     @Before
     public void setUp() {
-        factory = new OverlapBufferStreamIdStreamFactory();
+        factory = new OverlapBufferStreamFactory();
         pool = new LocalPool(Arrays.asList(factory));
     }
 
