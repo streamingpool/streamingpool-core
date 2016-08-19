@@ -15,9 +15,12 @@ package cern.streaming.pool.core.service;
  * is rose. It is not possible to enforce the single thread execution in the {@link #create(StreamId, DiscoveryService)}
  * method, but using the {@link DiscoveryService} from different threads may lead to unpredictable behavior and can
  * cause deadlocks.
+ * @param <X> The type of objects published by the {@link ReactiveStream} and therefore used by the {@link StreamId}
+ *           implementation
+ * @param <T> The class of {@link StreamId} to be used in the constrution of {@link ReactiveStream}s
  */
 @FunctionalInterface
-public interface StreamFactory {
+public interface StreamFactory <X, T extends StreamId<X>>{
 
     /***
      * Given a {@link StreamId} and a {@link DiscoveryService} this methods attempt to create a {@link ReactiveStream}.
@@ -33,6 +36,6 @@ public interface StreamFactory {
      *            ('upstream' of the one it will create)
      * @return the newly created stream or {@code null} if this factory cannot create the stream of the given id
      */
-    <T> ReactiveStream<T> create(StreamId<T> id, DiscoveryService discoveryService);
+    ReactiveStream<X> create(T id, DiscoveryService discoveryService);
 
 }

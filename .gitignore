@@ -6,3 +6,4 @@
 bin/
 *.log
 /build/
+streaming-pool-core.iml
