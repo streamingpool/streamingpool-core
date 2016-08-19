@@ -97,14 +97,12 @@ public class CombineWithLatestStreamIdStreamFactoryTest {
     public void test4() {
         Observable<Long> trigger = delayed(500);
         Observable<Long> data = Observable.interval(1000, MILLISECONDS);
-
         subscribeAndWait(data, trigger);
-
         assertThat(subscriber.getValues()).isEmpty();
     }
 
     private void subscribeAndWait(Observable<Long> data, Observable<Long> trigger) {
-        StreamId<Long> streamId = CombineWithLatestStreamId.of(fromRx(data), fromRx(trigger));
+        CombineWithLatestStreamId streamId = CombineWithLatestStreamId.of(fromRx(data), fromRx(trigger));
         ReactiveStreams.publisherFrom(factory.create(streamId, null)).subscribe(subscriber);
         subscriber.await();
     }

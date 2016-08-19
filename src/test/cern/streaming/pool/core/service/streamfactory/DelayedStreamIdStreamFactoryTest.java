@@ -46,7 +46,7 @@ public class DelayedStreamIdStreamFactoryTest {
         long delay = 2000;
         long deltaDelay = 500;
 
-        StreamId<Integer> delayedId = DelayedStreamId.of(SOURCE_STREAM_ID, Duration.ofMillis(delay));
+        DelayedStreamId<Integer> delayedId = DelayedStreamId.of(SOURCE_STREAM_ID, Duration.ofMillis(delay));
         publisherFrom(delayedId).subscribe(subscriber);
 
         Instant before = Instant.now();
@@ -57,15 +57,7 @@ public class DelayedStreamIdStreamFactoryTest {
         assertThat(Duration.between(before, after).toMillis()).isBetween(delay - deltaDelay, delay + deltaDelay);
     }
 
-    @Test
-    public void testThatStreamFactoryOnlyAcceptsDelayedStreamId() {
-        StreamId<?> anyOtherStreamId = mock(StreamId.class);
-        DiscoveryService anyDiscoveryService = mock(DiscoveryService.class);
-
-        assertThat(factory.create(anyOtherStreamId, anyDiscoveryService)).isNull();
-    }
-
-    private Publisher<Integer> publisherFrom(StreamId<Integer> delayedId) {
+    private Publisher<Integer> publisherFrom(DelayedStreamId<Integer> delayedId) {
         return ReactiveStreams.publisherFrom(factory.create(delayedId, mockDiscoveryService()));
     }
 

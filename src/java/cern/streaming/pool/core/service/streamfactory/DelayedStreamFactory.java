@@ -22,18 +22,12 @@ import cern.streaming.pool.core.service.streamid.DelayedStreamId;
  * @see DelayedStreamId
  * @author acalia
  */
-public class DelayedStreamFactory implements StreamFactory {
+public class DelayedStreamFactory <T> implements StreamFactory <T, DelayedStreamId<T>> {
 
     @Override
-    public <T> ReactiveStream<T> create(StreamId<T> id, DiscoveryService discoveryService) {
-        if (!(id instanceof DelayedStreamId)) {
-            return null;
-        }
-
-        DelayedStreamId<T> delayedId = (DelayedStreamId<T>) id;
-        Duration delay = delayedId.getDelay();
-        StreamId<T> target = delayedId.getTarget();
-
+    public ReactiveStream<T> create(DelayedStreamId<T> id, DiscoveryService discoveryService) {
+        Duration delay = id.getDelay();
+        StreamId<T> target = id.getTarget();
         return fromRx(rxFrom(discoveryService.discover(target)).delay(delay.toMillis(), MILLISECONDS));
     }
 

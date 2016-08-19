@@ -13,11 +13,10 @@ import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import rx.Observable;
 
-public class InjectionFactory implements StreamFactory {
+public class InjectionFactory <T> implements StreamFactory <T, StreamId<T>> {
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> ReactiveStream<T> create(StreamId<T> id, DiscoveryService discoveryService) {
+    public ReactiveStream<T> create(StreamId<T> id, DiscoveryService discoveryService) {
         if (!id.equals(InjectionIds.INJECTION_CONTROL_SYSTEM)) {
             return null;
         }

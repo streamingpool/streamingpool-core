@@ -17,21 +17,16 @@ import cern.streaming.pool.core.service.streamid.DerivedStreamId;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import rx.Observable;
 
-public class DerivedStreamFactory implements StreamFactory {
+public class DerivedStreamFactory <T> implements StreamFactory<T, DerivedStreamId<?, T>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DerivedStreamFactory.class);
 
     @Override
-    public <T> ReactiveStream<T> create(StreamId<T> id, DiscoveryService discoveryService) {
-        if (!(id instanceof DerivedStreamId)) {
-            return null;
-        }
-        @SuppressWarnings("unchecked")
-        DerivedStreamId<?, T> derivedStreamId = (DerivedStreamId<?, T>) id;
-        return createDerivedStream(derivedStreamId, discoveryService);
+    public ReactiveStream<T> create(DerivedStreamId<?, T> id, DiscoveryService discoveryService) {
+        return createDerivedStream(id, discoveryService);
     }
 
-    private <S, T> ReactiveStream<T> createDerivedStream(DerivedStreamId<S, T> id, DiscoveryService discoveryService) {
+    private <S> ReactiveStream<T> createDerivedStream(DerivedStreamId<S, T> id, DiscoveryService discoveryService) {
         ReactiveStream<S> sourceStream = discoveryService.discover(id.sourceStreamId());
         Observable<T> derivedStream = rxFrom(sourceStream).map((val) -> {
             try {

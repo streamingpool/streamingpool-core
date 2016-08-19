@@ -22,10 +22,10 @@ import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 
-public class AkkaStreamFactory implements AkkaSourceProvidingService, StreamFactory {
+public class AkkaStreamFactory <T> implements AkkaSourceProvidingService<T>, StreamFactory<T, StreamId<T>> {
 
     private final Materializer materializer;
-    private final ConcurrentMap<StreamId<?>, Source<?, ?>> suppliers = new ConcurrentHashMap<>();
+    private final ConcurrentMap<StreamId<T>, Source<T, ?>> suppliers = new ConcurrentHashMap<>();
 
     public AkkaStreamFactory(Materializer materializer) {
         this.materializer = Objects.requireNonNull(materializer, "materializer must not be null.");
@@ -33,8 +33,8 @@ public class AkkaStreamFactory implements AkkaSourceProvidingService, StreamFact
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> ReactiveStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
-        Source<T, ?> source = (Source<T, ?>) suppliers.get(newId);
+    public ReactiveStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
+        Source<T, ?> source = suppliers.get(newId);
         if (source == null) {
             return null;
         }
@@ -43,7 +43,7 @@ public class AkkaStreamFactory implements AkkaSourceProvidingService, StreamFact
     }
 
     @Override
-    public <T> void provide(StreamId<T> id, Source<T, ?> akkaSource) {
+    public void provide(StreamId<T> id, Source<T, ?> akkaSource) {
         requireNonNull(id, "id must not be null!");
         requireNonNull(akkaSource, "akkaSource must not be null!");
 

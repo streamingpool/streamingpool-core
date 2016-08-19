@@ -19,21 +19,16 @@ import rx.Observable;
  * @see CombineWithLatestStreamIdStreamFactoryTest
  * @author acalia
  */
-public class CombineWithLatestStreamFactory implements StreamFactory {
+public class CombineWithLatestStreamFactory <D> implements StreamFactory<D, CombineWithLatestStreamId<D, ?>> {
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <D> ReactiveStream<D> create(StreamId<D> id, DiscoveryService discoveryService) {
-        if (!(id instanceof CombineWithLatestStreamId)) {
-            return null;
-        }
-
-        return combineWithLatestStream((CombineWithLatestStreamId<D, ?>) id);
+    public ReactiveStream<D> create(CombineWithLatestStreamId<D, ?> id, DiscoveryService discoveryService) {
+        return combineWithLatestStream(id);
     }
 
-    private <D, T> ReactiveStream<D> combineWithLatestStream(CombineWithLatestStreamId<D, T> streamId) {
+    private ReactiveStream<D> combineWithLatestStream(CombineWithLatestStreamId<D, ?> streamId) {
         Observable<D> data = ReactiveStreams.rxFrom(streamId.dataStream());
-        Observable<T> trigger = ReactiveStreams.rxFrom(streamId.triggerStream());
+        Observable<?> trigger = ReactiveStreams.rxFrom(streamId.triggerStream());
         /*
          * The resulting Observable from withLatestFrom seems to not be compatible with rxjava-reactive-streams
          * adapters. Introducing an "useless" buffer in order to be able to transform to ReactiveStream interfaces with
@@ -44,5 +39,4 @@ public class CombineWithLatestStreamFactory implements StreamFactory {
                 .flatMap(Observable::from);
         return ReactiveStreams.fromRx(combinedWithLatest);
     }
-
 }

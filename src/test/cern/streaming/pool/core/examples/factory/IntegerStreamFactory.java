@@ -15,20 +15,12 @@ import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 
 @Component
-public class IntegerStreamFactory implements StreamFactory {
+public class IntegerStreamFactory implements StreamFactory<Integer, IntegerRangeId> {
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> ReactiveStream<T> create(StreamId<T> id, DiscoveryService discoveryService) {
-        if (!(id instanceof IntegerRangeId)) {
-            return null;
-        }
-        
-        IntegerRangeId integerId = (IntegerRangeId) id;
-        int from = integerId.getFrom();
-        int to = integerId.getTo();
-  
-        return (ReactiveStream<T>) fromRx(range(from, to - from));
+    public ReactiveStream<Integer> create(IntegerRangeId id, DiscoveryService discoveryService) {
+        int from = id.getFrom();
+        int to = id.getTo();
+        return fromRx(range(from, to - from));
     }
-
 }

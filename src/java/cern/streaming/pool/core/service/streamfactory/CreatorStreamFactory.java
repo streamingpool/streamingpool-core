@@ -26,28 +26,27 @@ import cern.streaming.pool.core.service.impl.ImmutableIdentifiedStreamCreator;
  * @see StreamCreator
  * @see ImmutableIdentifiedStreamCreator
  */
-public class CreatorStreamFactory implements CreatorProvidingService, StreamFactory {
+public class CreatorStreamFactory<T> implements CreatorProvidingService<T>, StreamFactory<T, StreamId<T>> {
 
-    private final ConcurrentMap<StreamId<?>, StreamCreator<?>> suppliers = new ConcurrentHashMap<>();
+    private final ConcurrentMap<StreamId<T>, StreamCreator<T>> suppliers = new ConcurrentHashMap<>();
 
-    public CreatorStreamFactory(Iterable<IdentifiedStreamCreator<?>> identifiedCreators) {
+    public CreatorStreamFactory(Iterable<IdentifiedStreamCreator<T>> identifiedCreators) {
         requireNonNull(identifiedCreators, "identifiedStreamCreators must not be null.");
 
         identifiedCreators.forEach(this::register);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> ReactiveStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
-        StreamCreator<?> streamCreator = suppliers.get(newId);
+    public ReactiveStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
+        StreamCreator<T> streamCreator = suppliers.get(newId);
         if (streamCreator == null) {
             return null;
         }
-        return (ReactiveStream<T>) streamCreator.createWith(discoveryService);
+        return streamCreator.createWith(discoveryService);
     }
 
     @Override
-    public <T> void provide(StreamId<T> id, StreamCreator<T> streamSupplier) {
+    public void provide(StreamId<T> id, StreamCreator<T> streamSupplier) {
         requireNonNull(id, "id must not be null!");
         requireNonNull(streamSupplier, "stream suplier must not be null!");
 
@@ -57,7 +56,7 @@ public class CreatorStreamFactory implements CreatorProvidingService, StreamFact
         }
     }
 
-    private <T> void register(IdentifiedStreamCreator<T> identifiedCreator) {
+    private void register(IdentifiedStreamCreator<T> identifiedCreator) {
         suppliers.put(identifiedCreator.getId(), identifiedCreator.getCreator());
     }
 }
