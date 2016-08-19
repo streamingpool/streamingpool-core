@@ -7,10 +7,7 @@ package cern.streaming.pool.core.service.impl;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
@@ -109,10 +106,9 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
     private <T> ReactiveStream<T> createFromFactories(StreamId<T> newId) {
         for (StreamFactory factory : factories) {
-            ReactiveStream<T> stream = factory.create(newId, cloneTrackKeepingDiscoveryServiceIncluding(newId));
-            if (stream != null) {
+            if(factory.canCreate(newId)) {
                 LOGGER.debug("Stream of id '{}' was created by factory '{}'.", newId, factory);
-                return stream;
+                return factory.create(newId, cloneTrackKeepingDiscoveryServiceIncluding(newId));
             }
         }
         return null;

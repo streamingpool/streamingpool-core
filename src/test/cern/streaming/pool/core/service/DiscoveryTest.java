@@ -8,6 +8,7 @@ import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,9 +30,7 @@ public class DiscoveryTest {
     @Test(expected = CycleInStreamDiscoveryDetectedException.class)
     public void testDiscoveryLoop() {
         StreamId<String> id = mockStreamId();
-
         StreamFactory factory = StreamFactoryMock.newFactory(String.class).withIdDiscoverAnother(id, id).build();
-
         prepareDiscoveryService(singletonList(factory)).discover(id);
     }
 

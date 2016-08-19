@@ -32,7 +32,6 @@ public class AkkaStreamFactory <T> implements AkkaSourceProvidingService<T>, Str
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public ReactiveStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
         Source<T, ?> source = suppliers.get(newId);
         if (source == null) {

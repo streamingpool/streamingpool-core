@@ -91,6 +91,23 @@ public class StreamFactoryMock<T> {
      */
     public StreamFactory build() {
         final StreamFactory factoryMock = mock(StreamFactory.class);
+        when(factoryMock.canCreate(any())).thenAnswer(args -> {
+            StreamId<T> streamId = args.getArgumentAt(0, StreamId.class);
+
+            if (withIdDiscover.containsKey(streamId)) {
+                return true;
+            }
+
+            if (withIdProvideStreamWithValue.containsKey(streamId)) {
+                return true;
+            }
+
+            if (withIdInvoke.containsKey(streamId)) {
+                return true;
+            }
+            return false;
+        });
+
         when(factoryMock.create(any(), any())).thenAnswer(args -> {
             @SuppressWarnings("unchecked")
             StreamId<T> streamId = args.getArgumentAt(0, StreamId.class);

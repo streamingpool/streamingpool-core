@@ -52,6 +52,11 @@ public class OverlapBufferStreamFactory <T, U> implements StreamFactory <List<T>
         return fromRx(bufferStream);
     }
 
+    @Override
+    public boolean canCreate(StreamId id) {
+        return id instanceof OverlapBufferStreamId;
+    }
+
     private Observable<Object> closingStreamFor(Object opening, Observable<U> endStream, Duration timeout) {
         Observable<U> mathingEndStream = endStream.filter(opening::equals);
         Observable<Long> timeoutStream = Observable.timer(timeout.toMillis(), MILLISECONDS);

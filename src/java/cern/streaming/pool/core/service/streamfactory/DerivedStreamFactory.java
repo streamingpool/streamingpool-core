@@ -39,4 +39,8 @@ public class DerivedStreamFactory <T> implements StreamFactory<T, DerivedStreamI
         return ReactiveStreams.fromRx(derivedStream);
     }
 
+    @Override
+    public boolean canCreate(StreamId id) {
+        return id instanceof DerivedStreamId;
+    }
 }

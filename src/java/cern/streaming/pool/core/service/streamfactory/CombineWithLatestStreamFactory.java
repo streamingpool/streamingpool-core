@@ -26,6 +26,11 @@ public class CombineWithLatestStreamFactory <D> implements StreamFactory<D, Comb
         return combineWithLatestStream(id);
     }
 
+    @Override
+    public boolean canCreate(StreamId id) {
+        return id instanceof CombineWithLatestStreamId;
+    }
+
     private ReactiveStream<D> combineWithLatestStream(CombineWithLatestStreamId<D, ?> streamId) {
         Observable<D> data = ReactiveStreams.rxFrom(streamId.dataStream());
         Observable<?> trigger = ReactiveStreams.rxFrom(streamId.triggerStream());

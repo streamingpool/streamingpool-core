@@ -31,4 +31,8 @@ public class DelayedStreamFactory <T> implements StreamFactory <T, DelayedStream
         return fromRx(rxFrom(discoveryService.discover(target)).delay(delay.toMillis(), MILLISECONDS));
     }
 
+    @Override
+    public boolean canCreate(StreamId id) {
+        return id instanceof DelayedStreamId;
+    }
 }
