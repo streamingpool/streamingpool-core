@@ -7,6 +7,9 @@ package cern.streaming.pool.core.service.streamfactory;
 import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static rx.Observable.merge;
+import static rx.Observable.never;
+import static rx.Observable.timer;
 
 import java.time.Duration;
 import java.util.List;
@@ -23,7 +26,7 @@ import rx.observables.ConnectableObservable;
  * Factory for {@link OverlapBufferStreamId}
  * 
  * @see OverlapBufferStreamId
- * @author acalia 
+ * @author acalia
  * @param <T> type of the stream data items
  * @param <U> type of the start and stop streams
  */
@@ -38,14 +41,14 @@ public class OverlapBufferStreamFactory <T, U> implements StreamFactory <List<T>
         
         Duration timeout = id.timeout();
 
-        ConnectableObservable<U> startStream = rxFrom(discoveryService.discover(startId)).share().publish();
-        ConnectableObservable<U> endStream = rxFrom(discoveryService.discover(endId)).share().publish();
-        ConnectableObservable<T> expressionStream = rxFrom(discoveryService.discover(sourceId)).publish();
+        ConnectableObservable<U> startStream = rxFrom(discoveryService.discover(startId)).publish();
+        ConnectableObservable<U> endStream = rxFrom(discoveryService.discover(endId)).publish();
+        ConnectableObservable<T> sourceStream = rxFrom(discoveryService.discover(sourceId)).publish();
 
-        Observable<List<T>> bufferStream = expressionStream.buffer(startStream,
+        Observable<List<T>> bufferStream = sourceStream.buffer(startStream,
                 opening -> closingStreamFor(opening, endStream, timeout));
 
-        expressionStream.connect();
+        sourceStream.connect();
         endStream.connect();
         startStream.connect();
 
@@ -57,9 +60,17 @@ public class OverlapBufferStreamFactory <T, U> implements StreamFactory <List<T>
         return id instanceof OverlapBufferStreamId;
     }
 
-    private Observable<Object> closingStreamFor(Object opening, Observable<U> endStream, Duration timeout) {
-        Observable<U> mathingEndStream = endStream.filter(opening::equals);
-        Observable<Long> timeoutStream = Observable.timer(timeout.toMillis(), MILLISECONDS);
-        return Observable.merge(mathingEndStream, timeoutStream).take(1);
+    private Observable<?> closingStreamFor(Object opening, Observable<?> endStream, Duration timeout) {
+        Observable<?> matchingEndStream = endStream.filter(opening::equals);
+        Observable<?> timeoutStream = timeoutStreamOf(timeout);
+
+        return merge(matchingEndStream, timeoutStream).take(1);
+    }
+
+    private Observable<?> timeoutStreamOf(Duration timeout) {
+        if (timeout.isNegative()) {
+            return never();
+        }
+        return timer(timeout.toMillis(), MILLISECONDS);
     }
 }

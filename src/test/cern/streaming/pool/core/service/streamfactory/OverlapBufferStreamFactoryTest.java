@@ -13,7 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static rx.Observable.interval;
 import static rx.Observable.just;
+import static rx.Observable.merge;
 import static rx.Observable.never;
+import static rx.Observable.timer;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -22,6 +24,8 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.LocalPool;
@@ -29,12 +33,11 @@ import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory
 import cern.streaming.pool.core.service.streamid.OverlapBufferStreamId;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import rx.Observable;
+import rx.observables.ConnectableObservable;
 
-public class OverlapBufferStreamIdStreamFactoryTest {
+public class OverlapBufferStreamFactoryTest {
 
-    private static final Observable<Object> EVERY_3_SEC_OBJECTS = interval(3, SECONDS).cast(Object.class);
-    private static final Observable<Long> EVERY_SEC_INTERVAL_10_ELEMENTS = interval(1, SECONDS).take(10);
-    private static final Duration NO_TIME_OUT = Duration.ofDays(5);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OverlapBufferStreamFactoryTest.class);
 
     private OverlapBufferStreamFactory factory;
     private LocalPool pool;
@@ -46,43 +49,76 @@ public class OverlapBufferStreamIdStreamFactoryTest {
     }
 
     @Test
-    public void dataStreamEndsBeforeEndStreamEmits() {
-        StreamId<Long> sourceId = registerRx(EVERY_SEC_INTERVAL_10_ELEMENTS);
+    public void ifStartEmitsOnlyOnceBeforeDataStreamNeverEnds() throws InterruptedException {
+        StreamId<Long> sourceId = registerRx(just(0L));
         StreamId<Object> startId = registerRx(just(new Object()));
         StreamId<Object> endId = registerRx(never());
 
-        Duration timeout = NO_TIME_OUT;
+        CountDownLatch sync = new CountDownLatch(1);
+        // rxFrom(pool.discover(OverlapBufferStreamId.of(sourceId, startId, endId))).doOnTerminate(sync::countDown)
+        // .subscribe(System.out::println);
 
-        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, startId, endId, timeout));
+        ConnectableObservable<?> sourceStream = just(0L).publish();
+        ConnectableObservable<?> startStream = just(new Object()).publish();
 
-        assertThat(values).isEmpty();
+        sourceStream.buffer(startStream, opening -> never()).doOnTerminate(sync::countDown)
+                .subscribe(System.out::println);
+        
+        sourceStream.connect();
+        startStream.connect();
+
+        sync.await(5, SECONDS);
+
+        assertThat(sync.getCount()).isEqualTo(0L);
+    }
+
+    private Observable<?> closingStreamFor(Object opening, Observable<?> endStream, Duration timeout) {
+        Observable<?> matchingEndStream = endStream.filter(opening::equals);
+        Observable<?> timeoutStream = timeoutStreamOf(timeout);
+
+        return merge(matchingEndStream, timeoutStream).take(1);
+    }
+
+    private Observable<?> timeoutStreamOf(Duration timeout) {
+        if (timeout.isNegative()) {
+            return never();
+        }
+        return timer(timeout.toMillis(), MILLISECONDS);
     }
 
     @Test
-    public void dataStreamEndsBeforeStartStreamEmits() {
-        StreamId<Long> sourceId = registerRx(EVERY_SEC_INTERVAL_10_ELEMENTS);
+    public void dataStreamEndsBeforeEndStreamEmitsShouldBufferEverything() {
+        StreamId<Long> sourceId = registerRx(oneSecondIntervalOfLength(5));
+        StreamId<Object> startId = registerRx(merge(just(new Object()).delay(2, SECONDS), never()));
+        StreamId<Object> endId = registerRx(never());
+
+        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, startId, endId));
+
+        assertThat(values).hasSize(1);
+        assertThat(values.get(0)).containsExactly(2L, 3L, 4L);
+    }
+
+    @Test
+    public void dataStreamEndsBeforeStartStreamEmitsShouldNotEmitEnything() {
+        StreamId<Long> sourceId = registerRx(oneSecondIntervalOfLength(10));
         StreamId<Object> startId = registerRx(never());
         StreamId<Object> endId = registerRx(never());
 
-        Duration timeout = NO_TIME_OUT;
-
-        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, startId, endId, timeout));
+        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, startId, endId));
 
         assertThat(values).isEmpty();
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void bufferEndsWithDelayedStart() {
-        Observable<Object> startStream = shiftedBy500Ms(EVERY_3_SEC_OBJECTS);
+    public void bufferEndsStreamUsingDelayedStart() {
+        Observable<Object> startStream = shiftedBy500Ms(ofObject(interval(3, SECONDS)));
 
-        StreamId<Long> sourceId = registerRx(EVERY_SEC_INTERVAL_10_ELEMENTS);
+        StreamId<Long> sourceId = registerRx(oneSecondIntervalOfLength(10));
         StreamId<Object> startId = registerRx(startStream);
         StreamId<Object> endId = registerRx(startStream.delay(3, SECONDS));
 
-        Duration timeout = NO_TIME_OUT;
-
-        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, startId, endId, timeout));
+        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, startId, endId));
 
         assertThat(values).contains(Arrays.asList(3L, 4L, 5L));
         assertThat(values).contains(Arrays.asList(6L, 7L, 8L));
@@ -92,11 +128,11 @@ public class OverlapBufferStreamIdStreamFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void bufferEndsWithTimeout() {
-        Observable<Object> startStream = shiftedBy500Ms(EVERY_3_SEC_OBJECTS);
+        Observable<Object> startStream = shiftedBy500Ms(ofObject(interval(3, SECONDS)));
 
-        StreamId<Long> sourceId = registerRx(EVERY_SEC_INTERVAL_10_ELEMENTS);
+        StreamId<Long> sourceId = registerRx(oneSecondIntervalOfLength(10));
         StreamId<Object> startId = registerRx(startStream);
-        StreamId<Object> endId = registerRx(startStream.delay(10, SECONDS));
+        StreamId<Object> endId = registerRx(never());
 
         Duration timeout = Duration.ofSeconds(5);
 
@@ -108,8 +144,8 @@ public class OverlapBufferStreamIdStreamFactoryTest {
     }
 
     @Test
-    public void bufferOverlap() {
-        StreamId<Long> sourceId = registerRx(EVERY_SEC_INTERVAL_10_ELEMENTS);
+    public void bufferCompletelyOverlap() {
+        StreamId<Long> sourceId = registerRx(oneSecondIntervalOfLength(10));
         StreamId<Object> startId = registerRx(shiftedBy500Ms(just(new Object(), new Object()).delay(5, SECONDS)));
         StreamId<Object> endId = registerRx(never());
 
@@ -119,6 +155,10 @@ public class OverlapBufferStreamIdStreamFactoryTest {
 
         assertThat(values).hasSize(2);
         assertThat(values.get(0)).containsExactlyElementsOf(values.get(1));
+    }
+
+    private Observable<Long> oneSecondIntervalOfLength(int length) {
+        return interval(1, SECONDS).take(length);
     }
 
     private List<List<Long>> subscribeAndWait(OverlapBufferStreamId<Long, Object> bufferId) {
@@ -146,6 +186,10 @@ public class OverlapBufferStreamIdStreamFactoryTest {
      */
     private <T> Observable<T> shiftedBy500Ms(Observable<T> source) {
         return source.delay(500, MILLISECONDS);
+    }
+
+    private Observable<Object> ofObject(Observable<?> source) {
+        return source.cast(Object.class);
     }
 
 }

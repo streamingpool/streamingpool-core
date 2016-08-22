@@ -12,9 +12,12 @@ import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory
 
 /**
  * Provide an overlapping buffer for the specified {@link #sourceId}. The buffer begins whenever {@link #startId} stream
- * emits an item and ends when the same item is emitted on the {@link #endId} stream. The behavior is very similar to
- * the {@code  buffer(Observable<TOpening> bufferOpenings, Func1<TOpening, Observable<TClosing>> bufferClosingSelector)}
- * RxJava 1 operator.
+ * emits an item and ends when the same item is emitted on the {@link #endId} stream. Optionally, it is possible to
+ * specify a timeout for the closing stream in case it does not emit items. In the case of a timeout, the buffers will
+ * be closed by whichever emit first, {@link #endId} or timout.
+ * <p>
+ * The behavior is very similar to the {@code  buffer(Observable<TOpening> bufferOpenings, Func1<TOpening, Observable
+ * <TClosing>> bufferClosingSelector)} RxJava 1 operator.
  * 
  * @see OverlapBufferStreamFactory
  * @see <a href="http://reactivex.io/RxJava/javadoc/rx/Observable.html#buffer(rx.Observable,%20rx.functions.Func1)">
@@ -25,6 +28,8 @@ import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory
  */
 public class OverlapBufferStreamId<T, U> implements StreamId<List<T>> {
 
+    private static final Duration NO_TIMEOUT = Duration.ofSeconds(-1);
+
     private final StreamId<T> sourceId;
     private final StreamId<U> startId;
     private final StreamId<U> endId;
@@ -33,6 +38,10 @@ public class OverlapBufferStreamId<T, U> implements StreamId<List<T>> {
     public static <T, U> OverlapBufferStreamId<T, U> of(StreamId<T> sourceId, StreamId<U> startId, StreamId<U> endId,
             Duration timeout) {
         return new OverlapBufferStreamId<>(sourceId, startId, endId, timeout);
+    }
+
+    public static <T, U> OverlapBufferStreamId<T, U> of(StreamId<T> sourceId, StreamId<U> startId, StreamId<U> endId) {
+        return new OverlapBufferStreamId<>(sourceId, startId, endId, NO_TIMEOUT);
     }
 
     private OverlapBufferStreamId(StreamId<T> sourceId, StreamId<U> startId, StreamId<U> endId, Duration timeout) {
