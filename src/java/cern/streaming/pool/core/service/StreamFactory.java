@@ -22,7 +22,6 @@ package cern.streaming.pool.core.service;
  * @author maosinsk
  * @author timartin
  */
-@FunctionalInterface
 public interface StreamFactory <X, T extends StreamId<X>>{
 
     /***
@@ -45,9 +44,7 @@ public interface StreamFactory <X, T extends StreamId<X>>{
      * can create a {@link ReactiveStream}.
      *
      * @param id the {@link StreamId} of the {@link ReactiveStream} to be created.
-     * @return
+     * @return true if the factory can create a @{ReactiveStream} out of the provided @{link StreamId}, false, otherswise.
      */
-    default boolean canCreate(StreamId id) {
-        return id instanceof StreamId;
-    }
+    boolean canCreate(StreamId<?> id);
 }

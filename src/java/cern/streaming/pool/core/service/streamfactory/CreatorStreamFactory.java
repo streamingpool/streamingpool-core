@@ -46,6 +46,11 @@ public class CreatorStreamFactory<T> implements CreatorProvidingService<T>, Stre
     }
 
     @Override
+    public boolean canCreate(StreamId<?> id) {
+        return id != null;
+    }
+
+    @Override
     public void provide(StreamId<T> id, StreamCreator<T> streamSupplier) {
         requireNonNull(id, "id must not be null!");
         requireNonNull(streamSupplier, "stream suplier must not be null!");

@@ -42,6 +42,11 @@ public class AkkaStreamFactory <T> implements AkkaSourceProvidingService<T>, Str
     }
 
     @Override
+    public boolean canCreate(StreamId<?> id) {
+        return id != null;
+    }
+
+    @Override
     public void provide(StreamId<T> id, Source<T, ?> akkaSource) {
         requireNonNull(id, "id must not be null!");
         requireNonNull(akkaSource, "akkaSource must not be null!");

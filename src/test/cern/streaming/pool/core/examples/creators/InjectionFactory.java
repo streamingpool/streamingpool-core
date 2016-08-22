@@ -25,4 +25,9 @@ public class InjectionFactory <T> implements StreamFactory <T, StreamId<T>> {
                 Observable.interval(1, SECONDS).map(num -> new InjectionDomainObject("Injection number " + num)));
     }
 
+    @Override
+    public boolean canCreate(StreamId<?> id) {
+        return id != null;
+    }
+
 }

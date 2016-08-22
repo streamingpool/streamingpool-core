@@ -23,4 +23,9 @@ public class IntegerStreamFactory implements StreamFactory<Integer, IntegerRange
         int to = id.getTo();
         return fromRx(range(from, to - from));
     }
+
+    @Override
+    public boolean canCreate(StreamId<?> id) {
+        return id != null;
+    }
 }
