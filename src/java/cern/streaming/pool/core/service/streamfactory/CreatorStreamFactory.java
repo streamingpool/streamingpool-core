@@ -47,7 +47,10 @@ public class CreatorStreamFactory<T> implements CreatorProvidingService<T>, Stre
 
     @Override
     public boolean canCreate(StreamId<?> id) {
-        return id != null;
+        if(id != null) {
+            return suppliers.get(id) != null;
+        }
+        return false;
     }
 
     @Override
