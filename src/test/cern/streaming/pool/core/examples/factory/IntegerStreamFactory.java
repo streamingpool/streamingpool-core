@@ -26,6 +26,6 @@ public class IntegerStreamFactory implements StreamFactory<Integer, IntegerRange
 
     @Override
     public boolean canCreate(StreamId<?> id) {
-        return id != null;
+        return id instanceof IntegerRangeId;
     }
 }

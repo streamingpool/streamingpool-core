@@ -7,11 +7,11 @@ package cern.streaming.pool.core.service.impl;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import cern.streaming.pool.core.service.CycleInStreamDiscoveryDetectedException;
 import cern.streaming.pool.core.service.DiscoveryService;
@@ -24,8 +24,6 @@ import cern.streaming.pool.core.service.StreamId;
  * cycles. Also, it is able to detect recursive discoveries from multiple threads, which is not allowed.
  */
 public class TrackKeepingDiscoveryService implements DiscoveryService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(TrackKeepingDiscoveryService.class);
 
     private final Set<StreamId<?>> idsOfStreamsUnderCreation;
     private final List<StreamFactory> factories;
@@ -104,12 +102,21 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         return new TrackKeepingDiscoveryService(factories, activeStreams, newSet, contextOfExecution);
     }
 
+    @SuppressWarnings("unchecked")
     private <T> ReactiveStream<T> createFromFactories(StreamId<T> newId) {
-        for (StreamFactory factory : factories) {
-            if(factory.canCreate(newId)) {
-                LOGGER.debug("Stream of id '{}' was created by factory '{}'.", newId, factory);
-                return factory.create(newId, cloneTrackKeepingDiscoveryServiceIncluding(newId));
+        for (StreamFactory<?, StreamId<?>> factory : factories) {
+
+            if (!factory.canCreate(newId)) {
+                continue;
             }
+
+            ReactiveStream<?> stream = factory.create(newId, cloneTrackKeepingDiscoveryServiceIncluding(newId));
+            if (stream == null) {
+                throw new IllegalStateException(format(
+                        "Factory %s said it can create stream id %s but returned a null stream", factory, newId));
+            }
+
+            return (ReactiveStream<T>) stream;
         }
         return null;
     }
