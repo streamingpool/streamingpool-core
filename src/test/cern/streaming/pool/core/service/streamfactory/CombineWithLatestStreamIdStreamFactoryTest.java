@@ -35,33 +35,33 @@ public class CombineWithLatestStreamIdStreamFactoryTest {
     }
 
     /* @formatter:off
-     * Trigger +--------------T--------------T--------------T--------------T--------------T-------------------->
-     * Data    +---------0---------1---------2---------3---------4---------5---------6---------7---------8----->
+     * Trigger +--------------T---------T---------T---------T----------------------------------------------->
+     * Data    +---------0---------1---------2---------3---------4---------5---------6---------7---------8-->
      *
-     * Result  +--------------0--------------2--------------3--------------5--------------6-------------------->
+     * Result  +--------------0---------1---------2--------3------------------------------------------------>
      * @formatter:on
      */
     @Test
     public void test1() {
-        Observable<Long> trigger = Observable.interval(1500, MILLISECONDS).take(5);
+        Observable<Long> trigger = Observable.interval(1000, MILLISECONDS).delay(500, MILLISECONDS).take(4);
         Observable<Long> data = Observable.interval(1000, MILLISECONDS);
 
         subscribeAndWait(data, trigger);
 
-        assertThat(subscriber.getValues()).containsExactly(0L, 2L, 3L, 5L, 6L);
+        assertThat(subscriber.getValues()).containsExactly(0L, 1L, 2L, 3L);
     }
 
     /* @formatter:off
-     * Trigger +----T------------------------T--------------T--------------T-------------------T--------------->
+     * Trigger +----T-----------------------------T---------T-------------------T-------------------T---------->
      * Data    +---------0---------1---------2---------3---------4---------5---------6---------7---------8----->
      *
-     * Result  +-----------------------------2--------------3--------------5-------------------7--------------->
+     * Result  +----------------------------------2---------3-------------------5-------------------7---------->
      * @formatter:on
      */
     @Test
     public void test2() {
-        Observable<Long> trigger = Observable.merge(delayed(500), delayed(3000), delayed(4500), delayed(6500),
-                delayed(8000));
+        Observable<Long> trigger = Observable.merge(delayed(500), delayed(3500), delayed(4500), delayed(6500),
+                delayed(8500));
         Observable<Long> data = Observable.interval(1000, MILLISECONDS);
 
         subscribeAndWait(data, trigger);
