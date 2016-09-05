@@ -15,7 +15,6 @@ import static rx.Observable.interval;
 import static rx.Observable.just;
 import static rx.Observable.merge;
 import static rx.Observable.never;
-import static rx.Observable.timer;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -24,20 +23,15 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.LocalPool;
-import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory;
 import cern.streaming.pool.core.service.streamid.OverlapBufferStreamId;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import rx.Observable;
 import rx.observables.ConnectableObservable;
 
 public class OverlapBufferStreamFactoryTest {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OverlapBufferStreamFactoryTest.class);
 
     private OverlapBufferStreamFactory factory;
     private LocalPool pool;
@@ -50,13 +44,7 @@ public class OverlapBufferStreamFactoryTest {
 
     @Test
     public void ifStartEmitsOnlyOnceBeforeDataStreamNeverEnds() throws InterruptedException {
-        StreamId<Long> sourceId = registerRx(just(0L));
-        StreamId<Object> startId = registerRx(just(new Object()));
-        StreamId<Object> endId = registerRx(never());
-
         CountDownLatch sync = new CountDownLatch(1);
-        // rxFrom(pool.discover(OverlapBufferStreamId.of(sourceId, startId, endId))).doOnTerminate(sync::countDown)
-        // .subscribe(System.out::println);
 
         ConnectableObservable<?> sourceStream = just(0L).publish();
         ConnectableObservable<?> startStream = just(new Object()).publish();
@@ -70,20 +58,6 @@ public class OverlapBufferStreamFactoryTest {
         sync.await(5, SECONDS);
 
         assertThat(sync.getCount()).isEqualTo(0L);
-    }
-
-    private Observable<?> closingStreamFor(Object opening, Observable<?> endStream, Duration timeout) {
-        Observable<?> matchingEndStream = endStream.filter(opening::equals);
-        Observable<?> timeoutStream = timeoutStreamOf(timeout);
-
-        return merge(matchingEndStream, timeoutStream).take(1);
-    }
-
-    private Observable<?> timeoutStreamOf(Duration timeout) {
-        if (timeout.isNegative()) {
-            return never();
-        }
-        return timer(timeout.toMillis(), MILLISECONDS);
     }
 
     @Test

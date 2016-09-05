@@ -5,9 +5,11 @@
 package cern.streaming.pool.core.service.akka;
 
 import static akka.stream.javadsl.AsPublisher.WITH_FANOUT;
+import static cern.streaming.pool.core.service.util.ReactiveStreams.fromPublisher;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -20,34 +22,29 @@ import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
 
-public class AkkaStreamFactory <T> implements AkkaSourceProvidingService<T>, StreamFactory<T, StreamId<T>> {
+public class AkkaStreamFactory implements AkkaSourceProvidingService, StreamFactory {
 
     private final Materializer materializer;
-    private final ConcurrentMap<StreamId<T>, Source<T, ?>> suppliers = new ConcurrentHashMap<>();
+    private final ConcurrentMap<StreamId<?>, Source<?, ?>> suppliers = new ConcurrentHashMap<>();
 
     public AkkaStreamFactory(Materializer materializer) {
         this.materializer = Objects.requireNonNull(materializer, "materializer must not be null.");
     }
 
     @Override
-    public ReactiveStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
-        Source<T, ?> source = suppliers.get(newId);
+    @SuppressWarnings("unchecked")
+    public <T> Optional<ReactiveStream<T>> create(StreamId<T> newId, DiscoveryService discoveryService) {
+        Source<T, ?> source = (Source<T, ?>) suppliers.get(newId);
         if (source == null) {
-            return null;
+            return Optional.empty();
         }
         Sink<T, Publisher<T>> akkaSink = Sink.asPublisher(WITH_FANOUT);
-        return ReactiveStreams.fromPublisher(source.runWith(akkaSink, materializer));
+        return Optional.of(fromPublisher(source.runWith(akkaSink, materializer)));
     }
 
     @Override
-    public boolean canCreate(StreamId<?> id) {
-        return id != null;
-    }
-
-    @Override
-    public void provide(StreamId<T> id, Source<T, ?> akkaSource) {
+    public <T> void provide(StreamId<T> id, Source<T, ?> akkaSource) {
         requireNonNull(id, "id must not be null!");
         requireNonNull(akkaSource, "akkaSource must not be null!");
 

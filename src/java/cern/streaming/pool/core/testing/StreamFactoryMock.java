@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ import com.google.common.collect.Multimap;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
+import cern.streaming.pool.core.service.TypedStreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import rx.Observable;
@@ -87,46 +89,29 @@ public class StreamFactoryMock<T> {
     }
 
     /**
-     * End method that will actually create the mocked {@link StreamFactory}
+     * End method that will actually create the mocked {@link TypedStreamFactory}
      */
     public StreamFactory build() {
         final StreamFactory factoryMock = mock(StreamFactory.class);
-        when(factoryMock.canCreate(any())).thenAnswer(args -> {
-            StreamId<T> streamId = args.getArgumentAt(0, StreamId.class);
-
-            if (withIdDiscover.containsKey(streamId)) {
-                return true;
-            }
-
-            if (withIdProvideStreamWithValue.containsKey(streamId)) {
-                return true;
-            }
-
-            if (withIdInvoke.containsKey(streamId)) {
-                return true;
-            }
-            return false;
-        });
-
         when(factoryMock.create(any(), any())).thenAnswer(args -> {
             @SuppressWarnings("unchecked")
             StreamId<T> streamId = args.getArgumentAt(0, StreamId.class);
             DiscoveryService discovery = args.getArgumentAt(1, DiscoveryService.class);
 
             if (withIdDiscover.containsKey(streamId)) {
-                return fromRx(Observable.merge(withIdDiscover.get(streamId).stream().map(discovery::discover)
-                        .map(ReactiveStreams::rxFrom).collect(Collectors.toList())));
+                return Optional.of(fromRx(Observable.merge(withIdDiscover.get(streamId).stream().map(discovery::discover)
+                        .map(ReactiveStreams::rxFrom).collect(Collectors.toList()))));
             }
 
             if (withIdProvideStreamWithValue.containsKey(streamId)) {
-                return fromRx(Observable.just(withIdProvideStreamWithValue.get(streamId)));
+                return Optional.of(fromRx(Observable.just(withIdProvideStreamWithValue.get(streamId))));
             }
 
             if (withIdInvoke.containsKey(streamId)) {
-                return withIdInvoke.get(streamId).apply(streamId, discovery);
+                return Optional.of(withIdInvoke.get(streamId).apply(streamId, discovery));
             }
 
-            return null;
+            return Optional.empty();
         });
         return factoryMock;
     }

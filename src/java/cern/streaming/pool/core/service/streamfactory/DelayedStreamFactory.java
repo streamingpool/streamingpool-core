@@ -9,6 +9,7 @@ import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.time.Duration;
+import java.util.Optional;
 
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
@@ -22,17 +23,17 @@ import cern.streaming.pool.core.service.streamid.DelayedStreamId;
  * @see DelayedStreamId
  * @author acalia
  */
-public class DelayedStreamFactory <T> implements StreamFactory <T, DelayedStreamId<T>> {
+public class DelayedStreamFactory implements StreamFactory {
 
     @Override
-    public ReactiveStream<T> create(DelayedStreamId<T> id, DiscoveryService discoveryService) {
-        Duration delay = id.getDelay();
-        StreamId<T> target = id.getTarget();
-        return fromRx(rxFrom(discoveryService.discover(target)).delay(delay.toMillis(), MILLISECONDS));
+    public <Y> Optional<ReactiveStream<Y>> create(StreamId<Y> id, DiscoveryService discoveryService) {
+        if(!(id instanceof DelayedStreamId)) {
+            return Optional.empty();
+        }
+        DelayedStreamId<Y> delayedId = (DelayedStreamId<Y>) id;
+        Duration delay = delayedId.getDelay();
+        StreamId<Y> target = delayedId.getTarget();
+        return Optional.of(fromRx(rxFrom(discoveryService.discover(target)).delay(delay.toMillis(), MILLISECONDS)));
     }
 
-    @Override
-    public boolean canCreate(StreamId id) {
-        return id instanceof DelayedStreamId;
-    }
 }

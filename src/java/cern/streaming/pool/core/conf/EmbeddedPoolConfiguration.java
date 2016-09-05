@@ -6,7 +6,6 @@ package cern.streaming.pool.core.conf;
 
 import static cern.streaming.pool.core.util.MoreCollections.emptyIfNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import cern.streaming.pool.core.service.StreamFactory;
-import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.TypedStreamFactory;
 import cern.streaming.pool.core.service.impl.LocalPool;
 
 /**
@@ -23,7 +22,7 @@ import cern.streaming.pool.core.service.impl.LocalPool;
  * </p>
  * Dependency injection:
  * <ul>
- * <li>{@link StreamFactory}: Any additional Stream factory will be automatically plugged into the pool to be used for
+ * <li>{@link TypedStreamFactory}: Any additional Stream factory will be automatically plugged into the pool to be used for
  * stream discovery.
  * </ul>
  * 

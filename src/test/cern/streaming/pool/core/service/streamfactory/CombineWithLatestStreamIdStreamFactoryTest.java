@@ -102,8 +102,8 @@ public class CombineWithLatestStreamIdStreamFactoryTest {
     }
 
     private void subscribeAndWait(Observable<Long> data, Observable<Long> trigger) {
-        CombineWithLatestStreamId streamId = CombineWithLatestStreamId.of(fromRx(data), fromRx(trigger));
-        ReactiveStreams.publisherFrom(factory.create(streamId, null)).subscribe(subscriber);
+        StreamId<Long> streamId = CombineWithLatestStreamId.of(fromRx(data), fromRx(trigger));
+        ReactiveStreams.publisherFrom(factory.create(streamId, null).get()).subscribe(subscriber);
         subscriber.await();
     }
 

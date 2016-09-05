@@ -11,21 +11,20 @@ import org.springframework.stereotype.Component;
 
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
-import cern.streaming.pool.core.service.StreamFactory;
-import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.TypedStreamFactory;
 
 @Component
-public class IntegerStreamFactory implements StreamFactory<Integer, IntegerRangeId> {
+public class IntegerStreamFactory implements TypedStreamFactory<Integer, IntegerRangeId> {
 
     @Override
-    public ReactiveStream<Integer> create(IntegerRangeId id, DiscoveryService discoveryService) {
+    public ReactiveStream<Integer> createReactiveStream(IntegerRangeId id, DiscoveryService discoveryService) {
         int from = id.getFrom();
         int to = id.getTo();
         return fromRx(range(from, to - from));
     }
-
+    
     @Override
-    public boolean canCreate(StreamId<?> id) {
-        return id instanceof IntegerRangeId;
+    public Class<IntegerRangeId> streamIdClass() {
+        return IntegerRangeId.class;
     }
 }

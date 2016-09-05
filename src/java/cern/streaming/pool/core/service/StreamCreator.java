@@ -18,7 +18,7 @@ public interface StreamCreator<T> {
      * {@link ReactiveStream}s in order to combine them during the creation process.
      * </p>
      * <strong>NOTE</strong>: it is strongly discouraged the use of multiple threads inside this method (see
-     * {@link StreamFactory} documentation).
+     * {@link TypedStreamFactory} documentation).
      * 
      * @param discoveryService {@link DiscoveryService} which can be used by the factory to look up other streams
      *            ('upstream' of the one it will create)

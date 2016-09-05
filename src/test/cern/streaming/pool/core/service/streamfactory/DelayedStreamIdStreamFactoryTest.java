@@ -58,7 +58,7 @@ public class DelayedStreamIdStreamFactoryTest {
     }
 
     private Publisher<Integer> publisherFrom(DelayedStreamId<Integer> delayedId) {
-        return ReactiveStreams.publisherFrom(factory.create(delayedId, mockDiscoveryService()));
+        return ReactiveStreams.publisherFrom(factory.create(delayedId, mockDiscoveryService()).get());
     }
 
     private DiscoveryService mockDiscoveryService() {

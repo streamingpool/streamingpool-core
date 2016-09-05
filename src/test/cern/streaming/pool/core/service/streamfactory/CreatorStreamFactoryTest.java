@@ -4,7 +4,7 @@
 
 package cern.streaming.pool.core.service.streamfactory;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
@@ -47,14 +47,12 @@ public class CreatorStreamFactoryTest {
     
     @Test
     public void createUnavailableStream() {
-        ReactiveStream<?> stream = factory.create(new NamedStreamId<>("mysterystream"), discoveryService);
-        
-        assertEquals(null, stream);
+        assertFalse(factory.create(new NamedStreamId<>("mysterystream"), discoveryService).isPresent());
     }
     
     @Test
     public void createAvailableStream() {
-        ReactiveStream<?> stream = factory.create(ID_A, discoveryService);
+        ReactiveStream<?> stream = factory.create(ID_A, discoveryService).get();
         
         assertEquals(STREAM_A, stream);
     }
@@ -77,7 +75,7 @@ public class CreatorStreamFactoryTest {
     @Test
     public void provideNewSupplier() {
         factory.provide(ID_B, discovery -> STREAM_B);
-        ReactiveStream<?> stream = factory.create(ID_B, discoveryService);
+        ReactiveStream<?> stream = factory.create(ID_B, discoveryService).get();
         
         assertEquals(STREAM_B, stream);
     }

@@ -6,6 +6,8 @@ package cern.streaming.pool.core.service.streamfactory;
 
 import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,30 +19,30 @@ import cern.streaming.pool.core.service.streamid.DerivedStreamId;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import rx.Observable;
 
-public class DerivedStreamFactory <T> implements StreamFactory<T, DerivedStreamId<?, T>> {
+public class DerivedStreamFactory implements StreamFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DerivedStreamFactory.class);
 
     @Override
-    public ReactiveStream<T> create(DerivedStreamId<?, T> id, DiscoveryService discoveryService) {
-        return createDerivedStream(id, discoveryService);
+    public <T> Optional<ReactiveStream<T>> create(StreamId<T> id, DiscoveryService discoveryService) {
+        if (!(id instanceof DerivedStreamId)) {
+            return Optional.empty();
+        }
+        @SuppressWarnings("unchecked")
+        DerivedStreamId<?, T> derivedStreamId = (DerivedStreamId<?, T>) id;
+        return Optional.of(createDerivedStream(derivedStreamId, discoveryService));
     }
 
-    private <S> ReactiveStream<T> createDerivedStream(DerivedStreamId<S, T> id, DiscoveryService discoveryService) {
-        ReactiveStream<S> sourceStream = discoveryService.discover(id.sourceStreamId());
-        Observable<T> derivedStream = rxFrom(sourceStream).map((val) -> {
+    private <S, T> ReactiveStream<T> createDerivedStream(DerivedStreamId<S, T> id, DiscoveryService discoveryService) {
+        Observable<S> sourceStream = rxFrom(discoveryService.discover(id.sourceStreamId()));
+        Observable<T> derivedStream = sourceStream.map(val -> {
             try {
-                return id.conversion().apply(val);
+                return Optional.<T> of(id.conversion().apply(val));
             } catch (Exception e) {
                 LOGGER.error("Error while converting '" + val + "' by derived stream id '" + id + "'.", e);
-                return null;
+                return Optional.<T> empty();
             }
-        }).filter(v -> (v != null));
+        }).filter(Optional::isPresent).map(Optional::get);
         return ReactiveStreams.fromRx(derivedStream);
-    }
-
-    @Override
-    public boolean canCreate(StreamId id) {
-        return id instanceof DerivedStreamId;
     }
 }

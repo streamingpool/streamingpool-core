@@ -10,7 +10,7 @@ package cern.streaming.pool.core.service;
  * @see StreamCreator
  */
 @FunctionalInterface
-public interface CreatorProvidingService <T> {
+public interface CreatorProvidingService {
 
     /**
      * Provides a {@link StreamCreator} associated to the specified id.
@@ -19,6 +19,6 @@ public interface CreatorProvidingService <T> {
      * @param streamSupplier the {@link StreamCreator} that is able to create the {@link ReactiveStream} specified using
      *            the given id
      */
-    void provide(StreamId<T> id, StreamCreator<T> streamSupplier);
+    <T> void provide(StreamId<T> id, StreamCreator<T> streamSupplier);
 
 }

@@ -10,6 +10,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
@@ -96,27 +97,29 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         }
     }
 
-    private <T> TrackKeepingDiscoveryService cloneTrackKeepingDiscoveryServiceIncluding(StreamId<T> newId) {
+    private <T> TrackKeepingDiscoveryService cloneDiscoveryServiceIncluding(StreamId<T> newId) {
         Set<StreamId<?>> newSet = new HashSet<>(idsOfStreamsUnderCreation);
         newSet.add(newId);
         return new TrackKeepingDiscoveryService(factories, activeStreams, newSet, contextOfExecution);
     }
 
-    @SuppressWarnings("unchecked")
     private <T> ReactiveStream<T> createFromFactories(StreamId<T> newId) {
-        for (StreamFactory<?, StreamId<?>> factory : factories) {
+        for (StreamFactory factory : factories) {
+            Optional<ReactiveStream<T>> factoryResult = factory.create(newId, cloneDiscoveryServiceIncluding(newId));
 
-            if (!factory.canCreate(newId)) {
-                continue;
+            if (factoryResult == null) {
+                throw new IllegalStateException(
+                        format("Factory %s returned null instead of a valid Optional for the id %s", factory, newId));
             }
 
-            ReactiveStream<?> stream = factory.create(newId, cloneTrackKeepingDiscoveryServiceIncluding(newId));
-            if (stream == null) {
-                throw new IllegalStateException(format(
-                        "Factory %s said it can create stream id %s but returned a null stream", factory, newId));
+            if (factoryResult.isPresent()) {
+                ReactiveStream<T> stream = factoryResult.get();
+                if (stream == null) {
+                    throw new IllegalStateException(
+                            format("Factory %s returned a null stream for the id %s", factory, newId));
+                }
+                return stream;
             }
-
-            return (ReactiveStream<T>) stream;
         }
         return null;
     }

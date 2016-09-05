@@ -6,6 +6,7 @@ package cern.streaming.pool.core.service.streamfactory;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -14,47 +15,41 @@ import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamFactory;
+import cern.streaming.pool.core.service.TypedStreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
 import cern.streaming.pool.core.service.impl.ImmutableIdentifiedStreamCreator;
 
 /**
- * {@link StreamFactory} specifically designed to create {@link ReactiveStream}s using {@link StreamCreator}s. In order
+ * {@link TypedStreamFactory} specifically designed to create {@link ReactiveStream}s using {@link StreamCreator}s. In order
  * to use the right {@link StreamCreator} for creating the {@link ReactiveStream}, it uses
  * {@link ImmutableIdentifiedStreamCreator} to map a specific {@link StreamId} to the correspondent {@link StreamCreator}.
  * 
  * @see StreamCreator
  * @see ImmutableIdentifiedStreamCreator
  */
-public class CreatorStreamFactory<T> implements CreatorProvidingService<T>, StreamFactory<T, StreamId<T>> {
+public class CreatorStreamFactory implements CreatorProvidingService, StreamFactory {
 
-    private final ConcurrentMap<StreamId<T>, StreamCreator<T>> suppliers = new ConcurrentHashMap<>();
+    private final ConcurrentMap<StreamId<?>, StreamCreator<?>> suppliers = new ConcurrentHashMap<>();
 
-    public CreatorStreamFactory(Iterable<IdentifiedStreamCreator<T>> identifiedCreators) {
+    public CreatorStreamFactory(Iterable<IdentifiedStreamCreator<?>> identifiedCreators) {
         requireNonNull(identifiedCreators, "identifiedStreamCreators must not be null.");
 
         identifiedCreators.forEach(this::register);
     }
 
     @Override
-    public ReactiveStream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
-        StreamCreator<T> streamCreator = suppliers.get(newId);
+    @SuppressWarnings("unchecked")
+    public <T> Optional<ReactiveStream<T>> create(StreamId<T> newId, DiscoveryService discoveryService) {
+        StreamCreator<?> streamCreator = suppliers.get(newId);
         if (streamCreator == null) {
-            return null;
+            return Optional.empty();
         }
-        return streamCreator.createWith(discoveryService);
+        return Optional.of((ReactiveStream<T>) streamCreator.createWith(discoveryService));
     }
 
     @Override
-    public boolean canCreate(StreamId<?> id) {
-        if(id != null) {
-            return suppliers.get(id) != null;
-        }
-        return false;
-    }
-
-    @Override
-    public void provide(StreamId<T> id, StreamCreator<T> streamSupplier) {
+    public <T> void provide(StreamId<T> id, StreamCreator<T> streamSupplier) {
         requireNonNull(id, "id must not be null!");
         requireNonNull(streamSupplier, "stream suplier must not be null!");
 
@@ -64,7 +59,7 @@ public class CreatorStreamFactory<T> implements CreatorProvidingService<T>, Stre
         }
     }
 
-    private void register(IdentifiedStreamCreator<T> identifiedCreator) {
+    private <T> void register(IdentifiedStreamCreator<T> identifiedCreator) {
         suppliers.put(identifiedCreator.getId(), identifiedCreator.getCreator());
     }
 }

@@ -8,7 +8,6 @@ import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +19,7 @@ import cern.streaming.pool.core.service.rx.RxStreams;
 import cern.streaming.pool.core.testing.StreamFactoryMock;
 
 /**
- * Test for the discovery of Streams using {@link StreamFactory} and {@link LocalPool}.
+ * Test for the discovery of Streams using {@link TypedStreamFactory} and {@link LocalPool}.
  * 
  * @author acalia
  */

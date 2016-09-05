@@ -12,7 +12,7 @@ import static rx.Observable.never;
 import static rx.Observable.timer;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.Optional;
 
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
@@ -30,34 +30,36 @@ import rx.observables.ConnectableObservable;
  * @param <T> type of the stream data items
  * @param <U> type of the start and stop streams
  */
-public class OverlapBufferStreamFactory <T, U> implements StreamFactory <List<T>, OverlapBufferStreamId<T, U>> {
+public class OverlapBufferStreamFactory implements StreamFactory {
 
+    /* Manually checked */
+    @SuppressWarnings("unchecked")
     @Override
-    public ReactiveStream<List<T>> create(OverlapBufferStreamId id, DiscoveryService discoveryService) {
+    public <T> Optional<ReactiveStream<T>> create(StreamId<T> id, DiscoveryService discoveryService) {
+        if (!(id instanceof OverlapBufferStreamId)) {
+            return Optional.empty();
+        }
 
-        StreamId<U> startId = id.startId();
-        StreamId<U> endId = id.endId();
-        StreamId<T> sourceId = id.sourceId();
-        
-        Duration timeout = id.timeout();
+        OverlapBufferStreamId<?, ?> analysisId = (OverlapBufferStreamId<?, ?>) id;
 
-        ConnectableObservable<U> startStream = rxFrom(discoveryService.discover(startId)).publish();
-        ConnectableObservable<U> endStream = rxFrom(discoveryService.discover(endId)).publish();
-        ConnectableObservable<T> sourceStream = rxFrom(discoveryService.discover(sourceId)).publish();
+        StreamId<?> startId = analysisId.startId();
+        StreamId<?> endId = analysisId.endId();
+        StreamId<?> sourceId = analysisId.sourceId();
 
-        Observable<List<T>> bufferStream = sourceStream.buffer(startStream,
+        Duration timeout = analysisId.timeout();
+
+        ConnectableObservable<?> startStream = rxFrom(discoveryService.discover(startId)).publish();
+        ConnectableObservable<?> endStream = rxFrom(discoveryService.discover(endId)).publish();
+        ConnectableObservable<?> sourceStream = rxFrom(discoveryService.discover(sourceId)).publish();
+
+        Observable<?> bufferStream = sourceStream.buffer(startStream,
                 opening -> closingStreamFor(opening, endStream, timeout));
 
         sourceStream.connect();
         endStream.connect();
         startStream.connect();
 
-        return fromRx(bufferStream);
-    }
-
-    @Override
-    public boolean canCreate(StreamId id) {
-        return id instanceof OverlapBufferStreamId;
+        return Optional.of((ReactiveStream<T>) fromRx(bufferStream));
     }
 
     private Observable<?> closingStreamFor(Object opening, Observable<?> endStream, Duration timeout) {
