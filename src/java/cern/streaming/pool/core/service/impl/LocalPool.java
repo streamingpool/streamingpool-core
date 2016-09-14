@@ -16,8 +16,8 @@ import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ProvidingService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
-import cern.streaming.pool.core.service.TypedStreamFactory;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.TypedStreamFactory;
 
 /**
  * Local poll for the providing and discovery of {@link ReactiveStream} (this class is both a {@link DiscoveryService}
@@ -53,6 +53,7 @@ public class LocalPool implements DiscoveryService, ProvidingService {
 
     @Override
     public <T> ReactiveStream<T> discover(StreamId<T> id) {
+        requireNonNull(id, "Cannot discover a null id");
         return new TrackKeepingDiscoveryService(factories, activeStreams).discover(id);
     }
 
