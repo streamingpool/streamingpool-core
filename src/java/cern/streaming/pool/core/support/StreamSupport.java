@@ -13,7 +13,7 @@ import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamId;
 
 /**
- * Support interface for working with {@link ReactiveStream}s. Provides convenience and fluid methods. 
+ * Support interface for working with {@link ReactiveStream}s. Provides convenience and fluid methods.
  * 
  * @author acalia
  */
@@ -42,6 +42,20 @@ public interface StreamSupport {
             providingService.provide(id, reactStream);
         }
 
+        public StreamId<T> withUniqueStreamId() {
+            StreamId<T> uniqueStreamId = generateUniqueId();
+            this.as(uniqueStreamId);
+            return uniqueStreamId;
+        }
+
+        private static <T> StreamId<T> generateUniqueId() {
+            return new StreamId<T>() {
+                @Override
+                public String toString() {
+                    return "Generated unique StreamId from StreamSupport";
+                }
+            };
+        }
     }
 
     class OngoingLazyProviding<T> {

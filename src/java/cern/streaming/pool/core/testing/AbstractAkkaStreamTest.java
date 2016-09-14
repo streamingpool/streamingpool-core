@@ -13,12 +13,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import cern.streaming.pool.core.conf.AkkaStreamingConfiguration;
+import cern.streaming.pool.core.conf.DefaultStreamFactories;
 import cern.streaming.pool.core.conf.EmbeddedPoolConfiguration;
 import cern.streaming.pool.core.conf.StreamCreatorFactoryConfiguration;
 import cern.streaming.pool.core.support.AbstractAkkaStreamSupport;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { EmbeddedPoolConfiguration.class, AkkaStreamingConfiguration.class,
+        DefaultStreamFactories.class,
         StreamCreatorFactoryConfiguration.class }, loader = AnnotationConfigContextLoader.class)
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 public abstract class AbstractAkkaStreamTest extends AbstractAkkaStreamSupport {
