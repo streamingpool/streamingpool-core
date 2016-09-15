@@ -4,10 +4,11 @@
 
 package cern.streaming.pool.core.service.streamid;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.stream.CombineWithLatestStreamIdStreamTest;
 import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFactory;
 
 /**
@@ -15,7 +16,7 @@ import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFac
  * stream at the moment of each triggering event
  * 
  * @see CombineWithLatestStreamFactory
- * @see CombineWithLatestStreamIdStreamFactoryTest
+ * @see CombineWithLatestStreamIdStreamTest
  * @author acalia, caguiler
  * @param <D> Type of the original data stream
  * @param <T> Type of the trigger (not really relevant)
@@ -30,9 +31,8 @@ public class CombineWithLatestStreamId<D, T> implements StreamId<D> {
     }
 
     private CombineWithLatestStreamId(ReactiveStream<D> data, ReactiveStream<T> trigger) {
-        super();
-        this.trigger = Objects.requireNonNull(trigger);
-        this.data = Objects.requireNonNull(data);
+        this.data = requireNonNull(data, "data stream must not be null");
+        this.trigger = requireNonNull(trigger, "trigger stream must not be null");
     }
 
     public ReactiveStream<D> dataStream() {

@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.streamfactory;
+package cern.streaming.pool.core.service.stream;
 
 import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -23,7 +23,7 @@ import rx.Observable;
  * 
  * @author acalia
  */
-public class CombineWithLatestStreamIdStreamFactoryTest {
+public class CombineWithLatestStreamIdStreamTest {
 
     private CombineWithLatestStreamFactory factory;
     private BlockingTestSubscriber<Long> subscriber;

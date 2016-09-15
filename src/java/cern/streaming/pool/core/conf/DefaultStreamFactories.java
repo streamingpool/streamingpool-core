@@ -11,6 +11,7 @@ import cern.streaming.pool.core.service.TypedStreamFactory;
 import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFactory;
 import cern.streaming.pool.core.service.streamfactory.DelayedStreamFactory;
 import cern.streaming.pool.core.service.streamfactory.DerivedStreamFactory;
+import cern.streaming.pool.core.service.streamfactory.FilteredStreamFactory;
 import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory;
 
 /**
@@ -41,4 +42,9 @@ public class DefaultStreamFactories {
         return new OverlapBufferStreamFactory();
     }
 
+    @Bean
+    public FilteredStreamFactory filteredStreamFactory() {
+        return new FilteredStreamFactory();
+    }
+    
 }

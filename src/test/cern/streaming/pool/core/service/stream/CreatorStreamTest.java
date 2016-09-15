@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.streamfactory;
+package cern.streaming.pool.core.service.stream;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -27,7 +27,7 @@ import cern.streaming.pool.core.testing.NamedStreamId;
  * 
  * @author mgalilee
  */
-public class CreatorStreamFactoryTest {
+public class CreatorStreamTest {
 
     private static final StreamId<Object> ID_A = mock(StreamId.class);
     private static final StreamId<Object> ID_B = mock(StreamId.class);

@@ -25,6 +25,10 @@ public class DerivedStreamId<S, T> implements StreamId<T> {
     private final StreamId<S> sourceStreamId;
     private final Function<S, T> conversion;
 
+    public static <S, T> DerivedStreamId<S, T> derive(StreamId<S> sourceStreamId, Function<S, T> conversion) {
+        return new DerivedStreamId<>(sourceStreamId, conversion);
+    }
+
     public DerivedStreamId(StreamId<S> sourceStreamId, Function<S, T> conversion) {
         this.sourceStreamId = requireNonNull(sourceStreamId, "sourceStreamId must not be null");
         this.conversion = requireNonNull(conversion, "conversion must not be null");

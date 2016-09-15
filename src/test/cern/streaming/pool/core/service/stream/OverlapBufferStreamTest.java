@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.streamfactory;
+package cern.streaming.pool.core.service.stream;
 
 import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static cern.streaming.pool.core.service.util.ReactiveStreams.publisherFrom;
@@ -26,12 +26,13 @@ import org.junit.Test;
 
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.LocalPool;
+import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory;
 import cern.streaming.pool.core.service.streamid.OverlapBufferStreamId;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import rx.Observable;
 import rx.observables.ConnectableObservable;
 
-public class OverlapBufferStreamFactoryTest {
+public class OverlapBufferStreamTest {
 
     private OverlapBufferStreamFactory factory;
     private LocalPool pool;

@@ -2,7 +2,7 @@
  * Copyright (c) 2016 European Organisation for Nuclear Research (CERN), All Rights Reserved.
  */
 
-package cern.streaming.pool.core.service.streamfactory;
+package cern.streaming.pool.core.service.stream;
 
 import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +26,7 @@ import cern.streaming.pool.core.service.streamid.DelayedStreamId;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 
-public class DelayedStreamIdStreamFactoryTest {
+public class DelayedStreamIdStreamTest {
     private static final int SOURCE_VALUE = 1;
     @SuppressWarnings("unchecked")
     private static final StreamId<Integer> SOURCE_STREAM_ID = mock(StreamId.class);
@@ -46,7 +46,7 @@ public class DelayedStreamIdStreamFactoryTest {
         long delay = 2000;
         long deltaDelay = 500;
 
-        DelayedStreamId<Integer> delayedId = DelayedStreamId.of(SOURCE_STREAM_ID, Duration.ofMillis(delay));
+        DelayedStreamId<Integer> delayedId = DelayedStreamId.delayBy(SOURCE_STREAM_ID, Duration.ofMillis(delay));
         publisherFrom(delayedId).subscribe(subscriber);
 
         Instant before = Instant.now();

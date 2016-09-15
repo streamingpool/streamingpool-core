@@ -4,6 +4,8 @@
 
 package cern.streaming.pool.core.service.streamid;
 
+import static java.util.Objects.requireNonNull;
+
 import java.time.Duration;
 
 import cern.streaming.pool.core.service.StreamId;
@@ -21,14 +23,13 @@ public class DelayedStreamId<T> implements StreamId<T> {
     private final StreamId<T> target;
     private final Duration delay;
 
-    private DelayedStreamId(StreamId<T> target, Duration delay) {
-        super();
-        this.target = target;
-        this.delay = delay;
+    public static <T> DelayedStreamId<T> delayBy(StreamId<T> target, Duration delay) {
+        return new DelayedStreamId<>(target, delay);
     }
 
-    public static <T> DelayedStreamId<T> of(StreamId<T> target, Duration delay) {
-        return new DelayedStreamId<>(target, delay);
+    public DelayedStreamId(StreamId<T> target, Duration delay) {
+        this.target = requireNonNull(target, "target of the delay must not be null");
+        this.delay = requireNonNull(delay, "delay must not be null");
     }
 
     public StreamId<T> getTarget() {
