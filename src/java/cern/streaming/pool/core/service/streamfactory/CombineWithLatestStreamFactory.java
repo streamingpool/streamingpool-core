@@ -12,7 +12,6 @@ import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.stream.CombineWithLatestStreamIdStreamTest;
 import cern.streaming.pool.core.service.streamid.CombineWithLatestStreamId;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import rx.Observable;
@@ -21,7 +20,6 @@ import rx.Observable;
  * Factory for {@link CombineWithLatestStreamId}
  * 
  * @see CombineWithLatestStreamId
- * @see CombineWithLatestStreamIdStreamTest
  * @author acalia
  */
 public class CombineWithLatestStreamFactory implements StreamFactory {

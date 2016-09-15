@@ -7,7 +7,6 @@ package cern.streaming.pool.core.service.streamid;
 import static java.util.Objects.requireNonNull;
 
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.stream.CombineWithLatestStreamIdStreamTest;
 import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFactory;
 
 /**
@@ -15,7 +14,6 @@ import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFac
  * stream at the moment of each triggering event
  * 
  * @see CombineWithLatestStreamFactory
- * @see CombineWithLatestStreamIdStreamTest
  * @author acalia, caguiler
  * @param <D> Type of the original data stream
  * @param <T> Type of the trigger (not really relevant)

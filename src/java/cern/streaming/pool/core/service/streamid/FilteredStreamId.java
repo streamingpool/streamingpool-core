@@ -9,7 +9,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Predicate;
 
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.stream.FilteredStreamTest;
 import cern.streaming.pool.core.service.streamfactory.FilteredStreamFactory;
 
 /**
@@ -17,7 +16,6 @@ import cern.streaming.pool.core.service.streamfactory.FilteredStreamFactory;
  * 
  * @author acalia
  * @see FilteredStreamFactory
- * @see FilteredStreamTest
  * @param <T> the type of the data items
  */
 public class FilteredStreamId<T> implements StreamId<T> {
