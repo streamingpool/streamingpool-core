@@ -4,6 +4,8 @@
 
 package cern.streaming.pool.core.service.streamfactory;
 
+import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
+
 import java.util.Optional;
 
 import cern.streaming.pool.core.service.DiscoveryService;
@@ -31,12 +33,13 @@ public class CombineWithLatestStreamFactory implements StreamFactory {
             return Optional.empty();
         }
 
-        return Optional.of(combineWithLatestStream((CombineWithLatestStreamId<Y, ?>) id));
+        return Optional.of(combineWithLatestStream((CombineWithLatestStreamId<Y, ?>) id, discoveryService));
     }
 
-    private <Y, T> ReactiveStream<Y> combineWithLatestStream(CombineWithLatestStreamId<Y, T> streamId) {
-        Observable<Y> data = ReactiveStreams.rxFrom(streamId.dataStream());
-        Observable<T> trigger = ReactiveStreams.rxFrom(streamId.triggerStream());
+    private <Y, T> ReactiveStream<Y> combineWithLatestStream(CombineWithLatestStreamId<Y, T> streamId,
+            DiscoveryService discoveryService) {
+        Observable<Y> data = rxFrom(discoveryService.discover(streamId.dataStream()));
+        Observable<T> trigger = rxFrom(discoveryService.discover(streamId.triggerStream()));
         /*
          * The resulting Observable from withLatestFrom seems to not be compatible with rxjava-reactive-streams
          * adapters. Introducing an "useless" buffer in order to be able to transform to ReactiveStream interfaces with

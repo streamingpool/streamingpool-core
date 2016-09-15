@@ -6,7 +6,6 @@ package cern.streaming.pool.core.service.streamid;
 
 import static java.util.Objects.requireNonNull;
 
-import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.stream.CombineWithLatestStreamIdStreamTest;
 import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFactory;
@@ -23,23 +22,23 @@ import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFac
  */
 public class CombineWithLatestStreamId<D, T> implements StreamId<D> {
 
-    private final ReactiveStream<T> trigger;
-    private final ReactiveStream<D> data;
+    private final StreamId<T> trigger;
+    private final StreamId<D> data;
 
-    public static <D, T> CombineWithLatestStreamId<D, T> of(ReactiveStream<D> data, ReactiveStream<T> trigger) {
+    public static <D, T> CombineWithLatestStreamId<D, T> of(StreamId<D> data, StreamId<T> trigger) {
         return new CombineWithLatestStreamId<>(data, trigger);
     }
 
-    private CombineWithLatestStreamId(ReactiveStream<D> data, ReactiveStream<T> trigger) {
+    private CombineWithLatestStreamId(StreamId<D> data, StreamId<T> trigger) {
         this.data = requireNonNull(data, "data stream must not be null");
         this.trigger = requireNonNull(trigger, "trigger stream must not be null");
     }
 
-    public ReactiveStream<D> dataStream() {
+    public StreamId<D> dataStream() {
         return data;
     }
 
-    public ReactiveStream<T> triggerStream() {
+    public StreamId<T> triggerStream() {
         return trigger;
     }
 

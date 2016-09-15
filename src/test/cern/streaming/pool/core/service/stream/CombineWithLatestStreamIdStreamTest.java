@@ -4,7 +4,6 @@
 
 package cern.streaming.pool.core.service.stream;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,7 +13,8 @@ import org.junit.Test;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFactory;
 import cern.streaming.pool.core.service.streamid.CombineWithLatestStreamId;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
+import cern.streaming.pool.core.support.RxStreamSupport;
+import cern.streaming.pool.core.testing.AbstractStreamTest;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import rx.Observable;
 
@@ -23,14 +23,12 @@ import rx.Observable;
  * 
  * @author acalia
  */
-public class CombineWithLatestStreamIdStreamTest {
+public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest implements RxStreamSupport {
 
-    private CombineWithLatestStreamFactory factory;
     private BlockingTestSubscriber<Long> subscriber;
 
     @Before
     public void setUp() {
-        factory = new CombineWithLatestStreamFactory();
         subscriber = BlockingTestSubscriber.ofName("Subscriber");
     }
 
@@ -102,8 +100,11 @@ public class CombineWithLatestStreamIdStreamTest {
     }
 
     private void subscribeAndWait(Observable<Long> data, Observable<Long> trigger) {
-        StreamId<Long> streamId = CombineWithLatestStreamId.of(fromRx(data), fromRx(trigger));
-        ReactiveStreams.publisherFrom(factory.create(streamId, null).get()).subscribe(subscriber);
+        StreamId<Long> dataId = provide(data).withUniqueStreamId();
+        StreamId<Long> triggerId = provide(trigger).withUniqueStreamId();
+        StreamId<Long> streamId = CombineWithLatestStreamId.of(dataId, triggerId);
+        
+        publisherFrom(streamId).subscribe(subscriber);
         subscriber.await();
     }
 
