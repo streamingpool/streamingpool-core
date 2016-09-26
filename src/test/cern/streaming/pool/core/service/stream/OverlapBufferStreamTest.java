@@ -52,7 +52,7 @@ public class OverlapBufferStreamTest {
 
         sourceStream.buffer(startStream, opening -> never()).doOnTerminate(sync::countDown)
                 .subscribe(System.out::println);
-        
+
         sourceStream.connect();
         startStream.connect();
 
@@ -136,7 +136,7 @@ public class OverlapBufferStreamTest {
         return interval(1, SECONDS).take(length);
     }
 
-    private List<List<Long>> subscribeAndWait(OverlapBufferStreamId<Long, Object> bufferId) {
+    private List<List<Long>> subscribeAndWait(OverlapBufferStreamId<Long> bufferId) {
         BlockingTestSubscriber<List<Long>> subscriber = BlockingTestSubscriber.ofName("subscriber");
         CountDownLatch sync = new CountDownLatch(1);
         publisherFrom(rxFrom(pool.discover(bufferId)).doOnTerminate(sync::countDown)).subscribe(subscriber);

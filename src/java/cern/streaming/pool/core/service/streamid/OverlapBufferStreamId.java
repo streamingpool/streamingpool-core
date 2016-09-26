@@ -24,27 +24,26 @@ import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory
  *      RxJava 1 buffer documentation</a>
  * @author acalia
  * @param <T> the type of the data stream
- * @param <U> the type of the start and end stream
  */
-public class OverlapBufferStreamId<T, U> implements StreamId<List<T>> {
+public class OverlapBufferStreamId<T> implements StreamId<List<T>> {
 
     private static final Duration NO_TIMEOUT = Duration.ofSeconds(-1);
 
     private final StreamId<T> sourceId;
-    private final StreamId<U> startId;
-    private final StreamId<U> endId;
+    private final StreamId<?> startId;
+    private final StreamId<?> endId;
     private final Duration timeout;
 
-    public static <T, U> OverlapBufferStreamId<T, U> of(StreamId<T> sourceId, StreamId<U> startId, StreamId<U> endId,
+    public static <T> OverlapBufferStreamId<T> of(StreamId<T> sourceId, StreamId<?> startId, StreamId<?> endId,
             Duration timeout) {
         return new OverlapBufferStreamId<>(sourceId, startId, endId, timeout);
     }
 
-    public static <T, U> OverlapBufferStreamId<T, U> of(StreamId<T> sourceId, StreamId<U> startId, StreamId<U> endId) {
+    public static <T> OverlapBufferStreamId<T> of(StreamId<T> sourceId, StreamId<?> startId, StreamId<?> endId) {
         return new OverlapBufferStreamId<>(sourceId, startId, endId, NO_TIMEOUT);
     }
 
-    private OverlapBufferStreamId(StreamId<T> sourceId, StreamId<U> startId, StreamId<U> endId, Duration timeout) {
+    private OverlapBufferStreamId(StreamId<T> sourceId, StreamId<?> startId, StreamId<?> endId, Duration timeout) {
         this.sourceId = sourceId;
         this.startId = startId;
         this.endId = endId;
@@ -55,11 +54,11 @@ public class OverlapBufferStreamId<T, U> implements StreamId<List<T>> {
         return sourceId;
     }
 
-    public StreamId<U> startId() {
+    public StreamId<?> startId() {
         return startId;
     }
 
-    public StreamId<U> endId() {
+    public StreamId<?> endId() {
         return endId;
     }
 
@@ -89,7 +88,7 @@ public class OverlapBufferStreamId<T, U> implements StreamId<List<T>> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        OverlapBufferStreamId<?, ?> other = (OverlapBufferStreamId<?, ?>) obj;
+        OverlapBufferStreamId<?> other = (OverlapBufferStreamId<?>) obj;
         if (endId == null) {
             if (other.endId != null) {
                 return false;

@@ -27,20 +27,16 @@ import rx.observables.ConnectableObservable;
  * 
  * @see OverlapBufferStreamId
  * @author acalia
- * @param <T> type of the stream data items
- * @param <U> type of the start and stop streams
  */
 public class OverlapBufferStreamFactory implements StreamFactory {
 
-    /* Manually checked */
-    @SuppressWarnings("unchecked")
     @Override
     public <T> Optional<ReactiveStream<T>> create(StreamId<T> id, DiscoveryService discoveryService) {
         if (!(id instanceof OverlapBufferStreamId)) {
             return Optional.empty();
         }
 
-        OverlapBufferStreamId<?, ?> analysisId = (OverlapBufferStreamId<?, ?>) id;
+        OverlapBufferStreamId<?> analysisId = (OverlapBufferStreamId<?>) id;
 
         StreamId<?> startId = analysisId.startId();
         StreamId<?> endId = analysisId.endId();
@@ -59,7 +55,9 @@ public class OverlapBufferStreamFactory implements StreamFactory {
         endStream.connect();
         startStream.connect();
 
-        return Optional.of((ReactiveStream<T>) fromRx(bufferStream));
+        @SuppressWarnings("unchecked")
+        ReactiveStream<T> resultingStream = (ReactiveStream<T>) fromRx(bufferStream);
+        return Optional.of(resultingStream);
     }
 
     private Observable<?> closingStreamFor(Object opening, Observable<?> endStream, Duration timeout) {
