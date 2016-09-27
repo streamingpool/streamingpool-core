@@ -18,6 +18,7 @@ import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.streamid.BufferSpecification;
 import cern.streaming.pool.core.service.streamid.OverlapBufferStreamId;
 import rx.Observable;
 import rx.observables.ConnectableObservable;
@@ -38,11 +39,13 @@ public class OverlapBufferStreamFactory implements StreamFactory {
 
         OverlapBufferStreamId<?> analysisId = (OverlapBufferStreamId<?>) id;
 
-        StreamId<?> startId = analysisId.startId();
-        StreamId<?> endId = analysisId.endId();
+        BufferSpecification bufferSpecification = analysisId.bufferSpecification();
+
+        StreamId<?> startId = bufferSpecification.startId();
+        StreamId<?> endId = bufferSpecification.endId();
         StreamId<?> sourceId = analysisId.sourceId();
 
-        Duration timeout = analysisId.timeout();
+        Duration timeout = bufferSpecification.timeout();
 
         ConnectableObservable<?> startStream = rxFrom(discoveryService.discover(startId)).publish();
         ConnectableObservable<?> endStream = rxFrom(discoveryService.discover(endId)).publish();
