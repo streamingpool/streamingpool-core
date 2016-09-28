@@ -4,7 +4,8 @@
 
 package cern.streaming.pool.core.service.stream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;

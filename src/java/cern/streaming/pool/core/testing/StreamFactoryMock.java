@@ -21,8 +21,8 @@ import com.google.common.collect.Multimap;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
-import cern.streaming.pool.core.service.TypedStreamFactory;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.TypedStreamFactory;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import rx.Observable;
 

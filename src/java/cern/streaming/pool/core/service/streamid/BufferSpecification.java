@@ -7,7 +7,6 @@ package cern.streaming.pool.core.service.streamid;
 import static java.util.Objects.requireNonNull;
 
 import java.time.Duration;
-import java.util.Objects;
 
 import cern.streaming.pool.core.service.StreamId;
 

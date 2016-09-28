@@ -4,7 +4,6 @@
 
 package cern.streaming.pool.core.service.streamid;
 
-import java.time.Duration;
 import java.util.List;
 
 import cern.streaming.pool.core.service.StreamId;

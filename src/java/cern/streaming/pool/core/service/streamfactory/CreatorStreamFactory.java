@@ -15,8 +15,8 @@ import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamFactory;
-import cern.streaming.pool.core.service.TypedStreamFactory;
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.TypedStreamFactory;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
 import cern.streaming.pool.core.service.impl.ImmutableIdentifiedStreamCreator;
 
