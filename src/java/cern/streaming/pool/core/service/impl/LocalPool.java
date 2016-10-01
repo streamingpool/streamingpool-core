@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.ImmutableList;
 
 import cern.streaming.pool.core.service.DiscoveryService;
@@ -24,10 +27,12 @@ import cern.streaming.pool.core.service.TypedStreamFactory;
  * and a {@link ProvidingService}). The most important feature of the {@link LocalPool} is that it supports the lazy
  * creation of the streams, specifically, they are created when discovered using {@link TypedStreamFactory}s. When a
  * {@link StreamId} is discovered, the discovery is delegated to a new instance of {@link TrackKeepingDiscoveryService}.
- * The {@link TrackKeepingDiscoveryService} then tries to create the stream using the provided {@link TypedStreamFactory}s if
- * no matching {@link StreamId} has already been provided.
+ * The {@link TrackKeepingDiscoveryService} then tries to create the stream using the provided
+ * {@link TypedStreamFactory}s if no matching {@link StreamId} has already been provided.
  */
 public class LocalPool implements DiscoveryService, ProvidingService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalPool.class);
 
     private final List<StreamFactory> factories;
     private final ConcurrentMap<StreamId<?>, ReactiveStream<?>> activeStreams = new ConcurrentHashMap<>();
@@ -38,6 +43,7 @@ public class LocalPool implements DiscoveryService, ProvidingService {
 
     public LocalPool(List<StreamFactory> factories) {
         this.factories = ImmutableList.copyOf(factories);
+        LOGGER.info("Available Stream Factories: " + factories);
     }
 
     @Override

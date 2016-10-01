@@ -18,6 +18,7 @@ import static rx.Observable.never;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -28,6 +29,7 @@ import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.LocalPool;
 import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory;
 import cern.streaming.pool.core.service.streamid.BufferSpecification;
+import cern.streaming.pool.core.service.streamid.BufferSpecification.EndStreamMatcher;
 import cern.streaming.pool.core.service.streamid.OverlapBufferStreamId;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import rx.Observable;
@@ -68,7 +70,8 @@ public class OverlapBufferStreamTest {
         StreamId<Object> startId = registerRx(merge(just(new Object()).delay(2, SECONDS), never()));
         StreamId<Object> endId = registerRx(never());
 
-        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification.ofStartAndEnd(startId, endId)));
+        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification
+                .ofStartAndEnd(startId, Collections.singleton(EndStreamMatcher.alwaysEndingOn(endId)))));
 
         assertThat(values).hasSize(1);
         assertThat(values.get(0)).containsExactly(2L, 3L, 4L);
@@ -80,7 +83,8 @@ public class OverlapBufferStreamTest {
         StreamId<Object> startId = registerRx(never());
         StreamId<Object> endId = registerRx(never());
 
-        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification.ofStartAndEnd(startId, endId)));
+        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification
+                .ofStartAndEnd(startId, Collections.singleton(EndStreamMatcher.alwaysEndingOn(endId)))));
 
         assertThat(values).isEmpty();
     }
@@ -94,8 +98,8 @@ public class OverlapBufferStreamTest {
         StreamId<Object> startId = registerRx(startStream);
         StreamId<Object> endId = registerRx(startStream.delay(3, SECONDS));
 
-        List<List<Long>> values = subscribeAndWait(
-                OverlapBufferStreamId.of(sourceId, BufferSpecification.ofStartAndEnd(startId, endId)));
+        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification
+                .ofStartAndEnd(startId, Collections.singleton(EndStreamMatcher.alwaysEndingOn(endId)))));
 
         assertThat(values).contains(Arrays.asList(3L, 4L, 5L));
         assertThat(values).contains(Arrays.asList(6L, 7L, 8L));
@@ -113,8 +117,8 @@ public class OverlapBufferStreamTest {
 
         Duration timeout = Duration.ofSeconds(5);
 
-        List<List<Long>> values = subscribeAndWait(
-                OverlapBufferStreamId.of(sourceId, BufferSpecification.ofStartEndTimeout(startId, endId, timeout)));
+        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification
+                .ofStartEndTimeout(startId, Collections.singleton(EndStreamMatcher.alwaysEndingOn(endId)), timeout)));
 
         assertThat(values).contains(Arrays.asList(3L, 4L, 5L, 6L, 7L));
         assertThat(values).contains(Arrays.asList(6L, 7L, 8L, 9L));
@@ -129,8 +133,8 @@ public class OverlapBufferStreamTest {
 
         Duration timeout = Duration.ofSeconds(5);
 
-        List<List<Long>> values = subscribeAndWait(
-                OverlapBufferStreamId.of(sourceId, BufferSpecification.ofStartEndTimeout(startId, endId, timeout)));
+        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification
+                .ofStartEndTimeout(startId, Collections.singleton(EndStreamMatcher.alwaysEndingOn(endId)), timeout)));
 
         assertThat(values).hasSize(2);
         assertThat(values.get(0)).containsExactlyElementsOf(values.get(1));
