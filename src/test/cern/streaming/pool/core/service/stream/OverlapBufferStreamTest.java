@@ -114,7 +114,7 @@ public class OverlapBufferStreamTest {
         Duration timeout = Duration.ofSeconds(5);
 
         List<List<Long>> values = subscribeAndWait(
-                OverlapBufferStreamId.of(sourceId, BufferSpecification.ofStartStopTimeout(startId, endId, timeout)));
+                OverlapBufferStreamId.of(sourceId, BufferSpecification.ofStartEndTimeout(startId, endId, timeout)));
 
         assertThat(values).contains(Arrays.asList(3L, 4L, 5L, 6L, 7L));
         assertThat(values).contains(Arrays.asList(6L, 7L, 8L, 9L));
@@ -130,7 +130,7 @@ public class OverlapBufferStreamTest {
         Duration timeout = Duration.ofSeconds(5);
 
         List<List<Long>> values = subscribeAndWait(
-                OverlapBufferStreamId.of(sourceId, BufferSpecification.ofStartStopTimeout(startId, endId, timeout)));
+                OverlapBufferStreamId.of(sourceId, BufferSpecification.ofStartEndTimeout(startId, endId, timeout)));
 
         assertThat(values).hasSize(2);
         assertThat(values.get(0)).containsExactlyElementsOf(values.get(1));

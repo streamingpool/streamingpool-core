@@ -24,7 +24,7 @@ public class BufferSpecification {
         this.timeout = requireNonNull(timeout, "timeout must not be null");
     }
 
-    public static BufferSpecification ofStartStopTimeout(StreamId<?> startStreamId, StreamId<?> endStreamId,
+    public static BufferSpecification ofStartEndTimeout(StreamId<?> startStreamId, StreamId<?> endStreamId,
             Duration timeout) {
         return new BufferSpecification(startStreamId, endStreamId, timeout);
     }
