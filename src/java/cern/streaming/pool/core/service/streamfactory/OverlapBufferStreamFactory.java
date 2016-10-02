@@ -67,8 +67,7 @@ public class OverlapBufferStreamFactory implements StreamFactory {
         startStream.connect();
 
         @SuppressWarnings("unchecked")
-        ReactiveStream<T> resultingStream = (ReactiveStream<T>) ReactiveStreams
-                .fromRx(bufferStream.doOnNext(System.out::println));
+        ReactiveStream<T> resultingStream = (ReactiveStream<T>) ReactiveStreams.fromRx(bufferStream);
         return Optional.of(resultingStream);
     }
 

@@ -7,6 +7,7 @@ package cern.streaming.pool.core.service.streamid;
 import static java.util.Objects.requireNonNull;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
 
@@ -32,7 +33,7 @@ public class BufferSpecification {
         return new BufferSpecification(startStreamId, endStreamMatchers, timeout);
     }
 
-    public static BufferSpecification ofStartAndEnd(StreamId<?> startStreamId,
+    public static BufferSpecification ofStartEnd(StreamId<?> startStreamId,
             Set<EndStreamMatcher<?, ?>> endStreamMatchers) {
         return new BufferSpecification(startStreamId, endStreamMatchers, NO_TIMEOUT);
     }
@@ -59,13 +60,17 @@ public class BufferSpecification {
             this.matching = matching;
         }
 
-        public static final <T, U> EndStreamMatcher<T, U> ofStreamMatching(StreamId<U> endStreamId,
+        public static final <T, U> EndStreamMatcher<T, U> endingOnMatch(StreamId<U> endStreamId,
                 BiPredicate<T, U> matching) {
             return new EndStreamMatcher<>(endStreamId, matching);
         }
 
-        public static final <U> EndStreamMatcher<?, U> alwaysEndingOn(StreamId<U> endStreamId) {
-            return ofStreamMatching(endStreamId, (a, b) -> true);
+        public static final <U> EndStreamMatcher<?, U> endingOnEvery(StreamId<U> endStreamId) {
+            return endingOnMatch(endStreamId, (a, b) -> true);
+        }
+
+        public static final <U> EndStreamMatcher<?, U> endingOnEquals(StreamId<U> endStreamId) {
+            return endingOnMatch(endStreamId, Objects::equals);
         }
 
         public StreamId<U> endStreamId() {
