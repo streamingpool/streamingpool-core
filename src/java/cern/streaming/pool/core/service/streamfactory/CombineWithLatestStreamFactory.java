@@ -31,20 +31,21 @@ public class CombineWithLatestStreamFactory implements StreamFactory {
             return Optional.empty();
         }
 
-        return Optional.of(combineWithLatestStream((CombineWithLatestStreamId<Y, ?>) id, discoveryService));
+        return Optional.of(combineWithLatestStream((CombineWithLatestStreamId<?, ?, Y>) id, discoveryService));
     }
 
-    private <Y, T> ReactiveStream<Y> combineWithLatestStream(CombineWithLatestStreamId<Y, T> streamId,
+    private <T, D, Y> ReactiveStream<Y> combineWithLatestStream(CombineWithLatestStreamId<T, D, Y> streamId,
             DiscoveryService discoveryService) {
-        Observable<Y> data = rxFrom(discoveryService.discover(streamId.dataStream()));
+        Observable<D> data = rxFrom(discoveryService.discover(streamId.dataStream()));
         Observable<T> trigger = rxFrom(discoveryService.discover(streamId.triggerStream()));
+
         /*
          * The resulting Observable from withLatestFrom seems to not be compatible with rxjava-reactive-streams
          * adapters. Introducing an "useless" buffer in order to be able to transform to ReactiveStream interfaces with
          * the least minimum side effects. FIXME: the withLatestFrom operator is marked as @Experimental. Wait for the
          * promotion to stable
          */
-        Observable<Y> combinedWithLatest = trigger.withLatestFrom(data, (t, d) -> d).buffer(1)
+        Observable<Y> combinedWithLatest = trigger.withLatestFrom(data, streamId.combiner()::apply).buffer(1)
                 .flatMap(Observable::from);
         return ReactiveStreams.fromRx(combinedWithLatest);
     }

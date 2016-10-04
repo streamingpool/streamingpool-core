@@ -102,7 +102,7 @@ public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest impl
     private void subscribeAndWait(Observable<Long> data, Observable<Long> trigger) {
         StreamId<Long> dataId = provide(data).withUniqueStreamId();
         StreamId<Long> triggerId = provide(trigger).withUniqueStreamId();
-        StreamId<Long> streamId = CombineWithLatestStreamId.of(dataId, triggerId);
+        StreamId<Long> streamId = CombineWithLatestStreamId.dataPropagated(triggerId, dataId);
         
         publisherFrom(streamId).subscribe(subscriber);
         subscriber.await();

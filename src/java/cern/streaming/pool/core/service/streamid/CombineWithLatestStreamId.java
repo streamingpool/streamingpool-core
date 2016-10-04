@@ -6,6 +6,8 @@ package cern.streaming.pool.core.service.streamid;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.BiFunction;
+
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFactory;
 
@@ -18,18 +20,29 @@ import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFac
  * @param <D> Type of the original data stream
  * @param <T> Type of the trigger (not really relevant)
  */
-public class CombineWithLatestStreamId<D, T> implements StreamId<D> {
+public class CombineWithLatestStreamId<T, D, R> implements StreamId<R> {
 
     private final StreamId<T> trigger;
     private final StreamId<D> data;
+    private final BiFunction<T, D, R> combiner;
 
-    public static <D, T> CombineWithLatestStreamId<D, T> of(StreamId<D> data, StreamId<T> trigger) {
-        return new CombineWithLatestStreamId<>(data, trigger);
-    }
-
-    private CombineWithLatestStreamId(StreamId<D> data, StreamId<T> trigger) {
+    private CombineWithLatestStreamId(StreamId<D> data, StreamId<T> trigger, BiFunction<T, D, R> combiner) {
         this.data = requireNonNull(data, "data stream must not be null");
         this.trigger = requireNonNull(trigger, "trigger stream must not be null");
+        this.combiner = requireNonNull(combiner, "combiner must not be null");
+    }
+
+    public static <T, D> CombineWithLatestStreamId<T, D, D> dataPropagated(StreamId<T> trigger, StreamId<D> data) {
+        return of(data, trigger, (t, d) -> d);
+    }
+
+    public static <T, D> CombineWithLatestStreamId<T, D, T> triggerPropagated(StreamId<T> trigger, StreamId<D> data) {
+        return of(data, trigger, (t, d) -> t);
+    }
+
+    public static <T, D, R> CombineWithLatestStreamId<T, D, R> of(StreamId<D> data, StreamId<T> trigger,
+            BiFunction<T, D, R> combiner) {
+        return new CombineWithLatestStreamId<T, D, R>(data, trigger, combiner);
     }
 
     public StreamId<D> dataStream() {
@@ -38,6 +51,10 @@ public class CombineWithLatestStreamId<D, T> implements StreamId<D> {
 
     public StreamId<T> triggerStream() {
         return trigger;
+    }
+
+    public BiFunction<T, D, R> combiner() {
+        return combiner;
     }
 
     @Override
@@ -60,7 +77,7 @@ public class CombineWithLatestStreamId<D, T> implements StreamId<D> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        CombineWithLatestStreamId<?, ?> other = (CombineWithLatestStreamId<?, ?>) obj;
+        CombineWithLatestStreamId<?, ?, ?> other = (CombineWithLatestStreamId<?, ?, ?>) obj;
         if (data == null) {
             if (other.data != null) {
                 return false;
@@ -82,5 +99,5 @@ public class CombineWithLatestStreamId<D, T> implements StreamId<D> {
     public String toString() {
         return "CombineWithLatestStreamId [trigger=" + trigger + ", data=" + data + "]";
     }
-    
+
 }
