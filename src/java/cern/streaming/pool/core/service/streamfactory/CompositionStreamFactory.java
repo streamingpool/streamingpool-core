@@ -27,8 +27,8 @@ public final class CompositionStreamFactory implements StreamFactory {
     }
 
     private <X, T> ReactiveStream<T> createStream(CompositionStreamId<X, T> id, DiscoveryService discoveryService) {
-        List<ReactiveStream<X>> extractedStreams = extractStreams(id.getSourceStreamIds(), discoveryService);
-        return id.getTransformation().apply(extractedStreams);
+        List<ReactiveStream<X>> extractedStreams = extractStreams(id.sourceStreamIds(), discoveryService);
+        return id.transformation().apply(extractedStreams);
     }
 
     private <X> List<ReactiveStream<X>> extractStreams(Collection<StreamId<X>> streamIds,

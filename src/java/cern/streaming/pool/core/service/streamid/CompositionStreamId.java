@@ -46,11 +46,11 @@ public final class CompositionStreamId<X, T> implements StreamId<T> {
         this.transformation = transformation;
     }
 
-    public List<StreamId<X>> getSourceStreamIds() {
+    public List<StreamId<X>> sourceStreamIds() {
         return sourceStreamIds;
     }
 
-    public Function<List<ReactiveStream<X>>, ReactiveStream<T>> getTransformation() {
+    public Function<List<ReactiveStream<X>>, ReactiveStream<T>> transformation() {
         return transformation;
     }
 }

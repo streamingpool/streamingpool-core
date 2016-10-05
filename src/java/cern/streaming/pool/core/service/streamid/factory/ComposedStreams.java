@@ -10,6 +10,7 @@ import rx.functions.Func2;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -23,9 +24,9 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  *
  * @author timartin
  */
-public final class CoreStreams {
+public final class ComposedStreams {
 
-    private CoreStreams() {
+    private ComposedStreams() {
     }
 
     /**
@@ -139,21 +140,23 @@ public final class CoreStreams {
      *                        source of the objects used by the zip function.
      * @param sourceStreamId2 {@link StreamId} which identifies the {@link ReactiveStream} that will be used as the
      *                        source of the objects used by the zip function.
-     * @param zip
+     * @param zip             A {@link BiFunction} which will convert both objects emitted by the
+     *                        {@link ReactiveStreams} into a single new instance of type T.
      * @return A {@link StreamId}.
      * @throws NullPointerException If any of the provided source stream ids or zip function are null.
      * @see Observable#zip(Observable, Observable, Func2)
      */
     public static final <X, T> StreamId<T> zippedStream(final StreamId<X> sourceStreamId1,
                                                         final StreamId<X> sourceStreamId2,
-                                                        final Func2<X, X, Optional<T>> zip) {
+                                                        final BiFunction<X, X, Optional<T>> zip) {
         Objects.requireNonNull(sourceStreamId1, "sourceStreamId1");
         Objects.requireNonNull(sourceStreamId2, "sourceStreamId2");
         Objects.requireNonNull(zip, "zip");
         return new CompositionStreamId<X, T>(Arrays.asList(sourceStreamId1, sourceStreamId2),
                 reactiveStreams -> ReactiveStreams
                         .fromRx(
-                                Observable.zip(rxFrom(reactiveStreams.get(0)), rxFrom(reactiveStreams.get(1)), zip)
+                                Observable.zip(rxFrom(reactiveStreams.get(0)), rxFrom(reactiveStreams.get(1)),
+                                        convertBiFunctionToRxFunc2(zip))
                                         .filter(Optional::isPresent)
                                         .map(Optional::get)));
     }
@@ -162,5 +165,15 @@ public final class CoreStreams {
         if (CollectionUtils.isEmpty(collection)) {
             throw new IllegalArgumentException("The collection " + collectionName + " cannot be null nor empty");
         }
+    }
+
+    private static final <X, T> Func2<X, X, Optional<T>> convertBiFunctionToRxFunc2(
+            final BiFunction<X, X, Optional<T>> biFunction) {
+        return new Func2<X, X, Optional<T>>() {
+            @Override
+            public Optional<T> call(X x, X x2) {
+                return biFunction.apply(x, x2);
+            }
+        };
     }
 }
