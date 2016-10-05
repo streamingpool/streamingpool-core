@@ -4,15 +4,11 @@
 
 package cern.streaming.pool.core.conf;
 
+import cern.streaming.pool.core.service.streamfactory.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import cern.streaming.pool.core.service.TypedStreamFactory;
-import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFactory;
-import cern.streaming.pool.core.service.streamfactory.DelayedStreamFactory;
-import cern.streaming.pool.core.service.streamfactory.DerivedStreamFactory;
-import cern.streaming.pool.core.service.streamfactory.FilteredStreamFactory;
-import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory;
 
 /**
  * Configuration for including the {@link TypedStreamFactory}s provided in the core project.
@@ -21,6 +17,11 @@ import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory
  */
 @Configuration
 public class DefaultStreamFactories {
+
+    @Bean
+    public CompositionStreamFactory compositionStreamFactory() {
+        return new CompositionStreamFactory();
+    }
 
     @Bean
     public CombineWithLatestStreamFactory combineWithLatestStreamIdStreamFactory() {
