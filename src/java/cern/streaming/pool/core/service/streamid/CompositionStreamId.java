@@ -53,4 +53,32 @@ public final class CompositionStreamId<X, T> implements StreamId<T> {
     public Function<List<ReactiveStream<X>>, ReactiveStream<T>> transformation() {
         return transformation;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CompositionStreamId<?, ?> that = (CompositionStreamId<?, ?>) o;
+
+        if (sourceStreamIds != null ? !sourceStreamIds.equals(that.sourceStreamIds) : that.sourceStreamIds != null)
+            return false;
+        return transformation != null ? transformation.equals(that.transformation) : that.transformation == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = sourceStreamIds != null ? sourceStreamIds.hashCode() : 0;
+        result = 31 * result + (transformation != null ? transformation.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "CompositionStreamId{" +
+                "sourceStreamIds=" + sourceStreamIds +
+                ", transformation=" + transformation +
+                '}';
+    }
 }
