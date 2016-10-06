@@ -52,8 +52,8 @@ public final class ComposedStreams {
 
     /**
      * Creates a {@link StreamId} that will identify a {@link ReactiveStream} which will emit items based on a
-     * {@link ReactiveStream} identified by the provided {@link StreamId}. The conversion function always returns an
-     * {@link Observable} which will used as the source of the objects to be flattened, if the observable emits values
+     * {@link ReactiveStream} identified by the provided {@link StreamId}. The conversion function always returns a
+     * {@link ReactiveStream} which will used as the source of the objects to be flattened, if the stream emits values
      * then these will be emitted, otherwise nothing will be emitted.
      *
      * @param sourceStreamId {@link StreamId} which identifies the {@link ReactiveStream} that will be used as the
@@ -64,11 +64,13 @@ public final class ComposedStreams {
      * @see Observable#flatMap(rx.functions.Func1)
      */
     public static final <X, T> StreamId<T> flatMappedStream(final StreamId<X> sourceStreamId,
-                                                            final Function<X, Observable<T>> conversion) {
+                                                            final Function<X, ReactiveStream<T>> conversion) {
         Objects.requireNonNull(sourceStreamId, "sourceStreamId");
         Objects.requireNonNull(conversion, "conversion");
         return new CompositionStreamId<X, T>(sourceStreamId,
-                reactiveStreams -> ReactiveStreams.fromRx(rxFrom(reactiveStreams.get(0)).flatMap(conversion::apply)));
+                reactiveStreams -> ReactiveStreams.fromRx(rxFrom(reactiveStreams.get(0)).flatMap(val ->
+                        rxFrom(conversion.apply(val))
+                )));
     }
 
     /**

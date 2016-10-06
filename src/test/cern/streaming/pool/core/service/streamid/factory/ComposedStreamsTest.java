@@ -1,6 +1,7 @@
 package cern.streaming.pool.core.service.streamid.factory;
 
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.util.ReactiveStreams;
 import cern.streaming.pool.core.support.RxStreamSupport;
 import cern.streaming.pool.core.testing.AbstractStreamTest;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
@@ -53,7 +54,7 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
 
     @Test(expected = NullPointerException.class)
     public void testFlatMappedStreamWithNullSourceStreamId() {
-        ComposedStreams.flatMappedStream(null, Observable::just);
+        ComposedStreams.flatMappedStream(null, val -> ReactiveStreams.fromRx(Observable.just(val)));
     }
 
     @Test(expected = NullPointerException.class)
@@ -66,7 +67,7 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
     public void testFlatMappedStreamWithConversionAlwaysReturns() {
         StreamId<Integer> sourceStreamId = provide(Observable.<Integer>just(1, 3)).withUniqueStreamId();
         StreamId<Integer> flatMappedStreamId = ComposedStreams.flatMappedStream(sourceStreamId,
-                val -> Observable.just(val, val));
+                val -> ReactiveStreams.fromRx(Observable.just(val, val)));
         BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(flatMappedStreamId);
         assertThat(subscriber.getValues()).hasSize(4).containsExactly(1, 1, 3, 3);
     }
@@ -75,7 +76,8 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
     public void testFlatMappedStreamWithConversionThatDoesNotAlwaysReturns() {
         StreamId<Integer> sourceStreamId = provide(Observable.<Integer>just(1, 3)).withUniqueStreamId();
         StreamId<Integer> flatMappedStreamId = ComposedStreams.flatMappedStream(sourceStreamId,
-                val -> (val == 1) ? Observable.just(val, val) : Observable.empty());
+                val -> (val == 1) ? ReactiveStreams.fromRx(Observable.just(val, val)) :
+                        ReactiveStreams.fromRx(Observable.empty()));
         BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(flatMappedStreamId);
         assertThat(subscriber.getValues()).hasSize(2).containsExactly(1, 1);
     }
