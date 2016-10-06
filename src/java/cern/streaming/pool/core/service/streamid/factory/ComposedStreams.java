@@ -1,21 +1,30 @@
 package cern.streaming.pool.core.service.streamid.factory;
 
-import cern.streaming.pool.core.service.ReactiveStream;
-import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.streamid.CompositionStreamId;
-import cern.streaming.pool.core.service.streamid.factory.function.*;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
-import org.springframework.util.CollectionUtils;
-import rx.Observable;
-import rx.functions.Func2;
+import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
+import org.springframework.util.CollectionUtils;
+
+import cern.streaming.pool.core.service.ReactiveStream;
+import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.streamid.CompositionStreamId;
+import cern.streaming.pool.core.service.streamid.factory.function.DelayCompositionFunction;
+import cern.streaming.pool.core.service.streamid.factory.function.FilterCompositionFunction;
+import cern.streaming.pool.core.service.streamid.factory.function.FlatMapCompositionFunction;
+import cern.streaming.pool.core.service.streamid.factory.function.MapCompositionFunction;
+import cern.streaming.pool.core.service.streamid.factory.function.ZipCompositionFunction;
+import cern.streaming.pool.core.service.util.ReactiveStreams;
+import rx.Observable;
 
 /**
  * Factory class which provides {@link StreamId}s that identify general purpose {@link ReactiveStream}s based on stream
@@ -149,7 +158,7 @@ public final class ComposedStreams {
                 new ZipCompositionFunction<>(zip));
     }
 
-    private static final void checkCollectionAndThrow(Collection collection, String collectionName) {
+    private static final void checkCollectionAndThrow(Collection<?> collection, String collectionName) {
         if (CollectionUtils.isEmpty(collection)) {
             throw new IllegalArgumentException("The collection " + collectionName + " cannot be null nor empty");
         }
