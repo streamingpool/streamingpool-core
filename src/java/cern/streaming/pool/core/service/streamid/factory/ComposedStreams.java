@@ -3,6 +3,7 @@ package cern.streaming.pool.core.service.streamid.factory;
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.streamid.CompositionStreamId;
+import cern.streaming.pool.core.service.streamid.factory.function.*;
 import cern.streaming.pool.core.service.util.ReactiveStreams;
 import org.springframework.util.CollectionUtils;
 import rx.Observable;
@@ -14,9 +15,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
  * Factory class which provides {@link StreamId}s that identify general purpose {@link ReactiveStream}s based on stream
@@ -39,15 +38,13 @@ public final class ComposedStreams {
      * @param conversion     {@link Function} used to convert the objects.
      * @return A {@link StreamId}.
      * @throws NullPointerException If the provided source stream id or conversion function are null.
-     * @see Observable#map(rx.functions.Func1)
+     * @see MapCompositionFunction
      */
     public static final <X, T> StreamId<T> mappedStream(final StreamId<X> sourceStreamId,
                                                         final Function<X, Optional<T>> conversion) {
         Objects.requireNonNull(sourceStreamId, "sourceStreamId");
         Objects.requireNonNull(conversion, "conversion");
-        return new CompositionStreamId<X, T>(sourceStreamId, reactiveStreams -> fromRx(rxFrom(reactiveStreams.get(0))
-                .map(conversion::apply)
-                .filter(Optional::isPresent).map(Optional::get)));
+        return new CompositionStreamId<>(sourceStreamId, new MapCompositionFunction<>(conversion));
     }
 
     /**
@@ -61,16 +58,13 @@ public final class ComposedStreams {
      * @param conversion     {@link Function} used to convert the objects.
      * @return A {@link StreamId}.
      * @throws NullPointerException If the provided source stream id or conversion function are null.
-     * @see Observable#flatMap(rx.functions.Func1)
+     * @see FlatMapCompositionFunction
      */
     public static final <X, T> StreamId<T> flatMappedStream(final StreamId<X> sourceStreamId,
                                                             final Function<X, ReactiveStream<T>> conversion) {
         Objects.requireNonNull(sourceStreamId, "sourceStreamId");
         Objects.requireNonNull(conversion, "conversion");
-        return new CompositionStreamId<X, T>(sourceStreamId,
-                reactiveStreams -> ReactiveStreams.fromRx(rxFrom(reactiveStreams.get(0)).flatMap(val ->
-                        rxFrom(conversion.apply(val))
-                )));
+        return new CompositionStreamId<>(sourceStreamId, new FlatMapCompositionFunction<>(conversion));
     }
 
     /**
@@ -103,14 +97,13 @@ public final class ComposedStreams {
      * @param predicate      {@link Predicate} that will be used to filter the items emitted by the source.
      * @return A {@link StreamId}.
      * @throws NullPointerException If the provided source stream id or predicate are null.
-     * @see Observable#filter(rx.functions.Func1)
+     * @see FilterCompositionFunction
      */
     public static final <X> StreamId<X> filteredStream(final StreamId<X> sourceStreamId,
                                                        final Predicate<X> predicate) {
         Objects.requireNonNull(sourceStreamId, "sourceStreamId");
         Objects.requireNonNull(predicate, "predicate");
-        return new CompositionStreamId<X, X>(sourceStreamId,
-                reactiveStreams -> ReactiveStreams.fromRx(rxFrom(reactiveStreams.get(0)).filter(predicate::test)));
+        return new CompositionStreamId<>(sourceStreamId, new FilterCompositionFunction<>(predicate));
     }
 
     /**
@@ -122,14 +115,12 @@ public final class ComposedStreams {
      * @param duration       {@link Duration} that will be used as the delay before re-emitting.
      * @return A {@link StreamId}.
      * @throws NullPointerException If the provided source stream id or duration are null.
-     * @see Observable#delay(long, java.util.concurrent.TimeUnit)
+     * @see DelayCompositionFunction
      */
     public static final <X> StreamId<X> delayedStream(final StreamId<X> sourceStreamId, final Duration duration) {
         Objects.requireNonNull(sourceStreamId, "sourceStreamId");
         Objects.requireNonNull(duration, "duration");
-        return new CompositionStreamId<X, X>(sourceStreamId,
-                reactiveStreams -> ReactiveStreams.fromRx(rxFrom(reactiveStreams.get(0)).delay(duration.toMillis(),
-                        MILLISECONDS)));
+        return new CompositionStreamId<X, X>(sourceStreamId, new DelayCompositionFunction<>(duration));
     }
 
     /**
@@ -146,7 +137,7 @@ public final class ComposedStreams {
      *                        {@link ReactiveStreams} into a single new instance of type T.
      * @return A {@link StreamId}.
      * @throws NullPointerException If any of the provided source stream ids or zip function are null.
-     * @see Observable#zip(Observable, Observable, Func2)
+     * @see ZipCompositionFunction
      */
     public static final <X, T> StreamId<T> zippedStream(final StreamId<X> sourceStreamId1,
                                                         final StreamId<X> sourceStreamId2,
@@ -155,27 +146,12 @@ public final class ComposedStreams {
         Objects.requireNonNull(sourceStreamId2, "sourceStreamId2");
         Objects.requireNonNull(zip, "zip");
         return new CompositionStreamId<X, T>(Arrays.asList(sourceStreamId1, sourceStreamId2),
-                reactiveStreams -> ReactiveStreams
-                        .fromRx(
-                                Observable.zip(rxFrom(reactiveStreams.get(0)), rxFrom(reactiveStreams.get(1)),
-                                        convertBiFunctionToRxFunc2(zip))
-                                        .filter(Optional::isPresent)
-                                        .map(Optional::get)));
+                new ZipCompositionFunction<>(zip));
     }
 
     private static final void checkCollectionAndThrow(Collection collection, String collectionName) {
         if (CollectionUtils.isEmpty(collection)) {
             throw new IllegalArgumentException("The collection " + collectionName + " cannot be null nor empty");
         }
-    }
-
-    private static final <X, T> Func2<X, X, Optional<T>> convertBiFunctionToRxFunc2(
-            final BiFunction<X, X, Optional<T>> biFunction) {
-        return new Func2<X, X, Optional<T>>() {
-            @Override
-            public Optional<T> call(X x, X x2) {
-                return biFunction.apply(x, x2);
-            }
-        };
     }
 }
