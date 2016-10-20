@@ -10,7 +10,7 @@ import java.util.function.Function;
 /**
  * Generic implementation of {@link StreamId} which in conjunction with the
  * {@link cern.streaming.pool.core.service.streamfactory.CompositionStreamFactory} allows for the easy creation of
- * general purpose streams based on composition of streams.
+ * general purpose streams based on composition of streams. This class is experimental.
  *
  * @param <X> The type of objects emitted by the source {@link ReactiveStream}s.
  * @param <T> The type of objects emitted by the new created {@link ReactiveStream}.

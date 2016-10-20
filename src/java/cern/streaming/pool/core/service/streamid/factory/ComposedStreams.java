@@ -28,7 +28,7 @@ import rx.Observable;
 
 /**
  * Factory class which provides {@link StreamId}s that identify general purpose {@link ReactiveStream}s based on stream
- * composition.
+ * composition. This class is experimental.
  *
  * @author timartin
  */

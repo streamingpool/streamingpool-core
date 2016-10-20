@@ -7,4 +7,4 @@ build_job:
   stage: build
   script:
   - chmod +x gradlew
-  - ./gradlew test --refresh-dependencies
+  - ./gradlew test
