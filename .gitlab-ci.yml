@@ -1,3 +1,10 @@
-build:
+image:  java:8-jdk
+
+stages:
+- build
+
+build_job:
+  stage: build
   script:
-    - gradle javadoc asciidoc
+  - chmod +x gradlew
+  - ./gradlew test
