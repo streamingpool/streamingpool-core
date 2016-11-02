@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
     private final Set<StreamId<?>> idsOfStreamsUnderCreation;
     private final List<StreamFactory> factories;
-    final PoolContent content;
+    private final PoolContent content;
     private final Thread contextOfExecution;
 
     public TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content) {

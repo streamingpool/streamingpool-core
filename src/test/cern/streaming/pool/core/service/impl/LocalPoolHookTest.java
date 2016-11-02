@@ -5,20 +5,22 @@
 package cern.streaming.pool.core.service.impl;
 
 import static cern.streaming.pool.core.service.streamid.StreamingPoolHook.NEW_STREAM_HOOK;
+import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
+import cern.streaming.pool.core.service.streamid.StreamingPoolHook;
 import rx.observers.TestSubscriber;
 
+/**
+ * Testing the behavior of new {@link StreamingPoolHook} hooks.
+ */
 public class LocalPoolHookTest {
 
     private LocalPool pool;
@@ -30,26 +32,33 @@ public class LocalPoolHookTest {
 
     @Test
     public void newStreamHookExists() {
-        assertThat(streamHook()).isNotNull();
+        assertThat(newStreamHook()).isNotNull();
     }
 
-    
+    @SuppressWarnings("unchecked")
     @Test
     public void registeringAStreamEmitsId() {
-        StreamId<?> mockedStreamId = mock(StreamId.class);
+        StreamId<?> anyStreamId = mock(StreamId.class);
         TestSubscriber<StreamId<?>> subscriber = new TestSubscriber<>();
-        ReactiveStreams.rxFrom(streamHook()).take(1).subscribe(subscriber);
-        
-        pool.provide(mockedStreamId, mock(ReactiveStream.class));
-        
+        rxFrom(newStreamHook()).take(1).subscribe(subscriber);
+
+        pool.provide(anyStreamId, mock(ReactiveStream.class));
+
         subscriber.awaitTerminalEvent(2, SECONDS);
-        subscriber.assertValues(mockedStreamId );
+        subscriber.assertValues(anyStreamId);
     }
-    
-    
-    private ReactiveStream<StreamId<?>> streamHook() {
+
+    @Test
+    public void noStreamIdEmittedIfNoStreamIsProvided() {
+        TestSubscriber<StreamId<?>> subscriber = new TestSubscriber<>();
+        rxFrom(newStreamHook()).subscribe(subscriber);
+
+        subscriber.awaitTerminalEvent(1, SECONDS);
+        subscriber.assertNoValues();
+    }
+
+    private ReactiveStream<StreamId<?>> newStreamHook() {
         return pool.discover(NEW_STREAM_HOOK);
     }
-    
 
 }

@@ -4,12 +4,9 @@
 
 package cern.streaming.pool.core.service.impl;
 
-import static cern.streaming.pool.core.service.streamid.StreamingPoolHook.NEW_STREAM_HOOK;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +19,6 @@ import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.TypedStreamFactory;
-import cern.streaming.pool.core.service.streamid.StreamingPoolHook;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
-import rx.subjects.PublishSubject;
 
 /**
  * Local pool for providing and discovery of {@link ReactiveStream}s. (this class is both a {@link DiscoveryService} and
@@ -46,7 +40,6 @@ public class LocalPool implements DiscoveryService, ProvidingService {
     }
 
     public LocalPool(List<StreamFactory> factories) {
-        content.synchronousPut(NEW_STREAM_HOOK, content::newStreamHook);
         this.factories = ImmutableList.copyOf(factories);
         LOGGER.info("Available Stream Factories: " + factories);
     }

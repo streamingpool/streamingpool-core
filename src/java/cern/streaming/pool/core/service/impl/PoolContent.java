@@ -4,6 +4,9 @@
 
 package cern.streaming.pool.core.service.impl;
 
+import static cern.streaming.pool.core.service.streamid.StreamingPoolHook.NEW_STREAM_HOOK;
+import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -12,15 +15,23 @@ import java.util.function.Supplier;
 
 import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
+import cern.streaming.pool.core.service.streamid.StreamingPoolHook;
 import rx.subjects.PublishSubject;
 
+/**
+ * Encapsulate the state of a streaming pool.
+ * 
+ * @author acalia, kfuchsbe, mihostet
+ */
 public class PoolContent {
 
     private final ConcurrentMap<StreamId<?>, ReactiveStream<?>> activeStreams = new ConcurrentHashMap<>();
-
     private final PublishSubject<StreamId<?>> newStreamHook = PublishSubject.create();
     private final ExecutorService hookExecutor = Executors.newSingleThreadExecutor();
+
+    public PoolContent() {
+        addStreamHooks();
+    }
 
     public <T> boolean synchronousPut(StreamId<T> id, Supplier<ReactiveStream<T>> supplier) {
         if (!activeStreams.containsKey(id)) {
@@ -44,7 +55,10 @@ public class PoolContent {
         return (ReactiveStream<T>) activeStreams.get(id);
     }
 
-    public ReactiveStream<StreamId<?>> newStreamHook() {
-        return ReactiveStreams.fromRx(newStreamHook);
+    /**
+     * Directly add the {@link StreamingPoolHook}s as active streams (without triggering any hook)
+     */
+    private void addStreamHooks() {
+        activeStreams.put(NEW_STREAM_HOOK, fromRx(newStreamHook));
     }
 }
