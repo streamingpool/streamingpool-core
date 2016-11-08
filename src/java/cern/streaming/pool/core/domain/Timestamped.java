@@ -8,21 +8,21 @@ import static java.util.Objects.requireNonNull;
 
 import java.time.Instant;
 
-public class TimeStamped<T> {
+public class Timestamped<T> {
 
     private final T value;
     private final Instant instant;
 
-    private TimeStamped(Instant instant, T value) {
+    private Timestamped(Instant instant, T value) {
         this.value = requireNonNull(value, "value must not be null");
         this.instant = requireNonNull(instant, "instant must not be null");
     }
 
-    public static <T> TimeStamped<T> atOf(Instant instant, T value) {
-        return new TimeStamped<>(instant, value);
+    public static <T> Timestamped<T> atOf(Instant instant, T value) {
+        return new Timestamped<>(instant, value);
     }
 
-    public static <T> TimeStamped<T> nowOf(T value) {
+    public static <T> Timestamped<T> nowOf(T value) {
         return atOf(Instant.now(), value);
     }
 
@@ -54,7 +54,7 @@ public class TimeStamped<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        TimeStamped<?> other = (TimeStamped<?>) obj;
+        Timestamped<?> other = (Timestamped<?>) obj;
         if (instant == null) {
             if (other.instant != null) {
                 return false;
