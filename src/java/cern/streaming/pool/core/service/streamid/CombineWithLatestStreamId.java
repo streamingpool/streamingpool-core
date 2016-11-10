@@ -26,19 +26,19 @@ public class CombineWithLatestStreamId<T, D, R> implements StreamId<R> {
     private final StreamId<D> data;
     private final BiFunction<T, D, R> combiner;
 
-    private CombineWithLatestStreamId(StreamId<D> data, StreamId<T> trigger, BiFunction<T, D, R> combiner) {
+    private CombineWithLatestStreamId(StreamId<T> trigger, StreamId<D> data, BiFunction<T, D, R> combiner) {
         this.data = requireNonNull(data, "data stream must not be null");
         this.trigger = requireNonNull(trigger, "trigger stream must not be null");
         this.combiner = requireNonNull(combiner, "combiner must not be null");
     }
 
     public static <T, D> CombineWithLatestStreamId<T, D, D> dataPropagated(StreamId<T> trigger, StreamId<D> data) {
-        return of(data, trigger, (t, d) -> d);
+        return combine(trigger, data, (t, d) -> d);
     }
 
-    public static <T, D, R> CombineWithLatestStreamId<T, D, R> of(StreamId<D> data, StreamId<T> trigger,
+    public static <T, D, R> CombineWithLatestStreamId<T, D, R> combine(StreamId<T> trigger, StreamId<D> data,
             BiFunction<T, D, R> combiner) {
-        return new CombineWithLatestStreamId<T, D, R>(data, trigger, combiner);
+        return new CombineWithLatestStreamId<>(trigger, data, combiner);
     }
 
     public StreamId<D> dataStream() {
