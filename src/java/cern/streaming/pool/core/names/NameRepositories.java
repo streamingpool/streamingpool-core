@@ -19,6 +19,10 @@ import cern.streaming.pool.core.names.impl.ImmutableNameRepository;
 
 public final class NameRepositories {
 
+    private NameRepositories() {
+        /* Only static methods */
+    }
+
     public static ImmutableNameRepository newFromConstantContainers(List<ConstantsNameContainer> constantsContainers) {
         return new ImmutableNameRepository(NameRepositories.mapNamesFrom(constantsContainers));
     }
@@ -28,12 +32,12 @@ public final class NameRepositories {
         return constantContainers.stream()
                 .flatMap(constants -> Stream.of(constants.getClass().getFields()))
                 .distinct()
-                .filter(NameRepositories::isConstant)
+                .filter(NameRepositories::isPublicConstant)
                 .collect(toMap(NameRepositories::valueOfField, NameRepositories::nameOfField));
         //@formatter:on
     }
 
-    private static final boolean isConstant(Field field) {
+    private static final boolean isPublicConstant(Field field) {
         final int modifiers = field.getModifiers();
         return isStatic(modifiers) && isFinal(modifiers) && isPublic(modifiers);
     }
@@ -48,10 +52,6 @@ public final class NameRepositories {
 
     private static final String nameOfField(Field field) {
         return field.getName();
-    }
-
-    private NameRepositories() {
-        /* Only static methods */
     }
 
 }
