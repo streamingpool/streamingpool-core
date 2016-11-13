@@ -53,6 +53,7 @@ public class OverlapBufferStreamFactory implements StreamFactory {
         ConnectableObservable<?> sourceStream = rxFrom(discoveryService.discover(sourceId)).publish();
 
         Set<EndStreamMatcher<?, ?>> matchers = bufferSpecification.endStreamMatchers();
+        @SuppressWarnings("unchecked")
         Map<EndStreamMatcher<Object, Object>, ConnectableObservable<?>> endStreams = matchers.stream()
                 .collect(Collectors.toMap(m -> (EndStreamMatcher<Object, Object>) m,
                         m -> rxFrom(discoveryService.discover(m.endStreamId())).publish()));
