@@ -19,7 +19,7 @@ import cern.streaming.pool.core.names.impl.ImmutableNameRepository;
 
 public final class NameRepositories {
 
-    public static ImmutableNameRepository fromConstantContainers(List<ConstantsNameContainer> constantsContainers) {
+    public static ImmutableNameRepository newFromConstantContainers(List<ConstantsNameContainer> constantsContainers) {
         return new ImmutableNameRepository(NameRepositories.mapNamesFrom(constantsContainers));
     }
 
