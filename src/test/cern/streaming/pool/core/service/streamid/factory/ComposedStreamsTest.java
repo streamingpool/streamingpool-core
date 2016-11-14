@@ -50,7 +50,7 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
     public void testMappedStreamWithConversionThatAlwaysReturns() {
         StreamId<Integer> sourceStreamId = provide(Observable.<Integer> just(1, 3)).withUniqueStreamId();
         StreamId<Integer> mappedStreamId = ComposedStreams.mappedStream(sourceStreamId,
-                val -> Optional.<Integer> of(val + 1));
+                val -> val + 1);
         BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(mappedStreamId);
         assertThat(subscriber.getValues()).hasSize(2).containsExactly(2, 4);
     }
@@ -59,7 +59,7 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
     public void testMappedStreamWithConversionThatDoesNotAlwaysReturns() {
         StreamId<Integer> sourceStreamId = provide(Observable.<Integer> just(1, 3)).withUniqueStreamId();
         StreamId<Integer> mappedStreamId = ComposedStreams.mappedStream(sourceStreamId,
-                val -> (val == 1) ? Optional.of(val) : Optional.empty());
+                val -> (val == 1) ? val : null);
         BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(mappedStreamId);
         assertThat(subscriber.getValues()).hasSize(1).containsExactly(1);
     }
@@ -67,7 +67,7 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
     @Test
     public void testEqualityOfMappedStreamIdOnEqualStreams() {
         StreamId<Object> sourceStreamId = DUMMY_STREAM_ID_1;
-        Function<Object, Optional<Object>> conversion = Optional::of;
+        Function<Object, Object> conversion = Optional::of;
         StreamId<Object> mappedStream1 = ComposedStreams.mappedStream(sourceStreamId, conversion);
         StreamId<Object> mappedStream2 = ComposedStreams.mappedStream(sourceStreamId, conversion);
         assertThat(mappedStream1).isEqualTo(mappedStream2);
@@ -83,7 +83,7 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
 
     @Test
     public void testEqualityOfMappedStreamIdOnNotEqualStreamSources() {
-        Function<Object, Optional<Object>> conversion = Optional::of;
+        Function<Object, Object> conversion = Optional::of;
         StreamId<Object> mappedStream1 = ComposedStreams.mappedStream(DUMMY_STREAM_ID_1, conversion);
         StreamId<Object> mappedStream2 = ComposedStreams.mappedStream(DUMMY_STREAM_ID_2, conversion);
         assertThat(mappedStream1).isNotEqualTo(mappedStream2);
