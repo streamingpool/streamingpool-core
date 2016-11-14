@@ -9,16 +9,16 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.BiFunction;
 
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFactory;
 
 /**
- * Given a data stream and a stream of triggering events, the resulting stream emits the latest element of the data
- * stream at the moment of each triggering event
+ * Given a data stream and a stream of triggering events, the resulting stream emits as soon as the trigger stream
+ * emits. The emitted value is determined by the comining function, and can thus be computed from the emitted value of
+ * the triggered stream and the latest emitted item of the data stream. stream at the moment of each triggering event
  * 
- * @see CombineWithLatestStreamFactory
  * @author acalia, caguiler
+ * @param <T> Type of the stream which will trigger the emitting of a new element
  * @param <D> Type of the original data stream
- * @param <T> Type of the trigger (not really relevant)
+ * @param <R> Type of the returned value (= type of the resulting stream)
  */
 public class CombineWithLatestStreamId<T, D, R> implements StreamId<R> {
 
@@ -26,23 +26,19 @@ public class CombineWithLatestStreamId<T, D, R> implements StreamId<R> {
     private final StreamId<D> data;
     private final BiFunction<T, D, R> combiner;
 
-    private CombineWithLatestStreamId(StreamId<D> data, StreamId<T> trigger, BiFunction<T, D, R> combiner) {
+    private CombineWithLatestStreamId(StreamId<T> trigger, StreamId<D> data, BiFunction<T, D, R> combiner) {
         this.data = requireNonNull(data, "data stream must not be null");
         this.trigger = requireNonNull(trigger, "trigger stream must not be null");
         this.combiner = requireNonNull(combiner, "combiner must not be null");
     }
 
     public static <T, D> CombineWithLatestStreamId<T, D, D> dataPropagated(StreamId<T> trigger, StreamId<D> data) {
-        return of(data, trigger, (t, d) -> d);
+        return combine(trigger, data, (t, d) -> d);
     }
 
-    public static <T, D> CombineWithLatestStreamId<T, D, T> triggerPropagated(StreamId<T> trigger, StreamId<D> data) {
-        return of(data, trigger, (t, d) -> t);
-    }
-
-    public static <T, D, R> CombineWithLatestStreamId<T, D, R> of(StreamId<D> data, StreamId<T> trigger,
+    public static <T, D, R> CombineWithLatestStreamId<T, D, R> combine(StreamId<T> trigger, StreamId<D> data,
             BiFunction<T, D, R> combiner) {
-        return new CombineWithLatestStreamId<T, D, R>(data, trigger, combiner);
+        return new CombineWithLatestStreamId<>(trigger, data, combiner);
     }
 
     public StreamId<D> dataStream() {

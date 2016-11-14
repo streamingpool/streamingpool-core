@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,19 +32,17 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
     private final Set<StreamId<?>> idsOfStreamsUnderCreation;
     private final List<StreamFactory> factories;
-    private final ConcurrentMap<StreamId<?>, ReactiveStream<?>> activeStreams;
+    private final PoolContent content;
     private final Thread contextOfExecution;
 
-    public TrackKeepingDiscoveryService(List<StreamFactory> factories,
-            ConcurrentMap<StreamId<?>, ReactiveStream<?>> activeStreams) {
-        this(factories, activeStreams, new HashSet<>(), Thread.currentThread());
+    public TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content) {
+        this(factories, content, new HashSet<>(), Thread.currentThread());
     }
 
-    public TrackKeepingDiscoveryService(List<StreamFactory> factories,
-            ConcurrentMap<StreamId<?>, ReactiveStream<?>> activeStreams, Set<StreamId<?>> idsOfStreamsUnderCreation,
-            Thread contextOfExecution) {
+    public TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content,
+            Set<StreamId<?>> idsOfStreamsUnderCreation, Thread contextOfExecution) {
         this.factories = requireNonNull(factories, "factories must not be null");
-        this.activeStreams = requireNonNull(activeStreams, "activeStreams must not be null");
+        this.content = requireNonNull(content, "activeStreams must not be null");
         this.idsOfStreamsUnderCreation = Collections.unmodifiableSet(idsOfStreamsUnderCreation);
         this.contextOfExecution = requireNonNull(contextOfExecution, "contextOfExecution must not be null");
     }
@@ -55,34 +52,19 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         checkSameContexOfExecution();
         checkForRecursiveCycles(id);
 
-        synchronouslyCreateStreamIfAbsent(id);
+        content.synchronousPut(id, () -> createFromFactories(id));
 
         return getStreamWithIdOrElseThrow(id);
     }
 
     private <T> ReactiveStream<T> getStreamWithIdOrElseThrow(StreamId<T> id) {
-        /* This cast is safe, because we only allow to add the right types into the map */
-        @SuppressWarnings("unchecked")
-        ReactiveStream<T> activeStream = (ReactiveStream<T>) activeStreams.get(id);
+        ReactiveStream<T> activeStream = content.get(id);
 
         if (activeStream == null) {
             throw new IllegalArgumentException(
                     "The stream for id '" + id + "' is neither present nor can it be created by any factory.");
         }
         return activeStream;
-    }
-
-    private <T> void synchronouslyCreateStreamIfAbsent(StreamId<T> id) {
-        if (!activeStreams.containsKey(id)) {
-            synchronized (activeStreams) {
-                if (!activeStreams.containsKey(id)) {
-                    ReactiveStream<T> reactStream = createFromFactories(id);
-                    if (reactStream != null) {
-                        activeStreams.put(id, reactStream);
-                    }
-                }
-            }
-        }
     }
 
     private <T> void checkForRecursiveCycles(StreamId<T> id) {
@@ -105,7 +87,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
     private <T> TrackKeepingDiscoveryService cloneDiscoveryServiceIncluding(StreamId<T> newId) {
         Set<StreamId<?>> newSet = new HashSet<>(idsOfStreamsUnderCreation);
         newSet.add(newId);
-        return new TrackKeepingDiscoveryService(factories, activeStreams, newSet, contextOfExecution);
+        return new TrackKeepingDiscoveryService(factories, content, newSet, contextOfExecution);
     }
 
     private <T> ReactiveStream<T> createFromFactories(StreamId<T> newId) {
