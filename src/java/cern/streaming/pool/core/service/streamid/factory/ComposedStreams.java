@@ -13,6 +13,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import cern.streaming.pool.core.service.streamid.DelayedStreamId;
+import cern.streaming.pool.core.service.streamid.DerivedStreamId;
+import cern.streaming.pool.core.service.streamid.FilteredStreamId;
 import org.springframework.util.CollectionUtils;
 
 import cern.streaming.pool.core.service.ReactiveStream;
@@ -50,13 +53,14 @@ public final class ComposedStreams {
      * @see MapCompositionFunction
      */
     public static final <X, T> StreamId<T> mappedStream(final StreamId<X> sourceStreamId,
-                                                        final Function<X, Optional<T>> conversion) {
+                                                        final Function<X, T> conversion) {
         Objects.requireNonNull(sourceStreamId, "sourceStreamId");
         Objects.requireNonNull(conversion, "conversion");
-        return new CompositionStreamId<>(sourceStreamId, new MapCompositionFunction<>(conversion));
+        return new DerivedStreamId<>(sourceStreamId, conversion);
     }
 
     /**
+     * EXPERIMENTAL
      * Creates a {@link StreamId} that will identify a {@link ReactiveStream} which will emit items based on a
      * {@link ReactiveStream} identified by the provided {@link StreamId}. The conversion function always returns a
      * {@link ReactiveStream} which will used as the source of the objects to be flattened, if the stream emits values
@@ -69,6 +73,7 @@ public final class ComposedStreams {
      * @throws NullPointerException If the provided source stream id or conversion function are null.
      * @see FlatMapCompositionFunction
      */
+
     public static final <X, T> StreamId<T> flatMappedStream(final StreamId<X> sourceStreamId,
                                                             final Function<X, ReactiveStream<T>> conversion) {
         Objects.requireNonNull(sourceStreamId, "sourceStreamId");
@@ -77,6 +82,7 @@ public final class ComposedStreams {
     }
 
     /**
+     * EXPERIMENTAL
      * Creates a {@link StreamId} that will be used to create a {@link ReactiveStream} which will emit all the items
      * emitted by the {@link ReactiveStream}s identified by the provided {@link StreamId}s.
      *
@@ -112,7 +118,7 @@ public final class ComposedStreams {
                                                        final Predicate<X> predicate) {
         Objects.requireNonNull(sourceStreamId, "sourceStreamId");
         Objects.requireNonNull(predicate, "predicate");
-        return new CompositionStreamId<>(sourceStreamId, new FilterCompositionFunction<>(predicate));
+        return new FilteredStreamId<>(sourceStreamId, predicate);
     }
 
     /**
@@ -129,10 +135,11 @@ public final class ComposedStreams {
     public static final <X> StreamId<X> delayedStream(final StreamId<X> sourceStreamId, final Duration duration) {
         Objects.requireNonNull(sourceStreamId, "sourceStreamId");
         Objects.requireNonNull(duration, "duration");
-        return new CompositionStreamId<X, X>(sourceStreamId, new DelayCompositionFunction<>(duration));
+        return new DelayedStreamId<>(sourceStreamId, duration);
     }
 
     /**
+     * EXPERIMENTAL
      * Creates a {@link StreamId} that will identify a {@link ReactiveStream} which will emit items generated using the
      * provided method and the values emitted by the {@link ReactiveStream}s identified by the provided {@link StreamId}
      * s. The zip function always returns an {@link Optional}, if the value is present then it will be emitted,
