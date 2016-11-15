@@ -23,11 +23,11 @@ public final class NameRepositories {
         /* Only static methods */
     }
 
-    public static ImmutableNameRepository newFromConstantContainers(List<ConstantsNameContainer> constantsContainers) {
+    public static ImmutableNameRepository newFromConstantContainers(List<ConstantsContainer> constantsContainers) {
         return new ImmutableNameRepository(NameRepositories.mapNamesFrom(constantsContainers));
     }
 
-    private static final Map<Object, String> mapNamesFrom(List<ConstantsNameContainer> constantContainers) {
+    private static final Map<Object, String> mapNamesFrom(List<ConstantsContainer> constantContainers) {
         //@formatter:off
         return constantContainers.stream()
                 .flatMap(constants -> Stream.of(constants.getClass().getFields()))

@@ -11,17 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import cern.streaming.pool.core.names.ConstantsNameContainer;
+import cern.streaming.pool.core.names.ConstantsContainer;
 import cern.streaming.pool.core.names.NameRepositories;
 import cern.streaming.pool.core.names.NameRepository;
-import cern.streaming.pool.core.names.resolve.FunctionChain;
-import cern.streaming.pool.core.names.resolve.NameFunctions;
+import cern.streaming.pool.core.names.resolve.Chains;
+import cern.streaming.pool.core.names.resolve.Names;
 
 @Configuration
 public class NameRepositoryConfiguration {
 
     @Autowired
-    private List<ConstantsNameContainer> expressionConstantsContainers;
+    private List<ConstantsContainer> expressionConstantsContainers;
 
     @Bean
     public NameRepository nameRepository() {
@@ -31,12 +31,12 @@ public class NameRepositoryConfiguration {
     @Bean
     public Function<Object, String> streamIdNameMapping(NameRepository nameRepository) {
         // @formatter:off
-        return FunctionChain
-                .chain(nameRepository::nameFor)
-                .then(NameFunctions.nameMethod())
-                .then(NameFunctions.getNameMethod())
-                .then(NameFunctions.overriddenToString())
-                .then(NameFunctions.simpleClassName())
+        return Chains
+                .<String>chain().or(nameRepository::nameFor)
+                .or(Names::fromNameMethod)
+                .or(Names::fromGetNameMethod)
+                .or(Names::fromOverriddenToString)
+                .or(Names::fromSimpleClassName)
                 .orElseNull();
         // @formatter:on
     }

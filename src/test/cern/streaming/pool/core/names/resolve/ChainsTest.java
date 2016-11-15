@@ -4,11 +4,13 @@
 
 package cern.streaming.pool.core.names.resolve;
 
+import java.util.function.Function;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class FunctionChainTest {
+public class ChainsTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -16,8 +18,8 @@ public class FunctionChainTest {
     @Test
     public void nullThrows() {
         thrown.expect(NullPointerException.class);
-        thrown.expectMessage("new function");
-        FunctionChain.chain(null);
+        thrown.expectMessage("new mapper");
+        Chains.<String> chain().or((Function<Object, String>) null);
     }
 
 }

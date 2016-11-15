@@ -20,7 +20,7 @@ import cern.streaming.pool.core.names.NameRepository;
  */
 public class ImmutableNameRepository implements NameRepository {
 
-    private final Map<Object, String> expressionNames;
+    private final Map<Object, String> objectNames;
 
     /**
      * Creates a new name repository backed by the given map.
@@ -29,12 +29,16 @@ public class ImmutableNameRepository implements NameRepository {
      */
     public ImmutableNameRepository(Map<Object, String> objectNames) {
         requireNonNull(objectNames, "objectNames must not be null");
-        this.expressionNames = ImmutableMap.copyOf(objectNames);
+        this.objectNames = ImmutableMap.copyOf(objectNames);
     }
 
     @Override
     public String nameFor(Object object) {
-        return expressionNames.get(object);
+        return objectNames.get(object);
+    }
+
+    public Map<Object, String> content() {
+        return this.objectNames;
     }
 
 }

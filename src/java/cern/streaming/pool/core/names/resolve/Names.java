@@ -9,33 +9,34 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class NameFunctions {
+public class Names {
+
+    public static final Function<Object, String> FROM_NAME_METHOD = Names::fromNameMethod;
+    public static final Function<Object, String> FROM_GET_NAME_METHOD = Names::fromGetNameMethod;
+    public static final Function<Object, String> FROM_SIMPLE_CLASSNAME = Names::fromSimpleClassName;
+    public static final Function<Object, String> FROM_OVERRIDDEN_TOSTRING = Names::fromOverriddenToString;
 
     private static final String GET_NAME_METHOD_NAME = "getName";
     private static final String NAME_METHOD_NAME = "name";
     private static final String TO_STRING_METHOD_NAME = "toString";
 
-    public static final Function<Object, String> anyToString() {
-        return Objects::toString;
+    public static final String fromToString(Object object) {
+        return Objects.toString(object);
     }
 
-    public static final Function<Object, String> overriddenToString() {
-        return NameFunctions::nameFromOverriddenToString;
+    public static String fromNameMethod(Object o) {
+        return nameFromMethodOfName(o, NAME_METHOD_NAME);
     }
 
-    public static final Function<Object, String> nameMethod() {
-        return o -> nameFromMethodOfName(o, NAME_METHOD_NAME);
+    public static String fromGetNameMethod(Object o) {
+        return nameFromMethodOfName(o, GET_NAME_METHOD_NAME);
     }
 
-    public static final Function<Object, String> getNameMethod() {
-        return o -> nameFromMethodOfName(o, GET_NAME_METHOD_NAME);
+    public static String fromSimpleClassName(Object o) {
+        return o.getClass().getSimpleName();
     }
 
-    public static final Function<Object, String> simpleClassName() {
-        return o -> o.getClass().getSimpleName();
-    }
-
-    private static final String nameFromOverriddenToString(Object object) {
+    public static final String fromOverriddenToString(Object object) {
         if (isToStringOverriden(object)) {
             return object.toString();
         }

@@ -7,6 +7,6 @@ package cern.streaming.pool.core.names;
 /**
  * Marker interface for classes that contain expression as constants.
  */
-public interface ConstantsNameContainer {
+public interface ConstantsContainer {
     /* marker interface */
 }
