@@ -9,6 +9,7 @@ import cern.streaming.pool.core.service.streamid.CompositionStreamId;
 import java.util.*;
 
 /**
+ * EXPERIMENTAL
  * {@link StreamFactory} which provides a flexible way to create {@link ReactiveStream}s based on composition of
  * streams.
  *
