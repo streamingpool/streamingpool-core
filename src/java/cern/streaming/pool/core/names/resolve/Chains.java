@@ -19,22 +19,22 @@ public final class Chains {
 
     }
 
-    public static <R> Builder<Object, R, Function<Object, R>> chain() {
+    public static <R> ChainBuilder<Object, R, Function<Object, R>> chain() {
         return newFunctionBuilder();
     }
 
-    public static <T, R> Builder<T, R, Function<T, R>> chain(
-            BiFunction<T, Function<? super T, R>, R> mapperWithCallback) {
-        Builder<T, R, Function<T, R>> builder = newFunctionBuilder();
+    public static <R> ChainBuilder<Object, R, Function<Object, R>> chain(
+            BiFunction<Object, Function<Object, R>, R> mapperWithCallback) {
+        ChainBuilder<Object, R, Function<Object, R>> builder = newFunctionBuilder();
         return builder.or(mapperWithCallback);
     }
 
-    private static <T, R> Builder<T, R, Function<T, R>> newFunctionBuilder() {
-        return new Builder<>(b -> new Chain<>(new BranchChain<>(b)));
+    private static <R> ChainBuilder<Object, R, Function<Object, R>> newFunctionBuilder() {
+        return new ChainBuilder<>(b -> new Chain<>(new BranchChain<>(b)));
     }
 
-    private static <T, R> Builder<T, R, BiFunction<T, Function<? super T, R>, R>> newBiFunctionBuilder() {
-        return new Builder<>(BranchChain<T, R>::new);
+    private static <T, R> ChainBuilder<T, R, BiFunction<T, Function<? super T, R>, R>> newBiFunctionBuilder() {
+        return new ChainBuilder<>(BranchChain<T, R>::new);
     }
 
     private static abstract class AbstractBuilder<T, R, B extends AbstractBuilder<T, R, B>> {
@@ -64,19 +64,22 @@ public final class Chains {
             return castedThis;
         }
 
-        public FunctionBranchBuilder<T, T, R, B> branchIf(Predicate<T> condition, Function<T, R> mapper) {
-            return new FunctionBranchBuilder<>(condition, Function.identity(), newFunctionBuilder(), castedThis)
-                    .or(mapper);
+        public BiFunctionBranchBuilder<T, T, R, B> branchIf(Predicate<T> condition, Function<T, R> mapper) {
+            return newBranchBuilder(condition).or(mapper);
         }
 
-        public BiFunctionBranchBuilder<T, T, R, B> branchFullIf(Predicate<T> condition, Function<T, R> mapper) {
-            return new BiFunctionBranchBuilder<>(condition, Function.identity(), newBiFunctionBuilder(), castedThis)
-                    .or(mapper);
+        public BiFunctionBranchBuilder<T, T, R, B> branchIf(Predicate<T> condition,
+                BiFunction<T, ? extends Function<? super T, R>, R> mapper) {
+            return newBranchBuilder(condition).or(mapper);
         }
 
-        public <T1 extends T> BiFunctionBranchBuilder<T, T1, R, B> branchCase(Class<T1> condition,
+        private BiFunctionBranchBuilder<T, T, R, B> newBranchBuilder(Predicate<T> condition) {
+            return new BiFunctionBranchBuilder<>(condition, Function.identity(), newBiFunctionBuilder(), castedThis);
+        }
+
+        public <T1 extends T> BiFunctionBranchBuilder<T, T1, R, B> branchCase(Class<T1> caseClass,
                 Function<? super T1, R> mapper) {
-            return new BiFunctionBranchBuilder<>(condition::isInstance, condition::cast, newBiFunctionBuilder(),
+            return new BiFunctionBranchBuilder<>(caseClass::isInstance, caseClass::cast, newBiFunctionBuilder(),
                     castedThis).or(mapper);
         }
 
@@ -99,15 +102,6 @@ public final class Chains {
             when(condition, conv, (o, c) -> mapper.apply(o));
             return castedThis;
         }
-
-        // public B when(Class<? extends T> caseClass, BiFunction<T, Function<? super T, R>, R> mapperWithCallback) {
-        // requireNonNull(caseClass, "caseClass must not be null");
-        // return when(caseClass::isInstance, mapperWithCallback);
-        // }
-        //
-        // public B when(Class<? extends T> condition, Function<T, R> mapper) {
-        // return when(condition, (o, c) -> mapper.apply(o));
-        // }
 
     }
 
@@ -149,16 +143,6 @@ public final class Chains {
             return castedThis;
         }
 
-        // public BB when(Class<? extends T> caseClass, BiFunction<T, Function<? super T, R>, R> mapperWithCallback) {
-        // delegate.when(caseClass, mapperWithCallback);
-        // return castedThis;
-        // }
-        //
-        // public BB when(Class<? extends T> caseClass, Function<T, R> mapper) {
-        // delegate.when(caseClass, mapper);
-        // return castedThis;
-        // }
-
         public <T1 extends T> BB when(Predicate<T> newCondition, Function<T, T1> conv, Function<T1, R> mapper) {
             delegate.when(newCondition, conv, mapper);
             return castedThis;
@@ -167,10 +151,10 @@ public final class Chains {
     }
 
     public static class FunctionBranchBuilder<PT, T extends PT, R, PB extends AbstractBuilder<PT, R, PB>> extends
-            AbstractBranchBuilder<PT, T, R, Builder<T, R, Function<T, R>>, PB, FunctionBranchBuilder<PT, T, R, PB>> {
+            AbstractBranchBuilder<PT, T, R, ChainBuilder<T, R, Function<T, R>>, PB, FunctionBranchBuilder<PT, T, R, PB>> {
 
         FunctionBranchBuilder(Predicate<PT> condition, Function<PT, T> conversion,
-                Builder<T, R, Function<T, R>> delegate, PB parentBuilder) {
+                ChainBuilder<T, R, Function<T, R>> delegate, PB parentBuilder) {
             super(condition, conversion, delegate, parentBuilder);
         }
 
@@ -189,10 +173,10 @@ public final class Chains {
     }
 
     public static class BiFunctionBranchBuilder<PT, T extends PT, R, PB extends AbstractBuilder<PT, R, PB>> extends
-            AbstractBranchBuilder<PT, T, R, Builder<T, R, BiFunction<T, Function<? super T, R>, R>>, PB, BiFunctionBranchBuilder<PT, T, R, PB>> {
+            AbstractBranchBuilder<PT, T, R, ChainBuilder<T, R, BiFunction<T, Function<? super T, R>, R>>, PB, BiFunctionBranchBuilder<PT, T, R, PB>> {
 
         BiFunctionBranchBuilder(Predicate<PT> condition, Function<PT, T> conversion,
-                Builder<T, R, BiFunction<T, Function<? super T, R>, R>> delegate, PB parentBuilder) {
+                ChainBuilder<T, R, BiFunction<T, Function<? super T, R>, R>> delegate, PB parentBuilder) {
             super(condition, conversion, delegate, parentBuilder);
         }
 
@@ -210,11 +194,11 @@ public final class Chains {
 
     }
 
-    public static class Builder<T, R, F> extends AbstractBuilder<T, R, Builder<T, R, F>> {
+    public static class ChainBuilder<T, R, F> extends AbstractBuilder<T, R, ChainBuilder<T, R, F>> {
 
-        private final Function<Builder<T, R, F>, ? extends F> constructor;
+        private final Function<ChainBuilder<T, R, F>, ? extends F> constructor;
 
-        Builder(Function<Builder<T, R, F>, ? extends F> constructor) {
+        ChainBuilder(Function<ChainBuilder<T, R, F>, ? extends F> constructor) {
             this.constructor = constructor;
         }
 
@@ -245,7 +229,7 @@ public final class Chains {
         private final boolean throwIfAllReturnNull;
         private final Predicate<R> returnWhen;
 
-        BranchChain(Builder<T, R, ?> builder) {
+        BranchChain(ChainBuilder<T, R, ?> builder) {
             this.conditionedMappers = builder.mappers.build();
             this.returnWhen = builder.returnWhen;
             this.defaultValue = builder.defaultValue;
@@ -259,7 +243,7 @@ public final class Chains {
                 if (conditionedMapper.condition().test(input)) {
                     /*
                      * XXX Simply passing in the callback is of course dangerous. Proof of principle for the moment ...
-                     * We have to keep track of the ongoing calls and detect loops!
+                     * We should keep track of the ongoing calls and detect loops!
                      */
                     R returnValue = conditionedMapper.apply(input, callback);
                     if (returnWhen.test(returnValue)) {
@@ -276,16 +260,16 @@ public final class Chains {
 
     }
 
-    private static final class Chain<T, R> implements Function<T, R> {
+    private static final class Chain<R> implements Function<Object, R> {
 
-        private final BiFunction<T, Function<? super T, R>, R> delegate;
+        private final BiFunction<Object, Function<? super Object, R>, R> delegate;
 
-        public Chain(BiFunction<T, Function<? super T, R>, R> delegate) {
+        public Chain(BiFunction<Object, Function<? super Object, R>, R> delegate) {
             this.delegate = requireNonNull(delegate, "delegate must not be null");
         }
 
         @Override
-        public R apply(T input) {
+        public R apply(Object input) {
             return delegate.apply(input, this);
         }
 
