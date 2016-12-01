@@ -69,7 +69,7 @@ public final class Chains {
         }
 
         public BiFunctionBranchBuilder<T, T, R, B> branchIf(Predicate<T> condition,
-                BiFunction<T, ? extends Function<? super T, R>, R> mapper) {
+                BiFunction<T, ? extends Function<Object, R>, R> mapper) {
             return newBranchBuilder(condition).or(mapper);
         }
 
@@ -84,7 +84,7 @@ public final class Chains {
         }
 
         public <T1 extends T> BiFunctionBranchBuilder<T, T1, R, B> branchCase(Class<T1> condition,
-                BiFunction<? super T1, ? extends Function<? super T1, R>, R> mapper) {
+                BiFunction<? super T1, ? extends Function<Object, R>, R> mapper) {
             return new BiFunctionBranchBuilder<>(condition::isInstance, condition::cast, newBiFunctionBuilder(),
                     castedThis).or(mapper);
         }
@@ -127,7 +127,7 @@ public final class Chains {
             return castedThis;
         }
 
-        public BB or(BiFunction<? super T, ? extends Function<? super T, R>, R> mapperWithCallback) {
+        public BB or(BiFunction<? super T, ? extends Function<Object, R>, R> mapperWithCallback) {
             delegate.or(mapperWithCallback);
             return castedThis;
         }
