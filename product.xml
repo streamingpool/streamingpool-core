@@ -4,24 +4,25 @@
 		<jar>streaming-pool-core.jar</jar>
 		<desc />
 		<dependencies>
-			<!-- Deps in build.gradle! -->
 			<dep product="reactive-streams" version="1.0.0" />
 
-			<dep product="guava" />
-
-			<dep product="rxjava" version="1.1.8" />
+			<dep product="rxjava" version="1.1.9" />
 			<dep product="rxjava-math" version="1.0.0" />
 			<dep product="rxjava-reactive-streams" version="1.1.0" />
 
-			<dep product="akka-stream_2.11" version="2.4.5" />
+			<dep product="akka-stream_2.11" version="2.4.11" />
 
 			<dep product="spring-core" />
 			<dep product="spring-context" />
-			<dep product="spring-test" />
+			<dep product="spring-test" local="true" excluded="true" />
 
-			<dep product="log4j" />
-			<dep product="slf4j-api" />
 			<dep product="slf4j-log4j12" />
+
+			<dep product="guava" />
+
+			<dep product="junit" local="true" excluded="true" />
+			<dep product="assertj-core" local="true" excluded="true" />
+			<dep product="mockito-core" local="true" />
 		</dependencies>
 	</product>
 </products>
