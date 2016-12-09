@@ -18,10 +18,8 @@ import akka.stream.javadsl.RunnableGraph;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import cern.streaming.pool.core.service.ProvidingService;
-import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.akka.AkkaSourceProvidingService;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
 
 /**
  * Support interface for working with Akka streams. It is preferable to use {@link AbstractAkkaStreamSupport} because it
@@ -36,8 +34,8 @@ public interface AkkaStreamSupport extends StreamSupport {
 
     AkkaSourceProvidingService sourceProvidingService();
 
-    default <Out, Mat> ReactiveStream<Out> streamFrom(Source<Out, Mat> akkaSource) {
-        return ReactiveStreams.fromPublisher(publisherFrom(akkaSource));
+    default <Out, Mat> Publisher<Out> streamFrom(Source<Out, Mat> akkaSource) {
+        return publisherFrom(akkaSource);
     }
 
     default <Out, Mat> OngoingAkkaSourceProviding<Out, Mat> provide(Source<Out, Mat> akkaSource) {
@@ -51,7 +49,7 @@ public interface AkkaStreamSupport extends StreamSupport {
     }
 
     default <T> Source<T, NotUsed> sourceFrom(StreamId<T> id) {
-        return ReactiveStreams.sourceFrom(discover(id));
+        return Source.fromPublisher(discover(id));
     }
 
     static <T> Sink<T, Publisher<T>> defaultPublisherSink() {
@@ -117,7 +115,7 @@ public interface AkkaStreamSupport extends StreamSupport {
         public Mat as(StreamId<Out> id) {
             RunnableGraph<Pair<Mat, Publisher<Out>>> graph = akkaSource.toMat(defaultPublisherSink(), Keep.both());
             Pair<Mat, Publisher<Out>> materializedPair = graph.run(materializer);
-            providingService.provide(id, ReactiveStreams.fromPublisher(materializedPair.second()));
+            providingService.provide(id, materializedPair.second());
             return materializedPair.first();
         }
 

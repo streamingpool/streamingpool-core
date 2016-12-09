@@ -4,8 +4,10 @@
 
 package cern.streaming.pool.core.service;
 
+import org.reactivestreams.Publisher;
+
 /**
- * Interface used to discover {@link ReactiveStream}.
+ * Interface used to discover {@link Publisher}.
  * 
  * @see ProvidingService
  */
@@ -13,13 +15,13 @@ package cern.streaming.pool.core.service;
 public interface DiscoveryService {
 
     /**
-     * Given a {@link StreamId}, this method returns the correspondent {@link ReactiveStream}. This method should not
+     * Given a {@link StreamId}, this method returns the correspondent {@link Publisher}. This method should not
      * return null, instead is preferred to throw a specific exception in the case the given id is not present in the
      * system. From the API level, this behavior is not forced.
      * 
      * @param id the identifier of the stream to be discovered
-     * @return the discovered {@link ReactiveStream}
+     * @return the discovered {@link Publisher}
      */
-    <T> ReactiveStream<T> discover(StreamId<T> id);
+    <T> Publisher<T> discover(StreamId<T> id);
 
 }

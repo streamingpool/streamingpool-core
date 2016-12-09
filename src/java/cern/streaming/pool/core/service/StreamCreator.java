@@ -4,6 +4,8 @@
 
 package cern.streaming.pool.core.service;
 
+import org.reactivestreams.Publisher;
+
 /**
  * Interface that represents an entity that is able to create a specific {@link ReactiveStream}. The implementations of
  * this interfaces should know a priori the type and how to create a {@link ReactiveStream}.
@@ -24,6 +26,6 @@ public interface StreamCreator<T> {
      *            ('upstream' of the one it will create)
      * @return the newly created {@link ReactiveStream}
      */
-    ReactiveStream<T> createWith(DiscoveryService discoveryService);
+    Publisher<T> createWith(DiscoveryService discoveryService);
 
 }

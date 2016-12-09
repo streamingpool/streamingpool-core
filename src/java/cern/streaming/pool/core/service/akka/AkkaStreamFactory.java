@@ -5,7 +5,6 @@
 package cern.streaming.pool.core.service.akka;
 
 import static akka.stream.javadsl.AsPublisher.WITH_FANOUT;
-import static cern.streaming.pool.core.service.util.ReactiveStreams.fromPublisher;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
@@ -19,7 +18,6 @@ import akka.stream.Materializer;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 
@@ -34,13 +32,13 @@ public class AkkaStreamFactory implements AkkaSourceProvidingService, StreamFact
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Optional<ReactiveStream<T>> create(StreamId<T> newId, DiscoveryService discoveryService) {
+    public <T> Optional<Publisher<T>> create(StreamId<T> newId, DiscoveryService discoveryService) {
         Source<T, ?> source = (Source<T, ?>) suppliers.get(newId);
         if (source == null) {
             return Optional.empty();
         }
         Sink<T, Publisher<T>> akkaSink = Sink.asPublisher(WITH_FANOUT);
-        return Optional.of(fromPublisher(source.runWith(akkaSink, materializer)));
+        return Optional.of(source.runWith(akkaSink, materializer));
     }
 
     @Override

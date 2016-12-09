@@ -4,17 +4,15 @@
 
 package cern.streaming.pool.core.service.streamfactory;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
-
 import java.util.Optional;
 
+import org.reactivestreams.Publisher;
+
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.streamid.CombineWithLatestStreamId;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
-import rx.Observable;
+import io.reactivex.Flowable;
 
 /**
  * Factory for {@link CombineWithLatestStreamId}
@@ -26,7 +24,7 @@ public class CombineWithLatestStreamFactory implements StreamFactory {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <Y> Optional<ReactiveStream<Y>> create(StreamId<Y> id, DiscoveryService discoveryService) {
+    public <Y> Optional<Publisher<Y>> create(StreamId<Y> id, DiscoveryService discoveryService) {
         if (!(id instanceof CombineWithLatestStreamId)) {
             return Optional.empty();
         }
@@ -34,20 +32,12 @@ public class CombineWithLatestStreamFactory implements StreamFactory {
         return Optional.of(combineWithLatestStream((CombineWithLatestStreamId<?, ?, Y>) id, discoveryService));
     }
 
-    private <T, D, Y> ReactiveStream<Y> combineWithLatestStream(CombineWithLatestStreamId<T, D, Y> streamId,
+    private <T, D, Y> Publisher<Y> combineWithLatestStream(CombineWithLatestStreamId<T, D, Y> streamId,
             DiscoveryService discoveryService) {
-        Observable<D> data = rxFrom(discoveryService.discover(streamId.dataStream()));
-        Observable<T> trigger = rxFrom(discoveryService.discover(streamId.triggerStream()));
+        Flowable<D> data = Flowable.fromPublisher(discoveryService.discover(streamId.dataStream()));
+        Flowable<T> trigger = Flowable.fromPublisher(discoveryService.discover(streamId.triggerStream()));
 
-        /*
-         * The resulting Observable from withLatestFrom seems to not be compatible with rxjava-reactive-streams
-         * adapters. Introducing an "useless" buffer in order to be able to transform to ReactiveStream interfaces with
-         * the least minimum side effects. FIXME: the withLatestFrom operator is marked as @Experimental. Wait for the
-         * promotion to stable
-         */
-        Observable<Y> combinedWithLatest = trigger.withLatestFrom(data, streamId.combiner()::apply).buffer(1)
-                .flatMap(Observable::from);
-        return ReactiveStreams.fromRx(combinedWithLatest);
+        return trigger.withLatestFrom(data, streamId.combiner()::apply);
     }
 
 }

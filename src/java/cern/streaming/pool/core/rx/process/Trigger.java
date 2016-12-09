@@ -4,12 +4,12 @@
 
 package cern.streaming.pool.core.rx.process;
 
-import rx.Observable;
+import io.reactivex.Flowable;
 
 public interface Trigger {
 
     void trigger();
 
-    Observable<Object> asObservable();
+    Flowable<Object> asObservable();
 
 }

@@ -4,10 +4,9 @@
 
 package cern.streaming.pool.core.service.streamfactory;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
+import static io.reactivex.Flowable.never;
+import static io.reactivex.Flowable.timer;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static rx.Observable.never;
-import static rx.Observable.timer;
 
 import java.time.Duration;
 import java.util.Map;
@@ -15,16 +14,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.reactivestreams.Publisher;
+
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.streamid.BufferSpecification;
 import cern.streaming.pool.core.service.streamid.BufferSpecification.EndStreamMatcher;
 import cern.streaming.pool.core.service.streamid.OverlapBufferStreamId;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
-import rx.Observable;
-import rx.observables.ConnectableObservable;
+import io.reactivex.Flowable;
+import io.reactivex.flowables.ConnectableFlowable;
 
 /**
  * Factory for {@link OverlapBufferStreamId}
@@ -34,8 +33,9 @@ import rx.observables.ConnectableObservable;
  */
 public class OverlapBufferStreamFactory implements StreamFactory {
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> Optional<ReactiveStream<T>> create(StreamId<T> id, DiscoveryService discoveryService) {
+    public <T> Optional<Publisher<T>> create(StreamId<T> id, DiscoveryService discoveryService) {
         if (!(id instanceof OverlapBufferStreamId)) {
             return Optional.empty();
         }
@@ -49,42 +49,39 @@ public class OverlapBufferStreamFactory implements StreamFactory {
 
         Duration timeout = bufferSpecification.timeout();
 
-        ConnectableObservable<?> startStream = rxFrom(discoveryService.discover(startId)).publish();
-        ConnectableObservable<?> sourceStream = rxFrom(discoveryService.discover(sourceId)).publish();
+        ConnectableFlowable<?> startStream = Flowable.fromPublisher(discoveryService.discover(startId)).publish();
+        ConnectableFlowable<?> sourceStream = Flowable.fromPublisher(discoveryService.discover(sourceId)).publish();
 
         Set<EndStreamMatcher<?, ?>> matchers = bufferSpecification.endStreamMatchers();
-        @SuppressWarnings("unchecked")
-        Map<EndStreamMatcher<Object, Object>, ConnectableObservable<?>> endStreams = matchers.stream()
+        Map<EndStreamMatcher<Object, Object>, ConnectableFlowable<?>> endStreams = matchers.stream()
                 .collect(Collectors.toMap(m -> (EndStreamMatcher<Object, Object>) m,
-                        m -> rxFrom(discoveryService.discover(m.endStreamId())).publish()));
+                        m -> Flowable.fromPublisher(discoveryService.discover(m.endStreamId())).publish()));
 
-        Observable<?> bufferStream = sourceStream.buffer(startStream,
+        Flowable<?> bufferStream = sourceStream.buffer(startStream,
                 opening -> closingStreamFor(opening, endStreams, timeout));
 
         sourceStream.connect();
-        for (ConnectableObservable<?> stream : endStreams.values()) {
+        for (ConnectableFlowable<?> stream : endStreams.values()) {
             stream.connect();
         }
         startStream.connect();
 
-        @SuppressWarnings("unchecked")
-        ReactiveStream<T> resultingStream = (ReactiveStream<T>) ReactiveStreams.fromRx(bufferStream);
-        return Optional.of(resultingStream);
+        return Optional.of((Publisher<T>) bufferStream);
     }
 
-    private Observable<?> closingStreamFor(Object opening,
-            Map<EndStreamMatcher<Object, Object>, ConnectableObservable<?>> endStreams, Duration timeout) {
-        Observable<?> timeoutStream = timeoutStreamOf(timeout);
+    private Flowable<?> closingStreamFor(Object opening,
+            Map<EndStreamMatcher<Object, Object>, ConnectableFlowable<?>> endStreams, Duration timeout) {
+        Flowable<?> timeoutStream = timeoutStreamOf(timeout);
 
-        Set<Observable<?>> matchingEndStreams = endStreams.entrySet().stream()
+        Set<Flowable<?>> matchingEndStreams = endStreams.entrySet().stream()
                 .map(e -> e.getValue().filter(v -> e.getKey().matching().test(opening, v))).collect(Collectors.toSet());
 
         matchingEndStreams.add(timeoutStream);
 
-        return Observable.merge(matchingEndStreams).take(1);
+        return Flowable.merge(matchingEndStreams).take(1);
     }
 
-    private Observable<?> timeoutStreamOf(Duration timeout) {
+    private Flowable<?> timeoutStreamOf(Duration timeout) {
         if (timeout.isNegative()) {
             return never();
         }

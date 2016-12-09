@@ -16,7 +16,7 @@ public interface CreatorProvidingService {
      * Provides a {@link StreamCreator} associated to the specified id.
      * 
      * @param id the identifier of the stream that the {@link StreamCreator} will create
-     * @param streamSupplier the {@link StreamCreator} that is able to create the {@link ReactiveStream} specified using
+     * @param streamSupplier the {@link StreamCreator} that is able to create the {@link Flowable} specified using
      *            the given id
      */
     <T> void provide(StreamId<T> id, StreamCreator<T> streamSupplier);

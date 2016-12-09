@@ -1,6 +1,6 @@
 package cern.streaming.pool.core.service.rx;
 
-import rx.Observable;
+import io.reactivex.Flowable;
 
 public final class RxStreams {
     
@@ -8,8 +8,8 @@ public final class RxStreams {
         /* only static methods */
     }
 
-    public static <T> T awaitNext(Observable<T> rxStream) {
-        return rxStream.cache().toBlocking().first();
+    public static <T> T awaitNext(Flowable<T> rxStream) {
+        return rxStream.blockingFirst();
     }
 
 }

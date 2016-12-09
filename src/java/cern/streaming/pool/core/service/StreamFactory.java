@@ -6,8 +6,10 @@ package cern.streaming.pool.core.service;
 
 import java.util.Optional;
 
+import org.reactivestreams.Publisher;
+
 /**
- * This interface represents a factory for {@link ReactiveStream}s. An implementation of this interface is able to
+ * This interface represents a factory for {@link Publisher}s. An implementation of this interface is able to
  * create a stream given an implementation of {@link StreamId} and a {@link DiscoveryService}. During the creation of a
  * stream it is allowed to discover other streams. This allow the possibility to create streams that merge other streams
  * while performing transformations.
@@ -36,6 +38,6 @@ public interface StreamFactory {
      *            ('upstream' of the one it will create)
      * @return the newly created stream or {@code null} if this factory cannot create the stream of the given id
      */
-    <T> Optional<ReactiveStream<T>> create(StreamId<T> id, DiscoveryService discoveryService);
+    <T> Optional<Publisher<T>> create(StreamId<T> id, DiscoveryService discoveryService);
 
 }

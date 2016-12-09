@@ -6,19 +6,19 @@ package cern.streaming.pool.core.rx.process;
 
 import static java.util.Objects.requireNonNull;
 
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
+import io.reactivex.Flowable;
+import io.reactivex.processors.BehaviorProcessor;
 
 public class RunStateServiceImpl implements RunStateService {
 
-    private final BehaviorSubject<RunState> runState;
+    private final BehaviorProcessor<RunState> runState;
 
     public RunStateServiceImpl() {
         this(RunState.PAUSED);
     }
 
     public RunStateServiceImpl(RunState initialState) {
-        runState = BehaviorSubject.create(requireNonNull(initialState, "initial state must not be null"));
+        runState = BehaviorProcessor.createDefault(requireNonNull(initialState, "initial state must not be null"));
     }
 
     @Override
@@ -32,8 +32,8 @@ public class RunStateServiceImpl implements RunStateService {
     }
 
     @Override
-    public Observable<RunState> asObservable() {
-        return runState.asObservable();
+    public Flowable<RunState> asObservable() {
+        return runState;
     }
 
 }

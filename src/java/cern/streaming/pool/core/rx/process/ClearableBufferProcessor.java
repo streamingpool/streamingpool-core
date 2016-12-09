@@ -6,26 +6,26 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
+import io.reactivex.Flowable;
+import io.reactivex.processors.BehaviorProcessor;
 
 /**
  * Provides a buffered version of an observable of items of a certain type, where the buffering can be customized.
- * Additionally, the input is only propagated if the {@link RunState}, which is provided by another observable, is
+ * Additionally, the input is only propagated if the {@link RunState}, which is provided by another Flowable, is
  * {@link RunState#RUNNING}.
  * <p>
- * The following input observables can/must be provided:
+ * The following input Flowable can/must be provided:
  * <ul>
- * <li>An input observable ({@link #setInput(Observable)}): This observable provides the elements which have to be
- * buffered. This observable has to be provided (else the resulting observable will simply never publish anything).
- * <li>An observable of a runstate ({@link #setRunState(Observable)}): The items of the input observable are only
- * propagated when the run state is equal to {@link RunState#RUNNING}. If this observable is not provided or never emits
- * any item, then the state is considered as being {@link RunState#RUNNING} all the time.
- * <li>A trigger observable ({@link #setClearTrigger(Observable)}): Each time a new item is received on this observable,
- * a new (empty) buffer is created, which then fills up.
+ * <li>An input Flowable ({@link #setInput(Flowable)}): This Flowable provides the elements which have to be buffered.
+ * This Flowable has to be provided (else the resulting Flowable will simply never publish anything).
+ * <li>A Flowable of a runstate ({@link #setRunState(Flowable)}): The items of the input Flowable are only propagated
+ * when the run state is equal to {@link RunState#RUNNING}. If this Flowable is not provided or never emits any item,
+ * then the state is considered as being {@link RunState#RUNNING} all the time.
+ * <li>A trigger Flowable ({@link #setClearTrigger(Flowable)}): Each time a new item is received on this Flowable, a new
+ * (empty) buffer is created, which then fills up.
  * </ul>
  * The buffer is customized by the following parameters, which can be set at any time. However, they are only effective
- * at the moment when a new buffer is created (which happens anytime a new item is observed on the trigger observable).
+ * at the moment when a new buffer is created (which happens anytime a new item is observed on the trigger Flowable).
  * <p>
  * The possible options are:
  * <ul>
@@ -48,14 +48,14 @@ public class ClearableBufferProcessor<T> {
 
     private AtomicInteger minEmitSize = new AtomicInteger(DEFAULT_MIN_EMIT_SIZE);
     private final AtomicReference<RunState> runState = new AtomicReference<>(DEFAULT_RUN_STATE);
-    private BehaviorSubject<List<T>> bufferedContent = BehaviorSubject.create();
+    private BehaviorProcessor<List<T>> bufferedContent = BehaviorProcessor.create();
     private ConcurrentCircularBuffer<T> buffer = new ConcurrentCircularBuffer<>();
 
-    public void setClearTrigger(Observable<?> triggerClear) {
+    public void setClearTrigger(Flowable<?> triggerClear) {
         triggerClear.subscribe(object -> buffer.clear());
     }
 
-    public Observable<List<T>> bufferedContent() {
+    public Flowable<List<T>> bufferedContent() {
         return bufferedContent;
     }
 
@@ -67,11 +67,11 @@ public class ClearableBufferProcessor<T> {
         buffer.setLength(bufferSize);
     }
 
-    public void setBufferSize(Observable<Integer> bufferSize) {
+    public void setBufferSize(Flowable<Integer> bufferSize) {
         bufferSize.subscribe(buffer::setLength);
     }
 
-    public void setInput(Observable<T> input) {
+    public void setInput(Flowable<T> input) {
         input.subscribe(element -> {
             if (isAcquiring()) {
                 buffer.add(element);
@@ -95,7 +95,7 @@ public class ClearableBufferProcessor<T> {
         this.runState.set(runState);
     }
 
-    public void setRunState(Observable<RunState> runState) {
+    public void setRunState(Flowable<RunState> runState) {
         runState.subscribe(this.runState::set);
     }
 

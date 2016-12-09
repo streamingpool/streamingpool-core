@@ -4,11 +4,9 @@
 
 package cern.streaming.pool.core.service.stream;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static rx.Observable.just;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -19,18 +17,17 @@ import org.mockito.Matchers;
 import org.reactivestreams.Publisher;
 
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.streamfactory.DelayedStreamFactory;
 import cern.streaming.pool.core.service.streamid.DelayedStreamId;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
+import io.reactivex.Flowable;
 
 public class DelayedStreamIdStreamTest {
     private static final int SOURCE_VALUE = 1;
     @SuppressWarnings("unchecked")
     private static final StreamId<Integer> SOURCE_STREAM_ID = mock(StreamId.class);
-    private static final ReactiveStream<Integer> SOURCE_STREAM = fromRx(just(SOURCE_VALUE));
+    private static final Publisher<Integer> SOURCE_STREAM = Flowable.just(SOURCE_VALUE);
 
     private DelayedStreamFactory factory;
     private BlockingTestSubscriber<Integer> subscriber;
@@ -58,7 +55,7 @@ public class DelayedStreamIdStreamTest {
     }
 
     private Publisher<Integer> publisherFrom(DelayedStreamId<Integer> delayedId) {
-        return ReactiveStreams.publisherFrom(factory.create(delayedId, mockDiscoveryService()).get());
+        return factory.create(delayedId, mockDiscoveryService()).get();
     }
 
     private DiscoveryService mockDiscoveryService() {

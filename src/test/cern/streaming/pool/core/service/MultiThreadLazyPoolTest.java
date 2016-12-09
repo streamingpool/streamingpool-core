@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.junit.Test;
+import org.reactivestreams.Publisher;
 
 import cern.streaming.pool.core.service.impl.LocalPool;
 import cern.streaming.pool.core.testing.AbstractStreamTest;
@@ -33,7 +34,7 @@ public class MultiThreadLazyPoolTest extends AbstractStreamTest {
         StreamFactory multiThreadFactory = StreamFactoryMock.newFactory(String.class)
                 .withIdInvoke(idA, (streamId, recoursiveDiscoveryService) -> {
                     ExecutorService shouldNotDoAnExecutor = Executors.newSingleThreadExecutor();
-                    Future<ReactiveStream<String>> submission = shouldNotDoAnExecutor.submit(() -> {
+                    Future<Publisher<String>> submission = shouldNotDoAnExecutor.submit(() -> {
                         return recoursiveDiscoveryService.discover(idB);
                     });
 

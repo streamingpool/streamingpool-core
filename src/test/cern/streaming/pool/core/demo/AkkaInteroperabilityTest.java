@@ -26,7 +26,7 @@ import cern.streaming.pool.core.support.RxStreamSupport;
 import cern.streaming.pool.core.testing.AbstractAkkaStreamTest;
 import cern.streaming.pool.core.testing.NamedStreamId;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
-import rx.Observable;
+import io.reactivex.Flowable;
 import scala.concurrent.duration.Duration;
 
 public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements AkkaStreamSupport, RxStreamSupport {
@@ -41,7 +41,7 @@ public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements 
             17, 18, 19, 20);
     private static final Source<Integer, NotUsed> RANGE_SOURCE_AKKA = createAkkaRangeSource();
     private static final Flow<Integer, Integer, NotUsed> DELAY_FLOW = createDelayFlow();
-    private static final Observable<Integer> RANGE_SOURCE_RX = createRxRangeSource();
+    private static final Flowable<Integer> RANGE_SOURCE_RX = createRxRangeSource();
 
     private BlockingTestSubscriber<Integer> subscriber;
 
@@ -54,7 +54,7 @@ public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements 
     @Test
     public void provideAndDiscoverAkkaStream() {
         provide(RANGE_SOURCE_AKKA.via(DELAY_FLOW)).materialized().as(BUFFERED_ID);
-        publisherFrom(BUFFERED_ID).subscribe(subscriber);
+        discover(BUFFERED_ID).subscribe(subscriber);
 
         subscriber.await();
         assertThat(subscriber.getValues()).hasSize(SOURCE_STREAM_ELEMENT_NUM);
@@ -65,7 +65,7 @@ public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements 
     public void provideAsAkkaAndDiscoverAsRx() {
         provide(RANGE_SOURCE_AKKA).materialized().as(SOURCE_ID);
 
-        List<Integer> streamValues = rxFrom(SOURCE_ID).toList().toBlocking().single();
+        List<Integer> streamValues = rxFrom(SOURCE_ID).toList().blockingGet();
 
         assertThat(streamValues).hasSameSizeAs(ELEMENTS);
         assertThat(streamValues).containsExactlyElementsOf(ELEMENTS);
@@ -92,7 +92,7 @@ public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements 
         return Source.range(1, SOURCE_STREAM_ELEMENT_NUM);
     }
 
-    private static Observable<Integer> createRxRangeSource() {
-        return Observable.range(1, SOURCE_STREAM_ELEMENT_NUM);
+    private static Flowable<Integer> createRxRangeSource() {
+        return Flowable.range(1, SOURCE_STREAM_ELEMENT_NUM);
     }
 }

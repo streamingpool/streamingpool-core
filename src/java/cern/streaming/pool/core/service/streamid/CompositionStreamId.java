@@ -1,11 +1,12 @@
 package cern.streaming.pool.core.service.streamid;
 
-import cern.streaming.pool.core.service.ReactiveStream;
-import cern.streaming.pool.core.service.StreamId;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+
+import org.reactivestreams.Publisher;
+
+import cern.streaming.pool.core.service.StreamId;
 
 /**
  * Generic implementation of {@link StreamId} which in conjunction with the
@@ -18,7 +19,7 @@ import java.util.function.Function;
  */
 public final class CompositionStreamId<X, T> implements StreamId<T> {
     private final List<StreamId<X>> sourceStreamIds;
-    private final Function<List<ReactiveStream<X>>, ReactiveStream<T>> transformation;
+    private final Function<List<Publisher<X>>, Publisher<T>> transformation;
 
     /**
      * Creates a {@link CompositionStreamId} with the provided sourceStreamId and function.
@@ -28,7 +29,7 @@ public final class CompositionStreamId<X, T> implements StreamId<T> {
      * @param transformation The transformation {@link Function} to be used on the {@link ReactiveStream} identified by
      *                       the provided {@link StreamId}.
      */
-    public CompositionStreamId(StreamId<X> sourceStreamId, Function<List<ReactiveStream<X>>, ReactiveStream<T>> transformation) {
+    public CompositionStreamId(StreamId<X> sourceStreamId, Function<List<Publisher<X>>, Publisher<T>> transformation) {
         this(Collections.singletonList(sourceStreamId), transformation);
     }
 
@@ -41,7 +42,7 @@ public final class CompositionStreamId<X, T> implements StreamId<T> {
      *                        the provided {@link List} of {@link StreamId}s.
      */
     public CompositionStreamId(List<StreamId<X>> sourceStreamIds,
-                               Function<List<ReactiveStream<X>>, ReactiveStream<T>> transformation) {
+                               Function<List<Publisher<X>>, Publisher<T>> transformation) {
         this.sourceStreamIds = sourceStreamIds;
         this.transformation = transformation;
     }
@@ -50,7 +51,7 @@ public final class CompositionStreamId<X, T> implements StreamId<T> {
         return sourceStreamIds;
     }
 
-    public Function<List<ReactiveStream<X>>, ReactiveStream<T>> transformation() {
+    public Function<List<Publisher<X>>, Publisher<T>> transformation() {
         return transformation;
     }
 

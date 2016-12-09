@@ -4,7 +4,6 @@
 
 package cern.streaming.pool.core.service;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -14,11 +13,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+import org.reactivestreams.Publisher;
 
 import cern.streaming.pool.core.support.RxStreamSupport;
 import cern.streaming.pool.core.testing.AbstractStreamTest;
 import cern.streaming.pool.core.testing.NamedStreamId;
-import rx.Observable;
+import io.reactivex.Flowable;
 
 public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupport {
 
@@ -29,10 +29,10 @@ public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupp
     public void testElementsAreSentAndReceived() {
         final StreamId<Integer> id = new NamedStreamId<Integer>(ANY_NAME);
 
-        ReactiveStream<Integer> reactStream = fromRx(prepareRxStreamWith(INTEGER_SOURCE_ITEMS));
+        Publisher<Integer> reactStream = prepareRxStreamWith(INTEGER_SOURCE_ITEMS);
         provide(reactStream).as(id);
 
-        final int result = rxFrom(id).reduce(Math::addExact).toBlocking().single();
+        final int result = rxFrom(id).reduce(Math::addExact).blockingGet();
         final int expected = INTEGER_SOURCE_ITEMS.stream().mapToInt(i -> i.intValue()).sum();
 
         assertThat(result).isEqualTo(expected);
@@ -44,16 +44,15 @@ public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupp
         final StreamId<Integer> idB = new NamedStreamId<Integer>("idB");
 
         // Original stream
-        Observable<Integer> sourceStream = prepareRxStreamWith(INTEGER_SOURCE_ITEMS);
-        ReactiveStream<Integer> reactSourceStream = fromRx(sourceStream);
+        Publisher<Integer> reactSourceStream = prepareRxStreamWith(INTEGER_SOURCE_ITEMS);
         provide(reactSourceStream).as(idA);
 
         // Discover + re-provide
-        ReactiveStream<Integer> reactStreamB = fromRx(rxFrom(idA).map(value -> value * 2));
+        Publisher<Integer> reactStreamB = rxFrom(idA).map(value -> value * 2);
         provide(reactStreamB).as(idB);
 
         // Discover
-        final int result = rxFrom(idB).reduce(Math::addExact).toBlocking().single();
+        final int result = rxFrom(idB).reduce(Math::addExact).blockingGet();
         final int expected = INTEGER_SOURCE_ITEMS.stream().mapToInt(i -> i.intValue()).sum() * 2;
 
         assertThat(result).isEqualTo(expected);
@@ -69,26 +68,26 @@ public class ArchitectureTest extends AbstractStreamTest implements RxStreamSupp
         CountDownLatch counter = new CountDownLatch(1);
 
         List<Long> results = new ArrayList<>();
-        
-        Observable.interval(100, TimeUnit.MILLISECONDS) // Generate a value every 100 milliseconds
+
+        Flowable.interval(100, TimeUnit.MILLISECONDS) // Generate a value every 100 milliseconds
                 .filter(value -> value % 2 == 0) // Pass down only the values that are even
-                .limit(3) // Just accept 3 values
+                .take(3) // Just accept 3 values
                 .doAfterTerminate(counter::countDown) // When the stream ends (or there is an error) tell the counter to
                                                       // decrease
                 .subscribe(results::add); // Subscribe to the stream in order to get the values (in this case
-                                                 // print them)
+                                          // print them)
 
         // The counter works like this: it is initiated with a value (1 in this case) and this value can be decreased.
         // When it reaches 0, is considered done. In this case, the await() waits for the counter to reach 0 and then
         // unblock
         // the calling thread (the main in this case)
         counter.await();
-        
-        assertThat(results).hasSize(3).allMatch(value -> value %2 == 0);
+
+        assertThat(results).hasSize(3).allMatch(value -> value % 2 == 0);
     }
 
-    private static <T> Observable<T> prepareRxStreamWith(List<T> items) {
-        return Observable.from(items);
+    private static <T> Flowable<T> prepareRxStreamWith(List<T> items) {
+        return Flowable.fromIterable(items);
     }
 
 }

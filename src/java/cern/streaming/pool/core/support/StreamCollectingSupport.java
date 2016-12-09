@@ -24,7 +24,7 @@ public interface StreamCollectingSupport extends RxStreamSupport {
     default <T> OngoingBlockingCollecting<T> from(StreamId<T> streamId) {
         return new OngoingBlockingCollecting<>(streamId, this);
     }
-    
+
     class OngoingBlockingCollecting<T> {
         private int skip = 0;
         private final StreamId<T> streamId;

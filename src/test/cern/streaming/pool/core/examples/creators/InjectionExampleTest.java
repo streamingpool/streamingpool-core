@@ -5,9 +5,6 @@
 package cern.streaming.pool.core.examples.creators;
 
 import static cern.streaming.pool.core.examples.creators.InjectionIds.INJECTION_CONTROL_SYSTEM;
-import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
-import static cern.streaming.pool.core.service.util.ReactiveStreams.publisherFrom;
-import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,6 +20,7 @@ import cern.streaming.pool.core.conf.EmbeddedPoolConfiguration;
 import cern.streaming.pool.core.conf.StreamCreatorFactoryConfiguration;
 import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
+import io.reactivex.Flowable;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { EmbeddedPoolConfiguration.class, StreamCreatorFactoryConfiguration.class,
@@ -37,7 +35,7 @@ public class InjectionExampleTest {
 
         BlockingTestSubscriber<InjectionDomainObject> subscriber = BlockingTestSubscriber.ofName("Subscriber");
 
-        publisherFrom(fromRx(rxFrom(discovery.discover(INJECTION_CONTROL_SYSTEM)).limit(2))).subscribe(subscriber);
+        Flowable.fromPublisher(discovery.discover(INJECTION_CONTROL_SYSTEM)).take(2).subscribe(subscriber);
 
         subscriber.await(5, TimeUnit.SECONDS);
 

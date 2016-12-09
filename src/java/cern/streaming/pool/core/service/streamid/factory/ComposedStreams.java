@@ -1,7 +1,5 @@
 package cern.streaming.pool.core.service.streamid.factory;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,22 +11,20 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.reactivestreams.Publisher;
+import org.springframework.util.CollectionUtils;
+
+import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.streamid.CompositionStreamId;
 import cern.streaming.pool.core.service.streamid.DelayedStreamId;
 import cern.streaming.pool.core.service.streamid.DerivedStreamId;
 import cern.streaming.pool.core.service.streamid.FilteredStreamId;
-import org.springframework.util.CollectionUtils;
-
-import cern.streaming.pool.core.service.ReactiveStream;
-import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.streamid.CompositionStreamId;
 import cern.streaming.pool.core.service.streamid.factory.function.DelayCompositionFunction;
 import cern.streaming.pool.core.service.streamid.factory.function.FilterCompositionFunction;
 import cern.streaming.pool.core.service.streamid.factory.function.FlatMapCompositionFunction;
 import cern.streaming.pool.core.service.streamid.factory.function.MapCompositionFunction;
 import cern.streaming.pool.core.service.streamid.factory.function.ZipCompositionFunction;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
-import rx.Observable;
-
+import io.reactivex.Flowable;
 /**
  * Factory class which provides {@link StreamId}s that identify general purpose {@link ReactiveStream}s based on stream
  * composition. This class is experimental.
@@ -75,7 +71,7 @@ public final class ComposedStreams {
      */
 
     public static final <X, T> StreamId<T> flatMappedStream(final StreamId<X> sourceStreamId,
-                                                            final Function<X, ReactiveStream<T>> conversion) {
+                                                            final Function<X, Publisher<T>> conversion) {
         Objects.requireNonNull(sourceStreamId, "sourceStreamId");
         Objects.requireNonNull(conversion, "conversion");
         return new CompositionStreamId<>(sourceStreamId, new FlatMapCompositionFunction<>(conversion));
@@ -90,16 +86,16 @@ public final class ComposedStreams {
      *                        as the source of the new {@link ReactiveStream}.
      * @return A {@link StreamId}.
      * @throws IllegalArgumentException If the provided list of source stream ids is null or empty.
-     * @see Observable#merge(Iterable)
+     * @see Flowable#merge(Iterable)
      */
     public static final <X> StreamId<X> mergedStream(final List<StreamId<X>> sourceStreamIds) {
         checkCollectionAndThrow(sourceStreamIds, "sourceStreamIds");
         return new CompositionStreamId<>(sourceStreamIds, reactiveStreams -> {
-            List<Observable<X>> observablesToMerge = new ArrayList<>();
-            for (ReactiveStream<X> reactiveStream : reactiveStreams) {
-                observablesToMerge.add(rxFrom(reactiveStream));
+            List<Flowable<X>> observablesToMerge = new ArrayList<>();
+            for (Publisher<X> reactiveStream : reactiveStreams) {
+                observablesToMerge.add(Flowable.fromPublisher(reactiveStream));
             }
-            return ReactiveStreams.fromRx(Observable.merge(observablesToMerge));
+            return Flowable.merge(observablesToMerge);
         });
     }
 

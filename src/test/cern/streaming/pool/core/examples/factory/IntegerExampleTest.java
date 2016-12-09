@@ -4,7 +4,6 @@
 
 package cern.streaming.pool.core.examples.factory;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.publisherFrom;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
@@ -33,7 +32,7 @@ public class IntegerExampleTest {
         
         BlockingTestSubscriber<Integer> subscriber = BlockingTestSubscriber.ofName("subscriber");        
         
-        publisherFrom(discovery.discover(streamId)).subscribe(subscriber);
+        discovery.discover(streamId).subscribe(subscriber);
         
         subscriber.await();
         

@@ -4,25 +4,24 @@
 
 package cern.streaming.pool.core.examples.factory;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
-import static rx.Observable.range;
+import static io.reactivex.Flowable.range;
 
+import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Component;
 
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.TypedStreamFactory;
 
 @Component
 public class IntegerStreamFactory implements TypedStreamFactory<Integer, IntegerRangeId> {
 
     @Override
-    public ReactiveStream<Integer> createReactiveStream(IntegerRangeId id, DiscoveryService discoveryService) {
+    public Publisher<Integer> createReactiveStream(IntegerRangeId id, DiscoveryService discoveryService) {
         int from = id.getFrom();
         int to = id.getTo();
-        return fromRx(range(from, to - from));
+        return range(from, to - from);
     }
-    
+
     @Override
     public Class<IntegerRangeId> streamIdClass() {
         return IntegerRangeId.class;

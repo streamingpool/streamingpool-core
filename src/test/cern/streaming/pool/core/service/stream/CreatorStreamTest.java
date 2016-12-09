@@ -11,10 +11,10 @@ import static org.mockito.Mockito.mock;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.reactivestreams.Publisher;
 
 import cern.streaming.pool.core.service.CycleInStreamDiscoveryDetectedException;
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
 import cern.streaming.pool.core.service.impl.ImmutableIdentifiedStreamCreator;
@@ -32,52 +32,53 @@ public class CreatorStreamTest {
 
     private static final StreamId<Object> ID_A = mock(StreamId.class);
     private static final StreamId<Object> ID_B = mock(StreamId.class);
-    private static final ReactiveStream<Object> STREAM_A = mock(ReactiveStream.class);
-    private static final ReactiveStream<Object> STREAM_B = mock(ReactiveStream.class);
-    
-    private final IdentifiedStreamCreator<Object> creator = ImmutableIdentifiedStreamCreator.of(ID_A, discovery -> STREAM_A);
+    private static final Publisher<Object> STREAM_A = mock(Publisher.class);
+    private static final Publisher<Object> STREAM_B = mock(Publisher.class);
+
+    private final IdentifiedStreamCreator<Object> creator = ImmutableIdentifiedStreamCreator.of(ID_A,
+            discovery -> STREAM_A);
     private final CreatorStreamFactory factory = new CreatorStreamFactory(Arrays.asList(creator));
     private final DiscoveryService discoveryService = new LocalPool(Arrays.asList(factory));
-    
+
     @Test(expected = CycleInStreamDiscoveryDetectedException.class)
     public void testCycleLoopDetectedUsingStreamCreators() {
         DiscoveryService loopingDiscoveryService = new LocalPool(Arrays.asList(createLoopCreatorStreamFactory()));
-        
+
         loopingDiscoveryService.discover(ID_A);
     }
-    
+
     @Test
     public void createUnavailableStream() {
         assertFalse(factory.create(new NamedStreamId<>("mysterystream"), discoveryService).isPresent());
     }
-    
+
     @Test
     public void createAvailableStream() {
-        ReactiveStream<?> stream = factory.create(ID_A, discoveryService).get();
-        
+        Publisher<?> stream = factory.create(ID_A, discoveryService).get();
+
         assertEquals(STREAM_A, stream);
     }
-    
+
     @Test(expected = NullPointerException.class)
     public void provideWithNullId() {
         factory.provide(null, null);
     }
-    
+
     @Test(expected = NullPointerException.class)
     public void provideWithNullSupplier() {
         factory.provide(ID_A, null);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void provideDuplicateSupplier() {
         factory.provide(ID_A, creator.getCreator());
     }
-    
+
     @Test
     public void provideNewSupplier() {
         factory.provide(ID_B, discovery -> STREAM_B);
-        ReactiveStream<?> stream = factory.create(ID_B, discoveryService).get();
-        
+        Publisher<?> stream = factory.create(ID_B, discoveryService).get();
+
         assertEquals(STREAM_B, stream);
     }
 

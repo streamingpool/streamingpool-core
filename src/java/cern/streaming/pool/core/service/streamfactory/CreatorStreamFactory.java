@@ -10,20 +10,23 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.reactivestreams.Publisher;
+
 import cern.streaming.pool.core.service.CreatorProvidingService;
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.TypedStreamFactory;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
 import cern.streaming.pool.core.service.impl.ImmutableIdentifiedStreamCreator;
+import io.reactivex.Flowable;
 
 /**
- * {@link TypedStreamFactory} specifically designed to create {@link ReactiveStream}s using {@link StreamCreator}s. In order
- * to use the right {@link StreamCreator} for creating the {@link ReactiveStream}, it uses
- * {@link ImmutableIdentifiedStreamCreator} to map a specific {@link StreamId} to the correspondent {@link StreamCreator}.
+ * {@link TypedStreamFactory} specifically designed to create {@link ReactiveStream}s using {@link StreamCreator}s. In
+ * order to use the right {@link StreamCreator} for creating the {@link ReactiveStream}, it uses
+ * {@link ImmutableIdentifiedStreamCreator} to map a specific {@link StreamId} to the correspondent
+ * {@link StreamCreator}.
  * 
  * @see StreamCreator
  * @see ImmutableIdentifiedStreamCreator
@@ -40,12 +43,12 @@ public class CreatorStreamFactory implements CreatorProvidingService, StreamFact
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Optional<ReactiveStream<T>> create(StreamId<T> newId, DiscoveryService discoveryService) {
+    public <T> Optional<Publisher<T>> create(StreamId<T> newId, DiscoveryService discoveryService) {
         StreamCreator<?> streamCreator = suppliers.get(newId);
         if (streamCreator == null) {
             return Optional.empty();
         }
-        return Optional.of((ReactiveStream<T>) streamCreator.createWith(discoveryService));
+        return Optional.of((Flowable<T>) streamCreator.createWith(discoveryService));
     }
 
     @Override

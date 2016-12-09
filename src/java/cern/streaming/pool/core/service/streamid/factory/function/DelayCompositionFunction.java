@@ -1,20 +1,20 @@
 package cern.streaming.pool.core.service.streamid.factory.function;
 
-import cern.streaming.pool.core.service.ReactiveStream;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import org.reactivestreams.Publisher;
+
+import io.reactivex.Flowable;
 
 /**
  * Created by timartin on 06/10/2016.
  */
-public class DelayCompositionFunction<X> implements Function<List<ReactiveStream<X>>, ReactiveStream<X>> {
+public class DelayCompositionFunction<X> implements Function<List<Publisher<X>>, Publisher<X>> {
 
     private final Duration duration;
 
@@ -24,14 +24,16 @@ public class DelayCompositionFunction<X> implements Function<List<ReactiveStream
     }
 
     @Override
-    public ReactiveStream<X> apply(List<ReactiveStream<X>> reactiveStreams) {
-        return ReactiveStreams.fromRx(rxFrom(reactiveStreams.get(0)).delay(duration.toMillis(), MILLISECONDS));
+    public Publisher<X> apply(List<Publisher<X>> reactiveStreams) {
+        return Flowable.fromPublisher(reactiveStreams.get(0)).delay(duration.toMillis(), MILLISECONDS);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         DelayCompositionFunction<?> that = (DelayCompositionFunction<?>) o;
 
