@@ -8,6 +8,7 @@ import static cern.streaming.pool.core.demo.usecase.bis.RedundantPermitId.USER_P
 import static cern.streaming.pool.core.demo.usecase.bis.RedundantPermitId.USER_PERMIT_1_B;
 import static io.reactivex.Flowable.fromIterable;
 import static io.reactivex.Flowable.fromPublisher;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigInteger;
@@ -30,6 +31,7 @@ import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import io.reactivex.Flowable;
 import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class BisRegisterFlowTest extends AbstractStreamTest implements RxStreamSupport {
 
@@ -49,23 +51,30 @@ public class BisRegisterFlowTest extends AbstractStreamTest implements RxStreamS
 				.as(SOURCE_ID);
 		// @formatter:on
     }
-
+    
     @Test
-    public void testRxJava2() throws InterruptedException {
+    public void test() throws InterruptedException {
+
         CountDownLatch sync = new CountDownLatch(1);
 
-        // rxFrom(SOURCE_ID).flatMap(this::mapBitsToUserPermits).groupBy(UserPermit::getPermitId)
-        // .doOnTerminate(sync::countDown).subscribe(System.out::println);
-
-        Flowable.just(Arrays.asList(1, 2), Arrays.asList(3, 4)).flatMap(Flowable::fromIterable).groupBy(value -> value % 2 == 0)
-                .doOnTerminate(sync::countDown).subscribe(System.out::println);
+        // @formatter:off
+        fromIterable(DEMO_VALUES)
+            .observeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
+            .delay(10, TimeUnit.MILLISECONDS)
+            .take(SOURCE_STREAM_ELEMENTS)
+            .map(l -> Long.valueOf(l).intValue())
+            .flatMap(this::mapBitsToUserPermits)
+            .groupBy(UserPermit::getPermitId)
+            .doOnTerminate(sync::countDown)
+            .subscribe(System.out::println);
+        // @formatter:on
 
         sync.await();
     }
 
     @Ignore
     @Test
-    public void test() throws InterruptedException {
+    public void testBisUseCase() throws InterruptedException {
 
         CountDownLatch sync = new CountDownLatch(1);
 
@@ -84,12 +93,12 @@ public class BisRegisterFlowTest extends AbstractStreamTest implements RxStreamS
                 fromPublisher(discover(USER_PERMIT_1_B)), (a, b) -> a.isGiven() & b.isGiven());
         provide(userPermit1Stream).as(userPermit1Id);
 
-        BlockingTestSubscriber<Boolean> subscriber = BlockingTestSubscriber.ofName("subscriber");
+        TestSubscriber<Boolean> subscriber = TestSubscriber.create();
         discover(userPermit1Id).subscribe(subscriber);
 
-        subscriber.await();
+        assertThat(subscriber.awaitTerminalEvent(10, SECONDS)).isTrue().as("Timeout");
 
-        assertThat(subscriber.getValues()).hasSize(SOURCE_STREAM_ELEMENTS).contains(true, false);
+        assertThat(subscriber.values()).hasSize(SOURCE_STREAM_ELEMENTS).contains(true, false);
     }
 
     private Flowable<UserPermit> mapBitsToUserPermits(Integer register) {

@@ -33,7 +33,7 @@ public class PoolContent {
         addStreamHooks();
     }
 
-    public <T> boolean synchronousPut(StreamId<T> id, Supplier<Publisher<T>> supplier) {
+    public <T> boolean synchronousPutIfAbsent(StreamId<T> id, Supplier<Publisher<T>> supplier) {
         if (!activeStreams.containsKey(id)) {
             synchronized (activeStreams) {
                 if (!activeStreams.containsKey(id)) {

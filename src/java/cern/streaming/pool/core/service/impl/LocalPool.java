@@ -49,7 +49,7 @@ public class LocalPool implements DiscoveryService, ProvidingService {
         requireNonNull(id, "id must not be null!");
         requireNonNull(obs, "stream must not be null!");
 
-        boolean inserted = content.synchronousPut(id, () -> obs);
+        boolean inserted = content.synchronousPutIfAbsent(id, () -> obs);
         if (!inserted) {
             throw new IllegalArgumentException("Id " + id + " already registered! Cannot register twice.");
         }

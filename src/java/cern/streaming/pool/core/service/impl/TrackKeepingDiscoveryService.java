@@ -52,7 +52,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         checkSameContexOfExecution();
         checkForRecursiveCycles(id);
 
-        content.synchronousPut(id, () -> createFromFactories(id));
+        content.synchronousPutIfAbsent(id, () -> createFromFactories(id));
 
         return getStreamWithIdOrElseThrow(id);
     }
