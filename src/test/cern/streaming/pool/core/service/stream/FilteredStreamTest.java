@@ -5,7 +5,6 @@
 package cern.streaming.pool.core.service.stream;
 
 import static cern.streaming.pool.core.service.streamid.FilteredStreamId.filterBy;
-import static cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber.ofName;
 import static io.reactivex.Flowable.just;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -16,20 +15,20 @@ import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.streamid.FilteredStreamId;
 import cern.streaming.pool.core.support.RxStreamSupport;
 import cern.streaming.pool.core.testing.AbstractStreamTest;
-import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FilteredStreamTest extends AbstractStreamTest implements RxStreamSupport {
 
     @Test
-    public void streamFiltered() {
+    public void streamFiltered() throws InterruptedException {
         StreamId<Integer> sourceId = provide(just(1, 2, 3, 4)).withUniqueStreamId();
         FilteredStreamId<Integer> filterId = filterBy(sourceId, value -> value % 2 == 0);
         
-        BlockingTestSubscriber<Integer> subscriber = ofName("Subscriber");
+        TestSubscriber<Integer> subscriber = TestSubscriber.create();
         discover(filterId).subscribe(subscriber);
         subscriber.await();
         
-        assertThat(subscriber.getValues()).hasSize(2).containsOnly(2, 4);
+        assertThat(subscriber.values()).hasSize(2).containsOnly(2, 4);
     }
     
     @Test(expected = NullPointerException.class)

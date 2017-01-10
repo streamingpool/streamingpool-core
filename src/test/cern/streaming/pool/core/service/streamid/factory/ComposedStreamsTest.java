@@ -1,6 +1,7 @@
 package cern.streaming.pool.core.service.streamid.factory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -17,8 +18,8 @@ import org.reactivestreams.Publisher;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.support.RxStreamSupport;
 import cern.streaming.pool.core.testing.AbstractStreamTest;
-import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * Unit tests for {@link ComposedStreams}.
@@ -50,16 +51,16 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
     public void testMappedStreamWithConversionThatAlwaysReturns() {
         StreamId<Integer> sourceStreamId = provide(Flowable.<Integer> just(1, 3)).withUniqueStreamId();
         StreamId<Integer> mappedStreamId = ComposedStreams.mappedStream(sourceStreamId, val -> val + 1);
-        BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(mappedStreamId);
-        assertThat(subscriber.getValues()).hasSize(2).containsExactly(2, 4);
+        TestSubscriber<Integer> subscriber = createSubscriberAndWait(mappedStreamId);
+        assertThat(subscriber.values()).hasSize(2).containsExactly(2, 4);
     }
 
     @Test
     public void testMappedStreamWithConversionThatDoesNotAlwaysReturns() {
         StreamId<Integer> sourceStreamId = provide(Flowable.<Integer> just(1, 3)).withUniqueStreamId();
         StreamId<Integer> mappedStreamId = ComposedStreams.mappedStream(sourceStreamId, val -> (val == 1) ? val : null);
-        BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(mappedStreamId);
-        assertThat(subscriber.getValues()).hasSize(1).containsExactly(1);
+        TestSubscriber<Integer> subscriber = createSubscriberAndWait(mappedStreamId);
+        assertThat(subscriber.values()).hasSize(1).containsExactly(1);
     }
 
     @Test
@@ -103,8 +104,8 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
         StreamId<Integer> sourceStreamId = provide(Flowable.<Integer> just(1, 3)).withUniqueStreamId();
         StreamId<Integer> flatMappedStreamId = ComposedStreams.flatMappedStream(sourceStreamId,
                 val -> Flowable.<Integer> just(val, val));
-        BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(flatMappedStreamId);
-        assertThat(subscriber.getValues()).hasSize(4).containsExactly(1, 1, 3, 3);
+        TestSubscriber<Integer> subscriber = createSubscriberAndWait(flatMappedStreamId);
+        assertThat(subscriber.values()).hasSize(4).containsExactly(1, 1, 3, 3);
     }
 
     @Test
@@ -112,8 +113,8 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
         StreamId<Integer> sourceStreamId = provide(Flowable.<Integer> just(1, 3)).withUniqueStreamId();
         StreamId<Integer> flatMappedStreamId = ComposedStreams.flatMappedStream(sourceStreamId,
                 val -> (val == 1) ? Flowable.<Integer> just(val, val) : Flowable.<Integer> empty());
-        BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(flatMappedStreamId);
-        assertThat(subscriber.getValues()).hasSize(2).containsExactly(1, 1);
+        TestSubscriber<Integer> subscriber = createSubscriberAndWait(flatMappedStreamId);
+        assertThat(subscriber.values()).hasSize(2).containsExactly(1, 1);
     }
 
     @Test
@@ -155,8 +156,8 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
     public void testMergedStreamWithSingleSourceStreamId() {
         StreamId<Integer> sourceStreamId = provide(Flowable.<Integer> just(1, 3)).withUniqueStreamId();
         StreamId<Integer> mergedStreamId = ComposedStreams.mergedStream(Arrays.asList(sourceStreamId));
-        BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(mergedStreamId);
-        assertThat(subscriber.getValues()).hasSize(2).containsExactly(1, 3);
+        TestSubscriber<Integer> subscriber = createSubscriberAndWait(mergedStreamId);
+        assertThat(subscriber.values()).hasSize(2).containsExactly(1, 3);
     }
 
     @Test
@@ -165,8 +166,8 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
         StreamId<Integer> sourceStreamId2 = provide(Flowable.<Integer> just(2, 4)).withUniqueStreamId();
         StreamId<Integer> mergedStreamId = ComposedStreams
                 .mergedStream(Arrays.asList(sourceStreamId1, sourceStreamId2));
-        BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(mergedStreamId);
-        assertThat(subscriber.getValues()).hasSize(4).contains(1, 2, 3, 4);
+        TestSubscriber<Integer> subscriber = createSubscriberAndWait(mergedStreamId);
+        assertThat(subscriber.values()).hasSize(4).contains(1, 2, 3, 4);
     }
 
     @Test
@@ -202,8 +203,8 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
     public void testFilteredStreamWithCorrectValues() {
         StreamId<Integer> sourceStreamId = provide(Flowable.<Integer> just(1, 3)).withUniqueStreamId();
         StreamId<Integer> filteredStreamId = ComposedStreams.filteredStream(sourceStreamId, val -> val == 1);
-        BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(filteredStreamId);
-        assertThat(subscriber.getValues()).hasSize(1).contains(1);
+        TestSubscriber<Integer> subscriber = createSubscriberAndWait(filteredStreamId);
+        assertThat(subscriber.values()).hasSize(1).contains(1);
     }
 
     @Test
@@ -243,19 +244,19 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
     }
 
     @Test
-    public void testDelayedStreamWithCorrectValues() {
+    public void testDelayedStreamWithCorrectValues() throws InterruptedException {
         final long delay = 2000;
         final long deltaDelay = 500;
         StreamId<Integer> sourceStreamId = provide(Flowable.<Integer> just(1)).withUniqueStreamId();
         StreamId<Integer> delayedStreamId = ComposedStreams.delayedStream(sourceStreamId, Duration.ofMillis(delay));
-        BlockingTestSubscriber<Integer> subscriber = BlockingTestSubscriber.ofName("subscriber");
+        TestSubscriber<Integer> subscriber = TestSubscriber.create();
         discover(delayedStreamId).subscribe(subscriber);
 
         Instant before = Instant.now();
         subscriber.await();
         Instant after = Instant.now();
 
-        assertThat(subscriber.getValues()).hasSize(1).containsExactly(1);
+        assertThat(subscriber.values()).hasSize(1).containsExactly(1);
         assertThat(Duration.between(before, after).toMillis()).isBetween(delay - deltaDelay, delay + deltaDelay);
     }
 
@@ -307,8 +308,8 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
         StreamId<Integer> sourceStreamId2 = provide(Flowable.<Integer> just(2, 4)).withUniqueStreamId();
         StreamId<Integer> zippedStreamId = ComposedStreams.zippedStream(sourceStreamId1, sourceStreamId2,
                 (val1, val2) -> Optional.<Integer> of(val1 + val2));
-        BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(zippedStreamId);
-        assertThat(subscriber.getValues()).hasSize(2).containsExactly(3, 7);
+        TestSubscriber<Integer> subscriber = createSubscriberAndWait(zippedStreamId);
+        assertThat(subscriber.values()).hasSize(2).containsExactly(3, 7);
     }
 
     @Test
@@ -317,8 +318,8 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
         StreamId<Integer> sourceStreamId2 = provide(Flowable.<Integer> just(2, 4)).withUniqueStreamId();
         StreamId<Integer> zippedStreamId = ComposedStreams.zippedStream(sourceStreamId1, sourceStreamId2,
                 (val1, val2) -> (val1 == 1) ? Optional.<Integer> empty() : Optional.<Integer> of(val1 + val2));
-        BlockingTestSubscriber<Integer> subscriber = createSubscriberAndWait(zippedStreamId);
-        assertThat(subscriber.getValues()).hasSize(1).containsExactly(7);
+        TestSubscriber<Integer> subscriber = createSubscriberAndWait(zippedStreamId);
+        assertThat(subscriber.values()).hasSize(1).containsExactly(7);
     }
 
     @Test
@@ -350,10 +351,14 @@ public class ComposedStreamsTest extends AbstractStreamTest implements RxStreamS
         assertThat(zippedStream1).isNotEqualTo(zippedStream2);
     }
 
-    private final BlockingTestSubscriber<Integer> createSubscriberAndWait(StreamId<Integer> sourceStreamId) {
-        BlockingTestSubscriber<Integer> subscriber = BlockingTestSubscriber.ofName("subscriber");
+    private final TestSubscriber<Integer> createSubscriberAndWait(StreamId<Integer> sourceStreamId) {
+        TestSubscriber<Integer> subscriber = TestSubscriber.create();
         discover(sourceStreamId).subscribe(subscriber);
-        subscriber.await();
+        try {
+            subscriber.await();
+        } catch (InterruptedException e) {
+            fail("Interrupted wait", e);
+        }
         return subscriber;
     }
 }

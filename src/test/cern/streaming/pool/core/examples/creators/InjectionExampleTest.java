@@ -19,8 +19,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import cern.streaming.pool.core.conf.EmbeddedPoolConfiguration;
 import cern.streaming.pool.core.conf.StreamCreatorFactoryConfiguration;
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { EmbeddedPoolConfiguration.class, StreamCreatorFactoryConfiguration.class,
@@ -31,16 +31,16 @@ public class InjectionExampleTest {
     private DiscoveryService discovery;
 
     @Test
-    public void testInjectionUsingStreamCreator() {
+    public void testInjectionUsingStreamCreator() throws InterruptedException {
 
-        BlockingTestSubscriber<InjectionDomainObject> subscriber = BlockingTestSubscriber.ofName("Subscriber");
+        TestSubscriber<InjectionDomainObject> subscriber = TestSubscriber.create();
 
         Flowable.fromPublisher(discovery.discover(INJECTION_CONTROL_SYSTEM)).take(2).subscribe(subscriber);
 
         subscriber.await(5, TimeUnit.SECONDS);
 
-        assertThat(subscriber.getValues()).hasSize(2);
-        assertThat(subscriber.getValues().stream().map(injDomain -> injDomain.getInjectionName()).collect(toList()))
+        assertThat(subscriber.values()).hasSize(2);
+        assertThat(subscriber.values().stream().map(injDomain -> injDomain.getInjectionName()).collect(toList()))
                 .contains("Injection number 0", "Injection number 1");
     }
 

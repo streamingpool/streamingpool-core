@@ -33,9 +33,9 @@ import cern.streaming.pool.core.service.streamfactory.OverlapBufferStreamFactory
 import cern.streaming.pool.core.service.streamid.BufferSpecification;
 import cern.streaming.pool.core.service.streamid.BufferSpecification.EndStreamMatcher;
 import cern.streaming.pool.core.service.streamid.OverlapBufferStreamId;
-import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import io.reactivex.Flowable;
 import io.reactivex.flowables.ConnectableFlowable;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class OverlapBufferStreamTest {
 
@@ -148,7 +148,7 @@ public class OverlapBufferStreamTest {
     }
 
     private List<List<Long>> subscribeAndWait(OverlapBufferStreamId<Long> bufferId) {
-        BlockingTestSubscriber<List<Long>> subscriber = BlockingTestSubscriber.ofName("subscriber");
+        TestSubscriber<List<Long>> subscriber = TestSubscriber.create();
         CountDownLatch sync = new CountDownLatch(1);
         Flowable.fromPublisher(pool.discover(bufferId)).doOnTerminate(sync::countDown).subscribe(subscriber);
         try {
@@ -156,7 +156,7 @@ public class OverlapBufferStreamTest {
         } catch (InterruptedException e) {
             /* Tests.. */
         }
-        return subscriber.getValues();
+        return subscriber.values();
     }
 
     private <T> StreamId<T> registerRx(Flowable<T> stream) {

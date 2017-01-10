@@ -20,8 +20,8 @@ import cern.streaming.pool.core.service.DiscoveryService;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.streamfactory.DelayedStreamFactory;
 import cern.streaming.pool.core.service.streamid.DelayedStreamId;
-import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class DelayedStreamIdStreamTest {
     private static final int SOURCE_VALUE = 1;
@@ -30,16 +30,16 @@ public class DelayedStreamIdStreamTest {
     private static final Publisher<Integer> SOURCE_STREAM = Flowable.just(SOURCE_VALUE);
 
     private DelayedStreamFactory factory;
-    private BlockingTestSubscriber<Integer> subscriber;
+    private TestSubscriber<Integer> subscriber;
 
     @Before
     public void setUp() {
         factory = new DelayedStreamFactory();
-        subscriber = BlockingTestSubscriber.ofName("Subscriber");
+        subscriber = TestSubscriber.create();
     }
 
     @Test
-    public void testThatTheStreamIsDelayedAtLeastByTheSpecfiedTime() {
+    public void testThatTheStreamIsDelayedAtLeastByTheSpecfiedTime() throws InterruptedException {
         long delay = 2000;
         long deltaDelay = 500;
 
@@ -50,7 +50,7 @@ public class DelayedStreamIdStreamTest {
         subscriber.await();
         Instant after = Instant.now();
 
-        assertThat(subscriber.getValues()).containsOnly(SOURCE_VALUE);
+        assertThat(subscriber.values()).containsOnly(SOURCE_VALUE);
         assertThat(Duration.between(before, after).toMillis()).isBetween(delay - deltaDelay, delay + deltaDelay);
     }
 
