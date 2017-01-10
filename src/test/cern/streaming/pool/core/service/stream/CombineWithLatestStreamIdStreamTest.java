@@ -9,7 +9,6 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import cern.streaming.pool.core.service.StreamId;
@@ -17,22 +16,21 @@ import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFac
 import cern.streaming.pool.core.service.streamid.CombineWithLatestStreamId;
 import cern.streaming.pool.core.support.RxStreamSupport;
 import cern.streaming.pool.core.testing.AbstractStreamTest;
-import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * Unit tests for {@link CombineWithLatestStreamFactory}
  * 
  * @author acalia
  */
-@Ignore
 public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest implements RxStreamSupport {
 
-    private BlockingTestSubscriber<Long> subscriber;
+    private TestSubscriber<Long> subscriber;
 
     @Before
     public void setUp() {
-        subscriber = BlockingTestSubscriber.ofName("Subscriber");
+        subscriber = TestSubscriber.create();
     }
 
     /* @formatter:off
@@ -49,7 +47,7 @@ public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest impl
 
         subscribeAndWait(data, trigger);
 
-        assertThat(subscriber.getValues()).containsExactly(0L, 1L, 2L, 3L);
+        assertThat(subscriber.values()).containsExactly(0L, 1L, 2L, 3L);
     }
 
     /* @formatter:off
@@ -67,7 +65,7 @@ public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest impl
 
         subscribeAndWait(data, trigger);
 
-        assertThat(subscriber.getValues()).containsExactly(2L, 3L, 5L, 7L);
+        assertThat(subscriber.values()).containsExactly(2L, 3L, 5L, 7L);
     }
 
     /* @formatter:off
@@ -84,7 +82,7 @@ public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest impl
 
         subscribeAndWait(data, trigger);
 
-        assertThat(subscriber.getValues()).isEmpty();
+        assertThat(subscriber.values()).isEmpty();
     }
 
     /* @formatter:off
@@ -99,7 +97,7 @@ public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest impl
         Flowable<Long> trigger = delayed(500);
         Flowable<Long> data = Flowable.interval(1000, MILLISECONDS);
         subscribeAndWait(data, trigger);
-        assertThat(subscriber.getValues()).isEmpty();
+        assertThat(subscriber.values()).isEmpty();
     }
 
     private void subscribeAndWait(Flowable<Long> data, Flowable<Long> trigger) {
@@ -108,7 +106,7 @@ public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest impl
         StreamId<Long> streamId = CombineWithLatestStreamId.dataPropagated(triggerId, dataId);
 
         rxFrom(streamId).subscribe(subscriber);
-        subscriber.await();
+        subscriber.awaitTerminalEvent();
     }
 
     private Flowable<Long> delayed(int millis) {

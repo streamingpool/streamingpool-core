@@ -21,6 +21,7 @@ import cern.streaming.pool.core.service.impl.ImmutableIdentifiedStreamCreator;
 import cern.streaming.pool.core.service.impl.LocalPool;
 import cern.streaming.pool.core.service.streamfactory.CreatorStreamFactory;
 import cern.streaming.pool.core.testing.NamedStreamId;
+import io.reactivex.Flowable;
 
 @SuppressWarnings("unchecked")
 /**
@@ -32,8 +33,8 @@ public class CreatorStreamTest {
 
     private static final StreamId<Object> ID_A = mock(StreamId.class);
     private static final StreamId<Object> ID_B = mock(StreamId.class);
-    private static final Publisher<Object> STREAM_A = mock(Publisher.class);
-    private static final Publisher<Object> STREAM_B = mock(Publisher.class);
+    private static final Publisher<Object> STREAM_A = mock(Flowable.class);
+    private static final Publisher<Object> STREAM_B = mock(Flowable.class);
 
     private final IdentifiedStreamCreator<Object> creator = ImmutableIdentifiedStreamCreator.of(ID_A,
             discovery -> STREAM_A);

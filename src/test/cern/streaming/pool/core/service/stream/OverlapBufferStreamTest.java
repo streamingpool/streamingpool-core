@@ -11,6 +11,7 @@ import static io.reactivex.Flowable.never;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 import java.time.Duration;
@@ -21,7 +22,6 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableSet;
@@ -36,7 +36,7 @@ import cern.streaming.pool.core.service.streamid.OverlapBufferStreamId;
 import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
 import io.reactivex.Flowable;
 import io.reactivex.flowables.ConnectableFlowable;
-@Ignore
+
 public class OverlapBufferStreamTest {
 
     private OverlapBufferStreamFactory factory;
@@ -67,16 +67,19 @@ public class OverlapBufferStreamTest {
     }
 
     @Test
-    public void dataStreamEndsBeforeEndStreamEmitsShouldBufferEverything() {
+    public void dataStreamEndsBeforeEndStreamEmitsShouldBufferEverything() throws InterruptedException {
         StreamId<Long> sourceId = registerRx(oneSecondIntervalOfLength(5));
         StreamId<Object> startId = registerRx(merge(just(new Object()).delay(2, SECONDS), never()));
         StreamId<Object> endId = registerRx(never());
 
-        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification
-                .ofStartEnd(startId, Collections.singleton(EndStreamMatcher.endingOnEvery(endId)))));
+        OverlapBufferStreamId<Long> bufferId = OverlapBufferStreamId.of(sourceId,
+                BufferSpecification.ofStartEnd(startId, Collections.singleton(EndStreamMatcher.endingOnEvery(endId))));
 
-        assertThat(values).hasSize(1);
-        assertThat(values.get(0)).containsExactly(2L, 3L, 4L);
+        CountDownLatch sync = new CountDownLatch(1);
+        Flowable.fromPublisher(pool.discover(bufferId)).doOnNext(v -> sync.countDown()).subscribe();
+        if (sync.await(1, SECONDS)) {
+            fail("OnNext event should not happen if the end trigger does not yield any value");
+        }
     }
 
     @Test
@@ -85,13 +88,12 @@ public class OverlapBufferStreamTest {
         StreamId<Object> startId = registerRx(never());
         StreamId<Object> endId = registerRx(never());
 
-        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification
-                .ofStartEnd(startId, Collections.singleton(EndStreamMatcher.endingOnEvery(endId)))));
+        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId,
+                BufferSpecification.ofStartEnd(startId, Collections.singleton(EndStreamMatcher.endingOnEvery(endId)))));
 
         assertThat(values).isEmpty();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferEndsStreamUsingDelayedStart() {
         Flowable<Object> startStream = shiftedBy500Ms(ofObject(interval(3, SECONDS)));
@@ -100,18 +102,17 @@ public class OverlapBufferStreamTest {
         StreamId<Object> startId = registerRx(startStream);
         StreamId<Object> endId = registerRx(startStream.delay(3, SECONDS));
 
-        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification.ofStartEnd(
-                startId, Collections.singleton(EndStreamMatcher.endingOnMatch(endId, Objects::equals)))));
+        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification
+                .ofStartEnd(startId, Collections.singleton(EndStreamMatcher.endingOnMatch(endId, Objects::equals)))));
 
         assertThat(values).contains(Arrays.asList(3L, 4L, 5L));
         assertThat(values).contains(Arrays.asList(6L, 7L, 8L));
         assertThat(values).contains(Arrays.asList(9L));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void bufferEndsWithTimeout() {
-        Flowable<Object> startStream = shiftedBy500Ms(ofObject(interval(3, SECONDS)));
+        Flowable<Object> startStream = shiftedBy500Ms(ofObject(interval(3, SECONDS)).take(3));
 
         StreamId<Long> sourceId = registerRx(oneSecondIntervalOfLength(10));
         StreamId<Object> startId = registerRx(startStream);
