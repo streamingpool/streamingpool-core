@@ -35,12 +35,14 @@ public class CompositionStreamFactoryTest extends AbstractStreamTest implements 
     }
 
     @Test(expected = NullPointerException.class)
+    @SuppressWarnings("unchecked")
     public void testCreateWithNullDiscoveryService() {
         StreamId<Object> streamId = Mockito.mock(StreamId.class);
         compositionStreamFactory.create(streamId, null);
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testCreateWithWrongStreamIdType() {
         StreamId<Object> streamId = Mockito.mock(StreamId.class);
         DiscoveryService discoveryService = Mockito.mock(DiscoveryService.class);
@@ -50,6 +52,7 @@ public class CompositionStreamFactoryTest extends AbstractStreamTest implements 
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testCreate() {
         DiscoveryService discoveryService = Mockito.mock(DiscoveryService.class);
         StreamId<Object> sourceStreamId = Mockito.mock(StreamId.class);
