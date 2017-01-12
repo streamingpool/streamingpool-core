@@ -21,7 +21,7 @@
 			<dep product="guava" />
 
 			<dep product="junit" local="true" excluded="true" />
-			<dep product="assertj-core" local="true" excluded="true" />
+			<dep product="assertj-core" local="true" excluded="true" version="3.4.1" />
 			<dep product="mockito-core" local="true" />
 		</dependencies>
 	</product>
