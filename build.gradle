@@ -3,6 +3,11 @@ buildscript {
 			mavenCentral()
 			jcenter()
 	}
+	dependencies {
+			classpath 'net.saliman:gradle-cobertura-plugin:2.4.0'
+			classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.7.1'
+			classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+	}
 }
 
 repositories {
@@ -10,9 +15,21 @@ repositories {
 		jcenter()
 }
 
-group 'org.streamingpool'
-
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+if(System.getenv('TRAVIS')){
+    apply plugin: 'cobertura'
+		apply plugin: 'com.github.kt3k.coveralls'
+    apply plugin: 'io.codearte.nexus-staging'
+    apply from : './scripts/deploy.gradle'
+
+    cobertura.coverageFormats = ['html', 'xml']
+    cobertura.coverageSourceDirs = sourceSets.main.java.srcDirs
+}
+
+group 'org.streamingpool'
 
 sourceCompatibility = 1.8
 
