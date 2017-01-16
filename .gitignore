@@ -7,3 +7,4 @@ bin/
 *.log
 /build/
 streaming-pool-core.iml
+deployment.key
