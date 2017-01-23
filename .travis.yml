@@ -1,0 +1,11 @@
+language: java
+jdk:
+  - oraclejdk8
+before_install:
+  - chmod +x ./gradlew
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: /bin/sh ./scripts/deploy-jars.sh
+  on:
+    tags: true
