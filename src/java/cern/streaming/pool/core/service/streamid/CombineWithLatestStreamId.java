@@ -9,12 +9,14 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.BiFunction;
 
 import cern.streaming.pool.core.service.StreamId;
+import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFactory;
 
 /**
  * Given a data stream and a stream of triggering events, the resulting stream emits as soon as the trigger stream
  * emits. The emitted value is determined by the comining function, and can thus be computed from the emitted value of
  * the triggered stream and the latest emitted item of the data stream. stream at the moment of each triggering event
  * 
+ * @see CombineWithLatestStreamFactory
  * @author acalia, caguiler
  * @param <T> Type of the stream which will trigger the emitting of a new element
  * @param <D> Type of the original data stream

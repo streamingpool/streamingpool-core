@@ -4,7 +4,6 @@
 
 package cern.streaming.pool.core.testing;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -15,16 +14,16 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import org.reactivestreams.Publisher;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.TypedStreamFactory;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
-import rx.Observable;
+import io.reactivex.Flowable;
 
 /**
  * Very simple StreamFactory mock builder to simplify the test code.
@@ -32,7 +31,7 @@ import rx.Observable;
 public class StreamFactoryMock<T> {
     private final Multimap<StreamId<T>, StreamId<T>> withIdDiscover;
     private final Map<StreamId<T>, T> withIdProvideStreamWithValue;
-    private final Map<StreamId<T>, BiFunction<StreamId<T>, DiscoveryService, ReactiveStream<T>>> withIdInvoke;
+    private final Map<StreamId<T>, BiFunction<StreamId<T>, DiscoveryService, Publisher<T>>> withIdInvoke;
 
     private StreamFactoryMock() {
         this.withIdDiscover = HashMultimap.create();
@@ -83,7 +82,7 @@ public class StreamFactoryMock<T> {
      * @param bifunction the function that will be invoked
      */
     public StreamFactoryMock<T> withIdInvoke(StreamId<T> id,
-            BiFunction<StreamId<T>, DiscoveryService, ReactiveStream<T>> bifunction) {
+            BiFunction<StreamId<T>, DiscoveryService, Publisher<T>> bifunction) {
         withIdInvoke.put(id, bifunction);
         return this;
     }
@@ -99,12 +98,12 @@ public class StreamFactoryMock<T> {
             DiscoveryService discovery = args.getArgumentAt(1, DiscoveryService.class);
 
             if (withIdDiscover.containsKey(streamId)) {
-                return Optional.of(fromRx(Observable.merge(withIdDiscover.get(streamId).stream().map(discovery::discover)
-                        .map(ReactiveStreams::rxFrom).collect(Collectors.toList()))));
+                return Optional.of(Flowable.merge(
+                        withIdDiscover.get(streamId).stream().map(discovery::discover).collect(Collectors.toList())));
             }
 
             if (withIdProvideStreamWithValue.containsKey(streamId)) {
-                return Optional.of(fromRx(Observable.just(withIdProvideStreamWithValue.get(streamId))));
+                return Optional.of(Flowable.just(withIdProvideStreamWithValue.get(streamId)));
             }
 
             if (withIdInvoke.containsKey(streamId)) {

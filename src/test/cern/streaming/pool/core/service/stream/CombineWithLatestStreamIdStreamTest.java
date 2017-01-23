@@ -4,6 +4,7 @@
 
 package cern.streaming.pool.core.service.stream;
 
+import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,8 +16,8 @@ import cern.streaming.pool.core.service.streamfactory.CombineWithLatestStreamFac
 import cern.streaming.pool.core.service.streamid.CombineWithLatestStreamId;
 import cern.streaming.pool.core.support.RxStreamSupport;
 import cern.streaming.pool.core.testing.AbstractStreamTest;
-import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
-import rx.Observable;
+import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * Unit tests for {@link CombineWithLatestStreamFactory}
@@ -25,11 +26,11 @@ import rx.Observable;
  */
 public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest implements RxStreamSupport {
 
-    private BlockingTestSubscriber<Long> subscriber;
+    private TestSubscriber<Long> subscriber;
 
     @Before
     public void setUp() {
-        subscriber = BlockingTestSubscriber.ofName("Subscriber");
+        subscriber = TestSubscriber.create();
     }
 
     /* @formatter:off
@@ -41,12 +42,12 @@ public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest impl
      */
     @Test
     public void test1() {
-        Observable<Long> trigger = Observable.interval(1000, MILLISECONDS).delay(500, MILLISECONDS).take(4);
-        Observable<Long> data = Observable.interval(1000, MILLISECONDS);
+        Flowable<Long> trigger = Flowable.interval(1000, MILLISECONDS).delay(500, MILLISECONDS).take(4);
+        Flowable<Long> data = Flowable.interval(1000, MILLISECONDS);
 
         subscribeAndWait(data, trigger);
 
-        assertThat(subscriber.getValues()).containsExactly(0L, 1L, 2L, 3L);
+        assertThat(subscriber.values()).containsExactly(0L, 1L, 2L, 3L);
     }
 
     /* @formatter:off
@@ -58,13 +59,13 @@ public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest impl
      */
     @Test
     public void test2() {
-        Observable<Long> trigger = Observable.merge(delayed(500), delayed(3500), delayed(4500), delayed(6500),
-                delayed(8500));
-        Observable<Long> data = Observable.interval(1000, MILLISECONDS);
+        Flowable<Long> trigger = Flowable
+                .merge(asList(delayed(500), delayed(3500), delayed(4500), delayed(6500), delayed(8500)));
+        Flowable<Long> data = Flowable.interval(1000, MILLISECONDS);
 
         subscribeAndWait(data, trigger);
 
-        assertThat(subscriber.getValues()).containsExactly(2L, 3L, 5L, 7L);
+        assertThat(subscriber.values()).containsExactly(2L, 3L, 5L, 7L);
     }
 
     /* @formatter:off
@@ -76,12 +77,12 @@ public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest impl
      */
     @Test
     public void test3() {
-        Observable<Long> trigger = delayed(500);
-        Observable<Long> data = delayed(1000);
+        Flowable<Long> trigger = delayed(500);
+        Flowable<Long> data = delayed(1000);
 
         subscribeAndWait(data, trigger);
 
-        assertThat(subscriber.getValues()).isEmpty();
+        assertThat(subscriber.values()).isEmpty();
     }
 
     /* @formatter:off
@@ -93,23 +94,23 @@ public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest impl
      */
     @Test
     public void test4() {
-        Observable<Long> trigger = delayed(500);
-        Observable<Long> data = Observable.interval(1000, MILLISECONDS);
+        Flowable<Long> trigger = delayed(500);
+        Flowable<Long> data = Flowable.interval(1000, MILLISECONDS);
         subscribeAndWait(data, trigger);
-        assertThat(subscriber.getValues()).isEmpty();
+        assertThat(subscriber.values()).isEmpty();
     }
 
-    private void subscribeAndWait(Observable<Long> data, Observable<Long> trigger) {
+    private void subscribeAndWait(Flowable<Long> data, Flowable<Long> trigger) {
         StreamId<Long> dataId = provide(data).withUniqueStreamId();
         StreamId<Long> triggerId = provide(trigger).withUniqueStreamId();
         StreamId<Long> streamId = CombineWithLatestStreamId.dataPropagated(triggerId, dataId);
-        
-        publisherFrom(streamId).subscribe(subscriber);
-        subscriber.await();
+
+        rxFrom(streamId).subscribe(subscriber);
+        subscriber.awaitTerminalEvent();
     }
 
-    private Observable<Long> delayed(int millis) {
-        return Observable.just(-1L).delay(millis, MILLISECONDS);
+    private Flowable<Long> delayed(int millis) {
+        return Flowable.just(-1L).delay(millis, MILLISECONDS);
     }
 
 }

@@ -4,7 +4,6 @@
 
 package cern.streaming.pool.core.service;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -12,11 +11,13 @@ import static org.mockito.Mockito.mock;
 import java.util.Arrays;
 import java.util.List;
 
+import org.assertj.core.util.Lists;
 import org.junit.Test;
+import org.reactivestreams.Publisher;
 
 import cern.streaming.pool.core.service.impl.LocalPool;
-import cern.streaming.pool.core.service.rx.RxStreams;
 import cern.streaming.pool.core.testing.StreamFactoryMock;
+import io.reactivex.Flowable;
 
 /**
  * Test for the discovery of Streams using {@link TypedStreamFactory} and {@link LocalPool}.
@@ -42,7 +43,7 @@ public class DiscoveryTest {
         StreamFactory factoryB = StreamFactoryMock.newFactory(String.class).withIdProvideStreamWithValue(id, ANY_VALUE)
                 .build();
 
-        ReactiveStream<String> result = prepareDiscoveryService(Arrays.asList(factoryA, factoryB)).discover(id);
+        Publisher<String> result = prepareDiscoveryService(Arrays.asList(factoryA, factoryB)).discover(id);
 
         assertThat(toList(result)).hasSize(1).contains(ANY_VALUE);
     }
@@ -58,7 +59,7 @@ public class DiscoveryTest {
         StreamFactory factoryB = StreamFactoryMock.newFactory(String.class).withIdDiscoverAnother(idX, idY)
                 .withIdProvideStreamWithValue(idZ, ANY_VALUE).build();
 
-        ReactiveStream<String> result = prepareDiscoveryService(Arrays.asList(factoryA, factoryB)).discover(idX);
+        Publisher<String> result = prepareDiscoveryService(Arrays.asList(factoryA, factoryB)).discover(idX);
 
         assertThat(toList(result)).containsExactly(ANY_VALUE);
     }
@@ -79,7 +80,7 @@ public class DiscoveryTest {
         StreamFactory factoryC = StreamFactoryMock.newFactory(String.class).withIdProvideStreamWithValue(idZ, ANY_VALUE)
                 .build();
 
-        ReactiveStream<String> result = prepareDiscoveryService(Arrays.asList(factoryA, factoryB, factoryC)).discover(idX);
+        Publisher<String> result = prepareDiscoveryService(Arrays.asList(factoryA, factoryB, factoryC)).discover(idX);
 
         assertThat(toList(result)).hasSize(2).containsExactly(ANY_VALUE, ANY_VALUE);
     }
@@ -93,7 +94,7 @@ public class DiscoveryTest {
         return new LocalPool(factories);
     }
 
-    private List<String> toList(ReactiveStream<String> result) {
-        return RxStreams.awaitNext(rxFrom(result).toList());
+    private List<String> toList(Publisher<String> result) {
+        return Lists.newArrayList(Flowable.fromPublisher(result).blockingIterable());
     }
 }

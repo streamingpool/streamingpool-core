@@ -4,12 +4,8 @@
 
 package cern.streaming.pool.core.support;
 
-import org.reactivestreams.Publisher;
-
-import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamId;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
-import rx.Observable;
+import io.reactivex.Flowable;
 
 /**
  * Support interface for working with RxJava streams.
@@ -18,20 +14,8 @@ import rx.Observable;
  */
 public interface RxStreamSupport extends StreamSupport {
 
-    default <T> ReactiveStream<T> streamFrom(Observable<T> observable) {
-        return ReactiveStreams.fromRx(observable);
-    }
-
-    default <T> StreamSupport.OngoingProviding<T> provide(Observable<T> observable) {
-        return provide(ReactiveStreams.fromRx(observable));
-    }
-
-    default <T> Publisher<T> publisherFrom(Observable<T> observable) {
-        return ReactiveStreams.publisherFrom(streamFrom(observable));
-    }
-
-    default <T> Observable<T> rxFrom(StreamId<T> id) {
-        return ReactiveStreams.rxFrom(discover(id));
+    default <T> Flowable<T> rxFrom(StreamId<T> id) {
+        return Flowable.fromPublisher(discover(id));
     }
 
 }

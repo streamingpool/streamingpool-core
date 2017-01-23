@@ -4,12 +4,12 @@
 
 package cern.streaming.pool.core.rx.process;
 
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
+import io.reactivex.Flowable;
+import io.reactivex.processors.BehaviorProcessor;
 
 public class TriggerImpl implements Trigger {
 
-    private BehaviorSubject<Object> subject = BehaviorSubject.create(true);
+    private BehaviorProcessor<Object> subject = BehaviorProcessor.createDefault(true);
 
     @Override
     public void trigger() {
@@ -17,8 +17,8 @@ public class TriggerImpl implements Trigger {
     }
 
     @Override
-    public Observable<Object> asObservable() {
-        return subject.asObservable();
+    public Flowable<Object> asObservable() {
+        return subject;
     }
 
 }

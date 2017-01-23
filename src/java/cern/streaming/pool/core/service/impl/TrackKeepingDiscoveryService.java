@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cern.streaming.pool.core.service.CycleInStreamDiscoveryDetectedException;
 import cern.streaming.pool.core.service.DiscoveryService;
-import cern.streaming.pool.core.service.ReactiveStream;
 import cern.streaming.pool.core.service.StreamFactory;
 import cern.streaming.pool.core.service.StreamId;
 
@@ -48,17 +48,17 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
     }
 
     @Override
-    public <T> ReactiveStream<T> discover(StreamId<T> id) {
+    public <T> Publisher<T> discover(StreamId<T> id) {
         checkSameContexOfExecution();
         checkForRecursiveCycles(id);
 
-        content.synchronousPut(id, () -> createFromFactories(id));
+        content.synchronousPutIfAbsent(id, () -> createFromFactories(id));
 
         return getStreamWithIdOrElseThrow(id);
     }
 
-    private <T> ReactiveStream<T> getStreamWithIdOrElseThrow(StreamId<T> id) {
-        ReactiveStream<T> activeStream = content.get(id);
+    private <T> Publisher<T> getStreamWithIdOrElseThrow(StreamId<T> id) {
+        Publisher<T> activeStream = content.get(id);
 
         if (activeStream == null) {
             throw new IllegalArgumentException(
@@ -90,9 +90,9 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         return new TrackKeepingDiscoveryService(factories, content, newSet, contextOfExecution);
     }
 
-    private <T> ReactiveStream<T> createFromFactories(StreamId<T> newId) {
+    private <T> Publisher<T> createFromFactories(StreamId<T> newId) {
         for (StreamFactory factory : factories) {
-            Optional<ReactiveStream<T>> factoryResult = factory.create(newId, cloneDiscoveryServiceIncluding(newId));
+            Optional<Publisher<T>> factoryResult = factory.create(newId, cloneDiscoveryServiceIncluding(newId));
 
             if (factoryResult == null) {
                 throw new IllegalStateException(
@@ -100,7 +100,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
             }
 
             if (factoryResult.isPresent()) {
-                ReactiveStream<T> stream = factoryResult.get();
+                Publisher<T> stream = factoryResult.get();
                 if (stream == null) {
                     throw new IllegalStateException(
                             format("Factory %s returned a null stream for the id %s", factory, newId));

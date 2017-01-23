@@ -1,19 +1,18 @@
 package cern.streaming.pool.core.service.streamid.factory.function;
 
-import cern.streaming.pool.core.service.ReactiveStream;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static cern.streaming.pool.core.service.util.ReactiveStreams.rxFrom;
+import org.reactivestreams.Publisher;
+
+import io.reactivex.Flowable;
 
 /**
  * Created by timartin on 06/10/2016.
  */
-public class FilterCompositionFunction<X> implements Function<List<ReactiveStream<X>>, ReactiveStream<X>> {
+public class FilterCompositionFunction<X> implements Function<List<Publisher<X>>, Publisher<X>> {
 
     private final Predicate<X> predicate;
 
@@ -23,14 +22,16 @@ public class FilterCompositionFunction<X> implements Function<List<ReactiveStrea
     }
 
     @Override
-    public ReactiveStream<X> apply(List<ReactiveStream<X>> reactiveStreams) {
-        return ReactiveStreams.fromRx(rxFrom(reactiveStreams.get(0)).filter(predicate::test));
+    public Publisher<X> apply(List<Publisher<X>> reactiveStreams) {
+        return Flowable.fromPublisher(reactiveStreams.get(0)).filter(predicate::test);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         FilterCompositionFunction<?> that = (FilterCompositionFunction<?>) o;
 

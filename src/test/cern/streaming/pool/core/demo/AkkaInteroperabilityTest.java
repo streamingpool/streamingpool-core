@@ -25,8 +25,8 @@ import cern.streaming.pool.core.support.AkkaStreamSupport;
 import cern.streaming.pool.core.support.RxStreamSupport;
 import cern.streaming.pool.core.testing.AbstractAkkaStreamTest;
 import cern.streaming.pool.core.testing.NamedStreamId;
-import cern.streaming.pool.core.testing.subscriber.BlockingTestSubscriber;
-import rx.Observable;
+import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 import scala.concurrent.duration.Duration;
 
 public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements AkkaStreamSupport, RxStreamSupport {
@@ -36,36 +36,34 @@ public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements 
 
     private static final int SOURCE_STREAM_ELEMENT_NUM = 20;
     private static final int SOURCE_INTERVAL_MS = 5;
-    private static final int CONSUMING_DURATION_MS = 5;
     private static final List<Integer> ELEMENTS = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
             17, 18, 19, 20);
     private static final Source<Integer, NotUsed> RANGE_SOURCE_AKKA = createAkkaRangeSource();
     private static final Flow<Integer, Integer, NotUsed> DELAY_FLOW = createDelayFlow();
-    private static final Observable<Integer> RANGE_SOURCE_RX = createRxRangeSource();
+    private static final Flowable<Integer> RANGE_SOURCE_RX = createRxRangeSource();
 
-    private BlockingTestSubscriber<Integer> subscriber;
+    private TestSubscriber<Integer> subscriber;
 
     @Before
     public void setUp() {
-        subscriber = BlockingTestSubscriber.<Integer> ofName("Test Subscriber")
-                .withConsumingdelayInMs(CONSUMING_DURATION_MS);
+        subscriber = TestSubscriber.create();
     }
 
     @Test
-    public void provideAndDiscoverAkkaStream() {
+    public void provideAndDiscoverAkkaStream() throws InterruptedException {
         provide(RANGE_SOURCE_AKKA.via(DELAY_FLOW)).materialized().as(BUFFERED_ID);
-        publisherFrom(BUFFERED_ID).subscribe(subscriber);
+        discover(BUFFERED_ID).subscribe(subscriber);
 
         subscriber.await();
-        assertThat(subscriber.getValues()).hasSize(SOURCE_STREAM_ELEMENT_NUM);
-        assertThat(subscriber.getValues()).containsExactlyElementsOf(ELEMENTS);
+        assertThat(subscriber.values()).hasSize(SOURCE_STREAM_ELEMENT_NUM);
+        assertThat(subscriber.values()).containsExactlyElementsOf(ELEMENTS);
     }
 
     @Test
     public void provideAsAkkaAndDiscoverAsRx() {
         provide(RANGE_SOURCE_AKKA).materialized().as(SOURCE_ID);
 
-        List<Integer> streamValues = rxFrom(SOURCE_ID).toList().toBlocking().single();
+        List<Integer> streamValues = rxFrom(SOURCE_ID).toList().blockingGet();
 
         assertThat(streamValues).hasSameSizeAs(ELEMENTS);
         assertThat(streamValues).containsExactlyElementsOf(ELEMENTS);
@@ -92,7 +90,7 @@ public class AkkaInteroperabilityTest extends AbstractAkkaStreamTest implements 
         return Source.range(1, SOURCE_STREAM_ELEMENT_NUM);
     }
 
-    private static Observable<Integer> createRxRangeSource() {
-        return Observable.range(1, SOURCE_STREAM_ELEMENT_NUM);
+    private static Flowable<Integer> createRxRangeSource() {
+        return Flowable.range(1, SOURCE_STREAM_ELEMENT_NUM);
     }
 }

@@ -7,7 +7,8 @@ package cern.streaming.pool.core.service.util;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import cern.streaming.pool.core.service.ReactiveStream;
+import org.reactivestreams.Publisher;
+
 import cern.streaming.pool.core.service.StreamCreator;
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.impl.IdentifiedStreamCreator;
@@ -23,7 +24,7 @@ public final class StreamCreators {
         return new OngoingCreatorCreation<>(creator);
     }
 
-    public static <T> OngoingCreatorCreation<T> create(Supplier<ReactiveStream<T>> supplier) {
+    public static <T> OngoingCreatorCreation<T> create(Supplier<Publisher<T>> supplier) {
         return new OngoingCreatorCreation<T>(discovery -> supplier.get());
     }
 

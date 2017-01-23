@@ -4,7 +4,6 @@
 
 package cern.streaming.pool.core.names.resolve;
 
-import static cern.streaming.pool.core.names.resolve.Chains.chain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.function.Function;

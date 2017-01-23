@@ -12,6 +12,8 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
+
 import akka.actor.ActorSystem;
 import akka.stream.ActorMaterializer;
 import akka.stream.Attributes;
@@ -19,8 +21,7 @@ import akka.stream.Materializer;
 import akka.stream.javadsl.Source;
 import cern.streaming.pool.core.incubation.akka.IdBasedSource;
 import cern.streaming.pool.core.service.impl.LocalPool;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
-import rx.Observable;
+import io.reactivex.Flowable;
 
 public class AkkaIdSourceTest {
 
@@ -34,7 +35,7 @@ public class AkkaIdSourceTest {
     private static final LocalPool SIMPLE_POOL = new LocalPool();
 
     static {
-        SIMPLE_POOL.provide(STREAM_ID, ReactiveStreams.fromRx(Observable.range(0, 1000)));
+        SIMPLE_POOL.provide(STREAM_ID, Flowable.range(0, 1000));
     }
 
     private static class TestIdBasedSource extends IdBasedSource<Integer> {
@@ -66,7 +67,7 @@ public class AkkaIdSourceTest {
 
         latch.await();
 
-        List<Integer> expected = Observable.range(0, 1000).toList().toBlocking().first();
+        List<Integer> expected = Lists.newArrayList(Flowable.range(0, 1000).blockingIterable());
 
         assertThat(results).hasSize(1000).containsExactlyElementsOf(expected);
     }

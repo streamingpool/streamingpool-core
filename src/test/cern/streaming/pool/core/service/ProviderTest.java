@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -18,7 +19,7 @@ import cern.streaming.pool.core.testing.AbstractStreamTest;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ProviderTest extends AbstractStreamTest {
 
-    private static final ReactiveStream ANY_REACTIVE_STREAM = mock(ReactiveStream.class);
+    private static final Publisher ANY_REACTIVE_STREAM = mock(Publisher.class);
     private static final StreamId ANY_STREAM_ID = mock(StreamId.class);
     
     @Autowired

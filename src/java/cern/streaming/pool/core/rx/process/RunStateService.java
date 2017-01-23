@@ -4,7 +4,7 @@
 
 package cern.streaming.pool.core.rx.process;
 
-import rx.Observable;
+import io.reactivex.Flowable;
 
 public interface RunStateService {
 
@@ -12,6 +12,6 @@ public interface RunStateService {
 
     void switchTo(RunState runState);
 
-    Observable<RunState> asObservable();
+    Flowable<RunState> asObservable();
 
 }

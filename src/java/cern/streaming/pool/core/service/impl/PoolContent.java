@@ -5,7 +5,6 @@
 package cern.streaming.pool.core.service.impl;
 
 import static cern.streaming.pool.core.service.streamid.StreamingPoolHook.NEW_STREAM_HOOK;
-import static cern.streaming.pool.core.service.util.ReactiveStreams.fromRx;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -13,10 +12,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
-import cern.streaming.pool.core.service.ReactiveStream;
+import org.reactivestreams.Publisher;
+
 import cern.streaming.pool.core.service.StreamId;
 import cern.streaming.pool.core.service.streamid.StreamingPoolHook;
-import rx.subjects.PublishSubject;
+import io.reactivex.processors.PublishProcessor;
 
 /**
  * Encapsulate the state of a streaming pool.
@@ -25,19 +25,19 @@ import rx.subjects.PublishSubject;
  */
 public class PoolContent {
 
-    private final ConcurrentMap<StreamId<?>, ReactiveStream<?>> activeStreams = new ConcurrentHashMap<>();
-    private final PublishSubject<StreamId<?>> newStreamHook = PublishSubject.create();
+    private final ConcurrentMap<StreamId<?>, Publisher<?>> activeStreams = new ConcurrentHashMap<>();
+    private final PublishProcessor<StreamId<?>> newStreamHook = PublishProcessor.create();
     private final ExecutorService hookExecutor = Executors.newSingleThreadExecutor();
 
     public PoolContent() {
         addStreamHooks();
     }
 
-    public <T> boolean synchronousPut(StreamId<T> id, Supplier<ReactiveStream<T>> supplier) {
+    public <T> boolean synchronousPutIfAbsent(StreamId<T> id, Supplier<Publisher<T>> supplier) {
         if (!activeStreams.containsKey(id)) {
             synchronized (activeStreams) {
                 if (!activeStreams.containsKey(id)) {
-                    ReactiveStream<T> reactStream = supplier.get();
+                    Publisher<T> reactStream = supplier.get();
                     if (reactStream != null) {
                         activeStreams.put(id, reactStream);
                         hookExecutor.submit(() -> newStreamHook.onNext(id));
@@ -50,15 +50,15 @@ public class PoolContent {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> ReactiveStream<T> get(StreamId<T> id) {
+    public <T> Publisher<T> get(StreamId<T> id) {
         /* This cast is safe, because we only allow to add the right types into the map */
-        return (ReactiveStream<T>) activeStreams.get(id);
+        return (Publisher<T>) activeStreams.get(id);
     }
 
     /**
      * Directly add the {@link StreamingPoolHook}s as active streams (without triggering any hook)
      */
     private void addStreamHooks() {
-        activeStreams.put(NEW_STREAM_HOOK, fromRx(newStreamHook));
+        activeStreams.put(NEW_STREAM_HOOK, newStreamHook);
     }
 }

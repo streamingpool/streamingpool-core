@@ -1,17 +1,18 @@
 package cern.streaming.pool.core.service.streamid.factory.function;
 
-import cern.streaming.pool.core.service.ReactiveStream;
-import cern.streaming.pool.core.service.util.ReactiveStreams;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.reactivestreams.Publisher;
+
+import io.reactivex.Flowable;
+
 /**
  * Created by timartin on 06/10/2016.
  */
-public class MapCompositionFunction<X, T> implements Function<List<ReactiveStream<X>>, ReactiveStream<T>> {
+public class MapCompositionFunction<X, T> implements Function<List<Publisher<X>>, Publisher<T>> {
 
     private final Function<X, Optional<T>> mapFunction;
 
@@ -21,11 +22,11 @@ public class MapCompositionFunction<X, T> implements Function<List<ReactiveStrea
     }
 
     @Override
-    public ReactiveStream<T> apply(List<ReactiveStream<X>> reactiveStreams) {
-        return ReactiveStreams.fromRx(ReactiveStreams.rxFrom(reactiveStreams.get(0))
+    public Publisher<T> apply(List<Publisher<X>> reactiveStreams) {
+        return Flowable.fromPublisher(reactiveStreams.get(0))
                 .map(mapFunction::apply)
                 .filter(Optional::isPresent)
-                .map(Optional::get));
+                .map(Optional::get);
     }
 
     @Override

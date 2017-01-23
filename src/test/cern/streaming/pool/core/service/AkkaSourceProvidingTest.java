@@ -101,7 +101,7 @@ public class AkkaSourceProvidingTest extends AbstractAkkaStreamTest implements S
 		 * This call would throw, if the source would not have been materialized
 		 * with a sink with fanout
 		 */
-		rxFrom(STREAM_ID).toBlocking().first();
+		rxFrom(STREAM_ID).blockingFirst();
 	}
 
 }

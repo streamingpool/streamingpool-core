@@ -21,7 +21,7 @@ apply plugin: 'signing'
 
 if(System.getenv('TRAVIS')){
     apply plugin: 'cobertura'
-		apply plugin: 'com.github.kt3k.coveralls'
+	apply plugin: 'com.github.kt3k.coveralls'
     apply plugin: 'io.codearte.nexus-staging'
     apply from : './scripts/deploy.gradle'
 
@@ -36,8 +36,7 @@ sourceCompatibility = 1.8
 dependencies {
 	compile 'org.reactivestreams:reactive-streams:1.0.0'
 
-	compile 'io.reactivex:rxjava:1.2.5'
-	compile 'io.reactivex:rxjava-reactive-streams:1.2.1'
+	compile 'io.reactivex:rxjava:2.0.4'
 
 	compile 'com.typesafe.akka:akka-stream_2.11:2.4.16'
 
