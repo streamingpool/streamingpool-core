@@ -36,7 +36,7 @@ sourceCompatibility = 1.8
 dependencies {
 	compile 'org.reactivestreams:reactive-streams:1.0.0'
 
-	compile 'io.reactivex.rxjava2:rxjava:2.0.4'
+	compile 'io.reactivex.rxjava2:rxjava:2.0.5'
 
 	compile 'com.typesafe.akka:akka-stream_2.11:2.4.16'
 
