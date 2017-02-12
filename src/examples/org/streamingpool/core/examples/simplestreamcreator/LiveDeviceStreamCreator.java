@@ -20,20 +20,30 @@
 */
 // @formatter:on
 
-package org.streamingpool.core.examples.creators;
+package org.streamingpool.core.examples.simplestreamcreator;
 
-import static io.reactivex.Flowable.interval;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamCreator;
+import org.streamingpool.core.service.StreamFactory;
 
-public class InjectionStreamCreator implements StreamCreator<InjectionDomainObject> {
+import io.reactivex.Flowable;
 
-    @Override
-    public Publisher<InjectionDomainObject> createWith(DiscoveryService discoveryService) {
-        return interval(1, SECONDS).map(num -> new InjectionDomainObject("Injection number " + num));
-    }
+/**
+ * This {@link StreamCreator} is a specialization of a {@link StreamFactory}
+ * that knows and is able to create one type of stream. In this case, we
+ * simulate a reading from a device using a
+ * {@link Flowable#interval(long, java.util.concurrent.TimeUnit)} and then we
+ * transform it to a specific domain object.
+ *
+ */
+public class LiveDeviceStreamCreator implements StreamCreator<LiveDeviceReading> {
+
+	@Override
+	public Publisher<LiveDeviceReading> createWith(DiscoveryService discoveryService) {
+		return Flowable.interval(1, SECONDS).map(LiveDeviceReading::new);
+	}
 
 }

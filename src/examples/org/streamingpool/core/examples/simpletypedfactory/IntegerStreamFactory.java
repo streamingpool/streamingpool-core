@@ -20,31 +20,33 @@
 */
 // @formatter:on
 
-package org.streamingpool.core.examples.creators;
+package org.streamingpool.core.examples.simpletypedfactory;
 
-import static java.util.Optional.of;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import java.util.Optional;
+import static io.reactivex.Flowable.range;
 
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.service.DiscoveryService;
-import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
+import org.streamingpool.core.service.TypedStreamFactory;
 
-import io.reactivex.Flowable;
+/**
+ * The factory is in charge of creating the actual stream that the user receives
+ * in case the specified {@link StreamId} is not found on the pool. Since we
+ * know that the {@link StreamId} is an {@link IntegerRangeId} that produces
+ * {@link Integer}s, we can use the {@link TypedStreamFactory}.
+ *
+ */
+public class IntegerStreamFactory implements TypedStreamFactory<Integer, IntegerRangeId> {
 
-public class InjectionFactory implements StreamFactory {
+	@Override
+	public Publisher<Integer> createReactiveStream(IntegerRangeId id, DiscoveryService discoveryService) {
+		int from = id.getFrom();
+		int to = id.getTo();
+		return range(from, to - from);
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> Optional<Publisher<T>> create(StreamId<T> id, DiscoveryService discoveryService) {
-        if (!id.equals(InjectionIds.INJECTION_CONTROL_SYSTEM)) {
-            return null;
-        }
-
-        return of((Publisher<T>) Flowable.interval(1, SECONDS).map(num -> "Injection number " + num)
-                .map(InjectionDomainObject::new));
-    }
-
+	@Override
+	public Class<IntegerRangeId> streamIdClass() {
+		return IntegerRangeId.class;
+	}
 }

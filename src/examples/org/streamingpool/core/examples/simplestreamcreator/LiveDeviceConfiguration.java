@@ -20,20 +20,32 @@
 */
 // @formatter:on
 
-package org.streamingpool.core.examples.creators;
+package org.streamingpool.core.examples.simplestreamcreator;
 
-import static org.streamingpool.core.examples.creators.InjectionIds.INJECTION_CONTROL_SYSTEM;
+import static org.streamingpool.core.examples.simplestreamcreator.LiveDeviceIds.LIVE_DEVICE_ID;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.streamingpool.core.conf.StreamCreatorFactoryConfiguration;
+import org.streamingpool.core.service.StreamCreator;
+import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.impl.IdentifiedStreamCreator;
 import org.streamingpool.core.service.impl.ImmutableIdentifiedStreamCreator;
 
+/**
+ * In the configuration, we link the {@link StreamCreator} with the
+ * {@link StreamId}. In order to use the {@link StreamCreator} feature,
+ * {@link StreamCreatorFactoryConfiguration} needs to be available in the Spring
+ * context.
+ *
+ */
 @Configuration
-public class InjectionConfiguration {
+@Import({ StreamCreatorFactoryConfiguration.class })
+public class LiveDeviceConfiguration {
 
-    @Bean
-    public IdentifiedStreamCreator<InjectionDomainObject> injectionStreamCreator() {
-        return ImmutableIdentifiedStreamCreator.of(INJECTION_CONTROL_SYSTEM, new InjectionStreamCreator());
-    }
+	@Bean
+	public IdentifiedStreamCreator<LiveDeviceReading> injectionStreamCreator() {
+		return ImmutableIdentifiedStreamCreator.of(LIVE_DEVICE_ID, new LiveDeviceStreamCreator());
+	}
 }

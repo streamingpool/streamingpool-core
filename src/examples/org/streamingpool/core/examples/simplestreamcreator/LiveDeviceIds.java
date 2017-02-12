@@ -20,17 +20,20 @@
 */
 // @formatter:on
 
-package org.streamingpool.core.examples.factory;
+package org.streamingpool.core.examples.simplestreamcreator;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.streamingpool.core.service.StreamFactory;
+import org.streamingpool.core.service.StreamId;
+import org.streamingpool.core.testing.NamedStreamId;
 
-@Configuration
-public class FactoryConfiguration {
+/**
+ * This class just holds the constants of the {@link StreamId}s.
+ *
+ */
+public final class LiveDeviceIds {
 
-    @Bean
-    public StreamFactory factory() {
-        return new IntegerStreamFactory();
-    }
+	private LiveDeviceIds() {
+	}
+
+	public static final StreamId<LiveDeviceReading> LIVE_DEVICE_ID = NamedStreamId
+			.ofName("Any live device");
 }

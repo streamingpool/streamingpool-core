@@ -20,13 +20,12 @@
 */
 // @formatter:on
 
-package org.streamingpool.core.examples.creators;
+package org.streamingpool.core.examples.simpletypedfactory;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.streamingpool.core.examples.creators.InjectionIds.INJECTION_CONTROL_SYSTEM;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,32 +33,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.streamingpool.core.conf.EmbeddedPoolConfiguration;
-import org.streamingpool.core.conf.StreamCreatorFactoryConfiguration;
 import org.streamingpool.core.service.DiscoveryService;
+import org.streamingpool.core.service.StreamId;
+import org.streamingpool.core.service.TypedStreamFactory;
 
-import io.reactivex.Flowable;
 import io.reactivex.subscribers.TestSubscriber;
 
+/**
+ * Simple example that shows the use of {@link StreamId},
+ * {@link TypedStreamFactory} and {@link DiscoveryService}.
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { EmbeddedPoolConfiguration.class, StreamCreatorFactoryConfiguration.class,
-        InjectionConfiguration.class })
-public class InjectionExampleTest {
+@ContextConfiguration(classes = { EmbeddedPoolConfiguration.class, IntegerStreamFactory.class })
+public class MainSimpleTypedFactoryTest {
 
-    @Autowired
-    private DiscoveryService discovery;
+	@Autowired
+	private DiscoveryService discovery;
 
-    @Test
-    public void testInjectionUsingStreamCreator() throws InterruptedException {
+	@Test
+	public void test() throws InterruptedException {
+		// The stream id specify which stream we want to obtain
+		IntegerRangeId streamId = new IntegerRangeId(0, 10);
 
-        TestSubscriber<InjectionDomainObject> subscriber = TestSubscriber.create();
+		// Using the RxJava 2 test subscriber
+		TestSubscriber<Integer> subscriber = TestSubscriber.create();
 
-        Flowable.fromPublisher(discovery.discover(INJECTION_CONTROL_SYSTEM)).take(2).subscribe(subscriber);
+		// The stream id will be discovered (and created by the factory)
+		discovery.discover(streamId).subscribe(subscriber);
 
-        subscriber.await(5, TimeUnit.SECONDS);
+		// Wait for the end of the stream
+		subscriber.await();
 
-        assertThat(subscriber.values()).hasSize(2);
-        assertThat(subscriber.values().stream().map(injDomain -> injDomain.getInjectionName()).collect(toList()))
-                .contains("Injection number 0", "Injection number 1");
-    }
+		List<Integer> values = subscriber.values();
+		List<Integer> expectedValues = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+		assertThat(values).containsExactlyElementsOf(expectedValues);
+	}
 
 }
