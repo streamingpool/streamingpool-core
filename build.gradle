@@ -1,7 +1,14 @@
 buildscript {
 	repositories {
+        if (System.getenv('BUILD_SERVER') || System.getProperty('CERN_TECHNET_VM')) {
+            maven {
+                url 'http://artifactory.cern.ch/repo'
+                url 'http://artifactory.cern.ch/jcenter'
+            }
+        } else {
 			mavenCentral()
 			jcenter()
+        }
 	}
 	dependencies {
 			classpath 'net.saliman:gradle-cobertura-plugin:2.4.0'
@@ -11,8 +18,15 @@ buildscript {
 }
 
 repositories {
+    if (System.getenv('BUILD_SERVER') || System.getProperty('CERN_TECHNET_VM')) {
+        maven {
+            url 'http://artifactory.cern.ch/repo'
+            url 'http://artifactory.cern.ch/jcenter'
+        }
+    } else {
 		mavenCentral()
 		jcenter()
+    }
 }
 
 apply plugin: 'java'
