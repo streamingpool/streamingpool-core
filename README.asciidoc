@@ -32,17 +32,17 @@ When connecting together heterogeneous and complex systems, it is not easy to ex
 
 The ongoing effort of the http://reactivex.io/[ReactiveX] initiative is one example that demonstrates how demanding this technology is even for big companies. Bridging the discrepancies of different technologies with common interfaces is already done by the http://www.reactive-streams.org/[Reactive Streams] initiative and, in the JVM world, via https://github.com/reactive-streams/reactive-streams-jvm[reactive-streams-jvm] interfaces.
 
-Streaming Pool is a framework for providing and discovering reactive streams. Through the mechanism of dependency injection provided by the http://projects.spring.io/spring-framework/[Spring Framework], Streaming Pool provides a so called `DiscoveryService`. This object can discover and chain streams of data that are technologically agnostic, through the use of `StreamId`. The stream to be discovered must be present in the Streaming Pool system (by providing it using the `ProvidingService`) or it must be possible to create it (using one of the registered `StreamFactory`). In the latter case, the stream is lazily created on demand.
+Streaming Pool is a framework for providing and discovering reactive streams. Through the mechanism of dependency injection provided by the http://projects.spring.io/spring-framework/[Spring Framework], Streaming Pool provides a so called `DiscoveryService`. This object can discover and chain streams of data that are technologically agnostic, through the use of instances of the `StreamId` interface. The stream to be discovered must be present in the Streaming Pool system (by providing it using the `ProvidingService`) or it must be possible to create it (using one of the registered `StreamFactory`). In the latter case, the stream is lazily created on demand.
 The application (client) that uses a stream does not need to know which is the source of the information, it may be a component of the application itself or a distributed system. In this way, it is possible to create truly decoupled systems that are resilient to changes and are easy to mock or test.
 
 == Introduction
 A common use case in modern Software applications is to access the values from a particular source. In the context of Internet of Things the source can be a sensor or a device. In business applications the source can be a real time indicator or application state. At CERN a common problem is to listen for devices values of the control system of different machines.
 
-All these problems can be solved using the well-known Observable-Observer pattern or, recently, a reactive stream of the data. Streaming Pool assumes you want to use a Reactive Stream for accessing your data.
+All these problems can be solved using the well-known Observable-Observer pattern or a Reactive Stream of the data. Streaming Pool assumes you want to use a Reactive Stream for accessing your data.
 
 There are technologies that already solve this problem, such as https://projectreactor.io/[Project Reactor] and https://github.com/ReactiveX/RxJava[RxJava]. They provide stream creation, manipulation and subscription capabilities and they are great. Streaming Pool sits on top of these technologies.
 
-The goal of Streaming Pool is to provide and discover Reactive Streams without having the knowledge of where they live (in the local VM or on a Server). The only knowledge you need to have is the ID or `StreamId` associated to the Reactive Stream you want to get.
+The goal of Streaming Pool is to manage, reuse and share Reactive Streams, locally (in the same JVM) or remotely (distributed environment). The only required knowledge is the ID or `StreamId` that describes the Reactive Stream to obtain.
 
 === StreamId
 A `StreamId` is an object that implements the `StreamId<T>` interface. The generic type indicates the type of the data in the Reactive Stream. For each `StreamId<T>` there is a corresponding `Publisher<T>` and we enforce to have a consistent type by design.
@@ -57,16 +57,18 @@ Since the `StreamId` acts as key in the Streaming Pool for the corresponding `Pu
 === Discover a stream
 [source,java]
 ----
-class AnyClass {
+class TemperatureAdapter {
     @Autowired
     private DiscoveryService discoveryService;
 
-    private StreamId<Double> deviceStreamId;
+    public Flowable<Double> temperaturesOf(Building building, Floor floor) {
+        StreamId<Double> temperatureStreamId = TemperatureStreamId.builder()
+          .ofBuilding(building)
+          .ofFloor(floor)
+          .build();
 
-    public void anyMethod() {
-        // ...
-        Publisher<Double> = discoveryService.discover(deviceStreamId);
-        // ...
+        Publisher<Double> temperatureStream = discoveryService.discover(temperatureStreamId);
+        return Flowable.fromPublisher(temperatureStream);
     }
 }
 ----
@@ -74,23 +76,23 @@ In this example, the `Publisher` (Reactive Stream) related to the specified `dev
 
 [NOTE]
 ====
-Keep in mind that you can query the for the same ID multiple times and you will get the same instance of the `Publisher` (like in a `Map<StreamId<T>, Publisher<T>>`).
+Keep in mind that you can query for the same ID multiple times and you will get the same instance of the `Publisher` (like in a `Map<StreamId<T>, Publisher<T>>`).
 ====
 
 === Provide a stream
 [source,java]
 ----
-class AnyClass {
+class TemperatureProvider {
     @Autowired
     private ProvidingService providingService;
 
-    private StreamId<Double> deviceStreamId;
+    public void provideTemperatureStream(Building building, Floor floor, Flowable<Double> temperatures) {
+      StreamId<Double> temperatureStreamId = TemperatureStreamId.builder()
+        .ofBuilding(building)
+        .ofFloor(floor)
+        .build();
 
-    public void anyMethod() {
-        // ...
-        Publisher<Double> deviceStream = createStream();
-        providingService.provide(deviceStreamId, deviceStream);
-        // ...
+        providingService.provide(temperatureStreamId, temperatures);
     }
 }
 ----
@@ -104,7 +106,7 @@ It is currently not possible to remove a Reactive Stream from the Streaming Pool
 === How to lazily create Reactive Streams
 You do not have to explicitly provide `Publisher` instances in the Streaming Pool. A common way of creating Reactive Streams is through the use of `StreamFactory`. A `StreamFactory` is a mechanism that is used to create a `Publisher` from a given `StreamId`. When looking for a `StreamId` that has not been provided using the `ProvidingService`, the framework checks if any registered `StreamFactory` is able to create it.
 
-Using this mechanism, a `Publisher` is created on-demand (lazily) if it is not already present in the Streaming Pool system. A `StreamFactory` is a class that implements the interface `StreamFactory` or `TypedStreamFactory`.
+Using this mechanism, a `Publisher` is created on-demand (lazily) if it is not already present in the Streaming Pool system. A Stream Factory is a class that implements the interface `StreamFactory`.
 
 ==== Stream factory
 [source,java]
@@ -142,7 +144,7 @@ function discover(SteamId id)
 
     if streamingPoolContains(id) <1>
         return getStreamFor(id)
-    
+
     if not streamFactoriesCanCreate(id) <2>
         throws exception
 
