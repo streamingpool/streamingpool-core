@@ -30,7 +30,6 @@ package org.streamingpool.core.service;
  * to be used in the number generation. Also, another implementation may include information about the range in which
  * the numbers need to be scaled.
  * 
- * @see ReactiveStream
  * @param <T> the type of the data that the a stream created from this id contains
  */
 public interface StreamId<T> {
