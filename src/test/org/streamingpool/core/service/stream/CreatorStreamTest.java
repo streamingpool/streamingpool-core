@@ -68,12 +68,12 @@ public class CreatorStreamTest {
 
     @Test
     public void createUnavailableStream() {
-        assertFalse(factory.create(new NamedStreamId<>("mysterystream"), discoveryService).isPresent());
+        assertFalse(factory.create(new NamedStreamId<>("mysterystream"), discoveryService).wasCreated());
     }
 
     @Test
     public void createAvailableStream() {
-        Publisher<?> stream = factory.create(ID_A, discoveryService).get();
+        Publisher<?> stream = factory.create(ID_A, discoveryService).data();
 
         assertEquals(STREAM_A, stream);
     }
@@ -96,7 +96,7 @@ public class CreatorStreamTest {
     @Test
     public void provideNewSupplier() {
         factory.provide(ID_B, discovery -> STREAM_B);
-        Publisher<?> stream = factory.create(ID_B, discoveryService).get();
+        Publisher<?> stream = factory.create(ID_B, discoveryService).data();
 
         assertEquals(STREAM_B, stream);
     }

@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.streamingpool.core.domain.Stream;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.streamfactory.CompositionStreamFactory;
@@ -52,7 +53,7 @@ public class CompositionStreamFactoryTest extends AbstractStreamTest implements 
     @Test
     public void testCreateWithNullStreamId() {
         DiscoveryService discoveryService = Mockito.mock(DiscoveryService.class);
-        assertThat(compositionStreamFactory.create(null, discoveryService)).isEmpty();
+        assertThat(compositionStreamFactory.create(null, discoveryService).wasCreated()).isFalse();
     }
 
     @Test(expected = NullPointerException.class)
@@ -67,9 +68,8 @@ public class CompositionStreamFactoryTest extends AbstractStreamTest implements 
     public void testCreateWithWrongStreamIdType() {
         StreamId<Object> streamId = Mockito.mock(StreamId.class);
         DiscoveryService discoveryService = Mockito.mock(DiscoveryService.class);
-        Optional<Publisher<Object>> optionalReactiveStream = compositionStreamFactory.create(streamId,
-                discoveryService);
-        assertThat(optionalReactiveStream).isEmpty();
+        Stream<Object> optionalReactiveStream = compositionStreamFactory.create(streamId, discoveryService);
+        assertThat(optionalReactiveStream.wasCreated()).isFalse();
     }
 
     @Test
@@ -82,17 +82,16 @@ public class CompositionStreamFactoryTest extends AbstractStreamTest implements 
         Publisher<Object> newReactiveStream = Mockito.mock(Publisher.class);
         Mockito.when(discoveryService.discover(sourceStreamId)).thenReturn(sourceReactiveStream);
 
-        Function<List<Publisher<Object>>, Publisher<Object>> transformationFunction = Mockito.mock(
-                Function.class);
+        Function<List<Publisher<Object>>, Publisher<Object>> transformationFunction = Mockito.mock(Function.class);
         Mockito.when(transformationFunction.apply(Collections.singletonList(sourceReactiveStream)))
                 .thenReturn(newReactiveStream);
 
         CompositionStreamId<Object, Object> compositionStreamId = new CompositionStreamId<>(sourceStreamId,
                 transformationFunction);
-        Optional<Publisher<Object>> optionalCompositionReactiveStream = compositionStreamFactory.create(
-                compositionStreamId, discoveryService);
+        Stream<Object> optionalCompositionReactiveStream = compositionStreamFactory
+                .create(compositionStreamId, discoveryService);
 
-        assertThat(optionalCompositionReactiveStream).isPresent().contains(newReactiveStream);
+        assertThat(optionalCompositionReactiveStream.data()).isEqualTo(newReactiveStream);
         Mockito.verify(transformationFunction).apply(Collections.singletonList(sourceReactiveStream));
     }
 }

@@ -25,6 +25,7 @@ package org.streamingpool.core.service;
 import java.util.Optional;
 
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.domain.Stream;
 
 /**
  * Typed version of a {@link StreamFactory}. A {@link StreamFactory} can create any type of streams, but sometimes there
@@ -48,12 +49,12 @@ public interface TypedStreamFactory<X, T extends StreamId<X>> extends StreamFact
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <Y> Optional<Publisher<Y>> create(StreamId<Y> id, DiscoveryService discoveryService) {
+    default <Y> Stream<Y> create(StreamId<Y> id, DiscoveryService discoveryService) {
         if (!streamIdClass().isAssignableFrom(id.getClass())) {
-            return Optional.empty();
+            return Stream.notCreated();
         }
 
-        return Optional.of((Publisher<Y>) createReactiveStream((T) id, discoveryService));
+        return Stream.ofData((Publisher<Y>) createReactiveStream((T) id, discoveryService));
     }
 
     /**

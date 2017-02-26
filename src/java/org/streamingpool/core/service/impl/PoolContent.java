@@ -31,7 +31,9 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.domain.Stream;
 import org.streamingpool.core.service.StreamId;
+import org.streamingpool.core.service.diagnostic.ErrorStreamId;
 import org.streamingpool.core.service.streamid.StreamingPoolHook;
 
 import io.reactivex.processors.PublishProcessor;
@@ -51,13 +53,14 @@ public class PoolContent {
         addStreamHooks();
     }
 
-    public <T> boolean synchronousPutIfAbsent(StreamId<T> id, Supplier<Publisher<T>> supplier) {
+    public <T> boolean synchronousPutIfAbsent(StreamId<T> id, Supplier<Stream<T>> supplier) {
         if (!activeStreams.containsKey(id)) {
             synchronized (activeStreams) {
                 if (!activeStreams.containsKey(id)) {
-                    Publisher<T> reactStream = supplier.get();
-                    if (reactStream != null) {
-                        activeStreams.put(id, reactStream);
+                    Stream<T> stream = supplier.get();
+                    if (stream.wasCreated()) {
+                        activeStreams.put(id, stream.data());
+                        activeStreams.put(ErrorStreamId.of(id), stream.error());
                         hookExecutor.submit(() -> newStreamHook.onNext(id));
                         return true;
                     }
