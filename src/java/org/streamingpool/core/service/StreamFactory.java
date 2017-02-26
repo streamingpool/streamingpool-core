@@ -45,7 +45,7 @@ public interface StreamFactory {
 
     /***
      * Given an implementation of {@link StreamId} and a {@link DiscoveryService} this method creates a
-     * {@link ReactiveStream<X>}. The provided {@link DiscoveryService} can be used to discover other streams that are
+     * {@link Publisher<T>}. The provided {@link DiscoveryService} can be used to discover other streams that are
      * needed in the creation process (stream combination, transformation, etc.)
      * </p>
      * <strong>NOTE</strong>: it is strongly discouraged the use of multiple threads inside this method (see
