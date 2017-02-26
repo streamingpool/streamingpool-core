@@ -14,3 +14,8 @@ deploy:
   script: /bin/sh ./scripts/deploy-jars.sh
   on:
     tags: true
+
+after_success:
+  - ./gradlew cobertura 
+  - bash <(curl -s https://codecov.io/bash)
+    
