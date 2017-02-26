@@ -4,6 +4,7 @@
 image:https://img.shields.io/travis/streamingpool/streamingpool-core/master.svg[]
 image:https://img.shields.io/github/release/streamingpool/streamingpool-core.svg[]
 image:https://img.shields.io/github/license/streamingpool/streamingpool-core.svg[]
+image:https://codecov.io/gh/streamingpool/streamingpool-core/branch/master/graph/badge.svg[]
 
 == Getting Started
 In order to use the Streaming Pool, just get the latest version from https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22streamingpool-core%22[Maven Central].
