@@ -29,7 +29,7 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.streamingpool.core.domain.ErrorDeflector;
-import org.streamingpool.core.domain.Stream;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
@@ -40,16 +40,16 @@ import io.reactivex.Flowable;
 public class DerivedStreamFactory implements StreamFactory {
 
     @Override
-    public <T> Stream<T> create(StreamId<T> id, DiscoveryService discoveryService) {
+    public <T> ErrorStreamPair<T> create(StreamId<T> id, DiscoveryService discoveryService) {
         if (!(id instanceof DerivedStreamId)) {
-            return Stream.notCreated();
+            return ErrorStreamPair.empty();
         }
         @SuppressWarnings("unchecked")
         DerivedStreamId<?, T> derivedStreamId = (DerivedStreamId<?, T>) id;
         return createDerivedStream(derivedStreamId, discoveryService);
     }
 
-    private <S, T> Stream<T> createDerivedStream(DerivedStreamId<S, T> id, DiscoveryService discoveryService) {
+    private <S, T> ErrorStreamPair<T> createDerivedStream(DerivedStreamId<S, T> id, DiscoveryService discoveryService) {
         Flowable<S> sourceStream = Flowable.fromPublisher(discoveryService.discover(id.sourceStreamId()));
         Function<S, T> conversion = id.conversion();
 

@@ -45,13 +45,13 @@ public final class ErrorDeflector {
     }
 
     private <T> void deflectOperationIncomingError(Object operation, T incoming, Exception e) {
-        StreamException exception = new StreamException(
+        ErrorStreamException exception = new ErrorStreamException(
                 "Error in operation " + operation + ". Incoming value: " + incoming, e);
         errorStream.onNext(exception);
     }
 
-    public <T> Stream<T> stream(Publisher<T> dataPublisher) {
-        return Stream.ofDataError(dataPublisher, errorStream.toFlowable(DROP));
+    public <T> ErrorStreamPair<T> stream(Publisher<T> dataPublisher) {
+        return ErrorStreamPair.ofDataError(dataPublisher, errorStream.toFlowable(DROP));
     }
 
 }

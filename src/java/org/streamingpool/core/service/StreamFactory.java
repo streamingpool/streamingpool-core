@@ -25,7 +25,7 @@ package org.streamingpool.core.service;
 import java.util.Optional;
 
 import org.reactivestreams.Publisher;
-import org.streamingpool.core.domain.Stream;
+import org.streamingpool.core.domain.ErrorStreamPair;
 
 /**
  * This interface represents a factory for {@link Publisher}s. An implementation of this interface is able to
@@ -57,6 +57,6 @@ public interface StreamFactory {
      *            ('upstream' of the one it will create)
      * @return the newly created stream or {@code null} if this factory cannot create the stream of the given id
      */
-    <T> Stream<T> create(StreamId<T> id, DiscoveryService discoveryService);
+    <T> ErrorStreamPair<T> create(StreamId<T> id, DiscoveryService discoveryService);
 
 }

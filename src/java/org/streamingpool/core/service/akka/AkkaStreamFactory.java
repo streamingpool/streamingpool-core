@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.reactivestreams.Publisher;
-import org.streamingpool.core.domain.Stream;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
@@ -51,13 +51,13 @@ public class AkkaStreamFactory implements AkkaSourceProvidingService, StreamFact
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Stream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
+    public <T> ErrorStreamPair<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
         Source<T, ?> source = (Source<T, ?>) suppliers.get(newId);
         if (source == null) {
-            return Stream.notCreated();
+            return ErrorStreamPair.empty();
         }
         Sink<T, Publisher<T>> akkaSink = Sink.asPublisher(WITH_FANOUT);
-        return Stream.ofData(source.runWith(akkaSink, materializer));
+        return ErrorStreamPair.ofData(source.runWith(akkaSink, materializer));
     }
 
     @Override

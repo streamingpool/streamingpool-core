@@ -4,22 +4,22 @@
 
 package org.streamingpool.core.domain;
 
-public class StreamException extends RuntimeException {
+public class ErrorStreamException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
-    public StreamException() {
+    public ErrorStreamException() {
         super();
     }
 
-    public StreamException(String message, Throwable cause) {
+    public ErrorStreamException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public StreamException(String message) {
+    public ErrorStreamException(String message) {
         super(message);
     }
 
-    public StreamException(Throwable cause) {
+    public ErrorStreamException(Throwable cause) {
         super(cause);
     }
 

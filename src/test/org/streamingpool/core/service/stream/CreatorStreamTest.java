@@ -68,7 +68,7 @@ public class CreatorStreamTest {
 
     @Test
     public void createUnavailableStream() {
-        assertFalse(factory.create(new NamedStreamId<>("mysterystream"), discoveryService).wasCreated());
+        assertFalse(factory.create(new NamedStreamId<>("mysterystream"), discoveryService).isPresent());
     }
 
     @Test

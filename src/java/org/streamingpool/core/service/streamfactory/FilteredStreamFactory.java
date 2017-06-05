@@ -25,7 +25,7 @@ package org.streamingpool.core.service.streamfactory;
 import java.util.function.Predicate;
 
 import org.streamingpool.core.domain.ErrorDeflector;
-import org.streamingpool.core.domain.Stream;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
@@ -42,9 +42,9 @@ import io.reactivex.Flowable;
 public class FilteredStreamFactory implements StreamFactory {
 
     @Override
-    public <T> Stream<T> create(StreamId<T> id, DiscoveryService discoveryService) {
+    public <T> ErrorStreamPair<T> create(StreamId<T> id, DiscoveryService discoveryService) {
         if (!(id instanceof FilteredStreamId)) {
-            return Stream.notCreated();
+            return ErrorStreamPair.empty();
         }
         FilteredStreamId<T> filteredId = (FilteredStreamId<T>) id;
 

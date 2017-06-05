@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.reactivestreams.Publisher;
-import org.streamingpool.core.domain.Stream;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
@@ -54,9 +54,9 @@ public class OverlapBufferStreamFactory implements StreamFactory {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> Stream<T> create(StreamId<T> id, DiscoveryService discoveryService) {
+    public <T> ErrorStreamPair<T> create(StreamId<T> id, DiscoveryService discoveryService) {
         if (!(id instanceof OverlapBufferStreamId)) {
-            return Stream.notCreated();
+            return ErrorStreamPair.empty();
         }
 
         OverlapBufferStreamId<?> analysisId = (OverlapBufferStreamId<?>) id;
@@ -85,7 +85,7 @@ public class OverlapBufferStreamFactory implements StreamFactory {
         }
         startStream.connect();
 
-        return Stream.ofData((Publisher<T>) bufferStream);
+        return ErrorStreamPair.ofData((Publisher<T>) bufferStream);
     }
 
     private Flowable<?> closingStreamFor(Object opening,

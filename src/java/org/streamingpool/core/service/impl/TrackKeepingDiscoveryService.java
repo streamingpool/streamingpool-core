@@ -34,7 +34,7 @@ import java.util.Set;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.streamingpool.core.domain.Stream;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
@@ -110,21 +110,21 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         return new TrackKeepingDiscoveryService(factories, content, newSet, contextOfExecution);
     }
 
-    private <T> Stream<T> createFromFactories(StreamId<T> newId) {
+    private <T> ErrorStreamPair<T> createFromFactories(StreamId<T> newId) {
         for (StreamFactory factory : factories) {
-            Stream<T> factoryResult = factory.create(newId, cloneDiscoveryServiceIncluding(newId));
+            ErrorStreamPair<T> factoryResult = factory.create(newId, cloneDiscoveryServiceIncluding(newId));
 
             if (factoryResult == null) {
                 throw new IllegalStateException(format(
                         "Factory %s returned null instead of a valid stream object for the id %s", factory, newId));
             }
 
-            if (factoryResult.wasCreated()) {
+            if (factoryResult.isPresent()) {
                 LOGGER.info(format("Stream from id '%s' was successfully created by factory '%s'", newId, factory));
                 return factoryResult;
             }
         }
-        return Stream.notCreated();
+        return ErrorStreamPair.empty();
     }
 
 }

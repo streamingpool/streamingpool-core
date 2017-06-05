@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.reactivestreams.Publisher;
-import org.streamingpool.core.domain.Stream;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.CreatorProvidingService;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamCreator;
@@ -62,12 +62,12 @@ public class CreatorStreamFactory implements CreatorProvidingService, StreamFact
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Stream<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
+    public <T> ErrorStreamPair<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
         StreamCreator<?> streamCreator = suppliers.get(newId);
         if (streamCreator == null) {
-            return Stream.notCreated();
+            return ErrorStreamPair.empty();
         }
-        return Stream.ofData((Flowable<T>) streamCreator.createWith(discoveryService));
+        return ErrorStreamPair.ofData((Flowable<T>) streamCreator.createWith(discoveryService));
     }
 
     @Override

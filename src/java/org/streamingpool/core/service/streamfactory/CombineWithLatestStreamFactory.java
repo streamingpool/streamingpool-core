@@ -23,7 +23,7 @@
 package org.streamingpool.core.service.streamfactory;
 
 import org.reactivestreams.Publisher;
-import org.streamingpool.core.domain.Stream;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
@@ -41,12 +41,12 @@ public class CombineWithLatestStreamFactory implements StreamFactory {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <Y> Stream<Y> create(StreamId<Y> id, DiscoveryService discoveryService) {
+    public <Y> ErrorStreamPair<Y> create(StreamId<Y> id, DiscoveryService discoveryService) {
         if (!(id instanceof CombineWithLatestStreamId)) {
-            return Stream.notCreated();
+            return ErrorStreamPair.empty();
         }
 
-        return Stream.ofData(combineWithLatestStream((CombineWithLatestStreamId<?, ?, Y>) id, discoveryService));
+        return ErrorStreamPair.ofData(combineWithLatestStream((CombineWithLatestStreamId<?, ?, Y>) id, discoveryService));
     }
 
     private <T, D, Y> Publisher<Y> combineWithLatestStream(CombineWithLatestStreamId<T, D, Y> streamId,

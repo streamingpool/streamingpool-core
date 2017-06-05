@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.streamingpool.core.domain.Stream;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.streamfactory.CompositionStreamFactory;
@@ -53,7 +53,7 @@ public class CompositionStreamFactoryTest extends AbstractStreamTest implements 
     @Test
     public void testCreateWithNullStreamId() {
         DiscoveryService discoveryService = Mockito.mock(DiscoveryService.class);
-        assertThat(compositionStreamFactory.create(null, discoveryService).wasCreated()).isFalse();
+        assertThat(compositionStreamFactory.create(null, discoveryService).isPresent()).isFalse();
     }
 
     @Test(expected = NullPointerException.class)
@@ -68,8 +68,8 @@ public class CompositionStreamFactoryTest extends AbstractStreamTest implements 
     public void testCreateWithWrongStreamIdType() {
         StreamId<Object> streamId = Mockito.mock(StreamId.class);
         DiscoveryService discoveryService = Mockito.mock(DiscoveryService.class);
-        Stream<Object> optionalReactiveStream = compositionStreamFactory.create(streamId, discoveryService);
-        assertThat(optionalReactiveStream.wasCreated()).isFalse();
+        ErrorStreamPair<Object> optionalReactiveStream = compositionStreamFactory.create(streamId, discoveryService);
+        assertThat(optionalReactiveStream.isPresent()).isFalse();
     }
 
     @Test
@@ -88,7 +88,7 @@ public class CompositionStreamFactoryTest extends AbstractStreamTest implements 
 
         CompositionStreamId<Object, Object> compositionStreamId = new CompositionStreamId<>(sourceStreamId,
                 transformationFunction);
-        Stream<Object> optionalCompositionReactiveStream = compositionStreamFactory
+        ErrorStreamPair<Object> optionalCompositionReactiveStream = compositionStreamFactory
                 .create(compositionStreamId, discoveryService);
 
         assertThat(optionalCompositionReactiveStream.data()).isEqualTo(newReactiveStream);
