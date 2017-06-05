@@ -29,6 +29,7 @@ import java.util.List;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.ProvidingService;
 import org.streamingpool.core.service.StreamFactory;
@@ -66,7 +67,7 @@ public class LocalPool implements DiscoveryService, ProvidingService {
         requireNonNull(id, "id must not be null!");
         requireNonNull(obs, "stream must not be null!");
 
-        boolean inserted = content.synchronousPutIfAbsent(id, () -> obs);
+        boolean inserted = content.synchronousPutIfAbsent(id, () -> ErrorStreamPair.ofData(obs));
         if (!inserted) {
             throw new IllegalArgumentException("Id " + id + " already registered! Cannot register twice.");
         }

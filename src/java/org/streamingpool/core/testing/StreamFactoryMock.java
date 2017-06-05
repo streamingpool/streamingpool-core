@@ -33,6 +33,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
@@ -116,19 +117,19 @@ public class StreamFactoryMock<T> {
             DiscoveryService discovery = args.getArgumentAt(1, DiscoveryService.class);
 
             if (withIdDiscover.containsKey(streamId)) {
-                return Optional.of(Flowable.merge(
+                return ErrorStreamPair.ofData(Flowable.merge(
                         withIdDiscover.get(streamId).stream().map(discovery::discover).collect(Collectors.toList())));
             }
 
             if (withIdProvideStreamWithValue.containsKey(streamId)) {
-                return Optional.of(Flowable.just(withIdProvideStreamWithValue.get(streamId)));
+                return ErrorStreamPair.ofData(Flowable.just(withIdProvideStreamWithValue.get(streamId)));
             }
 
             if (withIdInvoke.containsKey(streamId)) {
-                return Optional.of(withIdInvoke.get(streamId).apply(streamId, discovery));
+                return ErrorStreamPair.ofData(withIdInvoke.get(streamId).apply(streamId, discovery));
             }
 
-            return Optional.empty();
+            return ErrorStreamPair.empty();
         });
         return factoryMock;
     }

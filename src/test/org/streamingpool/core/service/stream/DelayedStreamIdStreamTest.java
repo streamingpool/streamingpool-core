@@ -73,7 +73,7 @@ public class DelayedStreamIdStreamTest {
     }
 
     private Publisher<Integer> publisherFrom(DelayedStreamId<Integer> delayedId) {
-        return factory.create(delayedId, mockDiscoveryService()).get();
+        return factory.create(delayedId, mockDiscoveryService()).data();
     }
 
     private DiscoveryService mockDiscoveryService() {

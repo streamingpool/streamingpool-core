@@ -29,6 +29,7 @@ import java.time.Duration;
 import java.util.Optional;
 
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
@@ -43,14 +44,14 @@ import org.streamingpool.core.service.streamid.DelayedStreamId;
 public class DelayedStreamFactory implements StreamFactory {
 
     @Override
-    public <Y> Optional<Publisher<Y>> create(StreamId<Y> id, DiscoveryService discoveryService) {
+    public <Y> ErrorStreamPair<Y> create(StreamId<Y> id, DiscoveryService discoveryService) {
         if (!(id instanceof DelayedStreamId)) {
-            return Optional.empty();
+            return ErrorStreamPair.empty();
         }
         DelayedStreamId<Y> delayedId = (DelayedStreamId<Y>) id;
         Duration delay = delayedId.getDelay();
         StreamId<Y> target = delayedId.getTarget();
-        return Optional.of(fromPublisher(discoveryService.discover(target)).delay(delay.toMillis(), MILLISECONDS));
+        return ErrorStreamPair.ofData(fromPublisher(discoveryService.discover(target)).delay(delay.toMillis(), MILLISECONDS));
     }
 
 }

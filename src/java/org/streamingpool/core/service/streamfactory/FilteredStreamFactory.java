@@ -22,13 +22,10 @@
 
 package org.streamingpool.core.service.streamfactory;
 
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
-
-import java.util.Optional;
 import java.util.function.Predicate;
 
-import org.reactivestreams.Publisher;
+import org.streamingpool.core.domain.ErrorDeflector;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
@@ -45,16 +42,17 @@ import io.reactivex.Flowable;
 public class FilteredStreamFactory implements StreamFactory {
 
     @Override
-    public <T> Optional<Publisher<T>> create(StreamId<T> id, DiscoveryService discoveryService) {
+    public <T> ErrorStreamPair<T> create(StreamId<T> id, DiscoveryService discoveryService) {
         if (!(id instanceof FilteredStreamId)) {
-            return empty();
+            return ErrorStreamPair.empty();
         }
         FilteredStreamId<T> filteredId = (FilteredStreamId<T>) id;
 
         StreamId<T> source = filteredId.sourceStreamId();
         Predicate<T> predicate = filteredId.predicate();
 
-        return of(Flowable.fromPublisher(discoveryService.discover(source)).filter(predicate::test));
+        ErrorDeflector ed = new ErrorDeflector();
+        return ed.stream(Flowable.fromPublisher(discoveryService.discover(source)).filter(ed.falseOnError(predicate)));
     }
 
 }
