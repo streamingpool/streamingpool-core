@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 
 import org.reactivestreams.Publisher;
 
+import io.reactivex.Flowable;
 import io.reactivex.subjects.PublishSubject;
 
 public final class ErrorDeflector {
@@ -52,6 +53,10 @@ public final class ErrorDeflector {
 
     public <T> ErrorStreamPair<T> stream(Publisher<T> dataPublisher) {
         return ErrorStreamPair.ofDataError(dataPublisher, errorStream.toFlowable(DROP));
+    }
+
+    public <T> ErrorStreamPair<T> streamNonEmpty(Publisher<Optional<T>> optionalPublisher) {
+        return stream(Flowable.fromPublisher(optionalPublisher).filter(Optional::isPresent).map(Optional::get));
     }
 
 }
