@@ -59,9 +59,11 @@ public class PoolContent {
                 if (!activeStreams.containsKey(id)) {
                     ErrorStreamPair<T> stream = supplier.get();
                     if (stream.isPresent()) {
+                        ErrorStreamId<StreamId<T>> errorStreamId = ErrorStreamId.of(id);
                         activeStreams.put(id, stream.data());
-                        activeStreams.put(ErrorStreamId.of(id), stream.error());
+                        activeStreams.put(errorStreamId, stream.error());
                         hookExecutor.submit(() -> newStreamHook.onNext(id));
+                        hookExecutor.submit(() -> newStreamHook.onNext(errorStreamId));
                         return true;
                     }
                 }

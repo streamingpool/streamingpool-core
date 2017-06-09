@@ -29,11 +29,11 @@ import java.time.Instant;
 public class Timestamped<T> {
 
     private final T value;
-    private final Instant instant;
+    private final Instant time;
 
     private Timestamped(Instant instant, T value) {
         this.value = requireNonNull(value, "value must not be null");
-        this.instant = requireNonNull(instant, "instant must not be null");
+        this.time = requireNonNull(instant, "instant must not be null");
     }
 
     public static <T> Timestamped<T> atOf(Instant instant, T value) {
@@ -49,14 +49,14 @@ public class Timestamped<T> {
     }
 
     public Instant instant() {
-        return instant;
+        return time;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((instant == null) ? 0 : instant.hashCode());
+        result = prime * result + ((time == null) ? 0 : time.hashCode());
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
     }
@@ -73,11 +73,11 @@ public class Timestamped<T> {
             return false;
         }
         Timestamped<?> other = (Timestamped<?>) obj;
-        if (instant == null) {
-            if (other.instant != null) {
+        if (time == null) {
+            if (other.time != null) {
                 return false;
             }
-        } else if (!instant.equals(other.instant)) {
+        } else if (!time.equals(other.time)) {
             return false;
         }
         if (value == null) {
@@ -92,7 +92,7 @@ public class Timestamped<T> {
 
     @Override
     public String toString() {
-        return value + "@" + instant;
+        return value + "@" + time;
     }
 
 }
