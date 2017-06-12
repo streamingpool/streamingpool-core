@@ -38,9 +38,6 @@ apply plugin: 'signing'
 if(System.getenv('TRAVIS')){
     apply plugin: 'io.codearte.nexus-staging'
     apply from : './scripts/deploy.gradle'
-
-    cobertura.coverageFormats = ['html', 'xml']
-    cobertura.coverageSourceDirs = sourceSets.main.java.srcDirs
 }
 
 group 'org.streamingpool'
