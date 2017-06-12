@@ -1,20 +1,19 @@
 buildscript {
 	repositories {
-        if (System.getenv('BUILD_SERVER') || System.getProperty('CERN_TECHNET_VM')) {
+        	if (System.getenv('BUILD_SERVER') || System.getProperty('CERN_TECHNET_VM')) {
 			maven {
 				url 'http://artifactory.cern.ch/repo'
 			}
 			maven {
 				url 'http://artifactory.cern.ch/jcenter'
 			}
-        } else {
+        	} else {
 			mavenCentral()
 			jcenter()
-        }
+        	}
 	}
 	dependencies {
-			classpath 'net.saliman:gradle-cobertura-plugin:2.4.0'
-			classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+			classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.9.0"
 	}
 }
 
@@ -37,7 +36,6 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 if(System.getenv('TRAVIS')){
-    apply plugin: 'cobertura'
     apply plugin: 'io.codearte.nexus-staging'
     apply from : './scripts/deploy.gradle'
 
@@ -51,17 +49,13 @@ sourceCompatibility = 1.8
 
 dependencies {
 	compile 'org.reactivestreams:reactive-streams:1.0.0'
-
-	compile 'io.reactivex.rxjava2:rxjava:2.0.5'
-
+	compile 'io.reactivex.rxjava2:rxjava:2.1.0'
 	compile 'com.typesafe.akka:akka-stream_2.11:2.4.16'
-
 	compile 'org.springframework:spring-core:4.3.5.RELEASE'
 	compile 'org.springframework:spring-context:4.3.5.RELEASE'
 	compile 'org.springframework:spring-test:4.3.5.RELEASE' // Testing utils in /src/java for the moment
 
-	//compile 'org.slf4j:slf4j-api:1.7.21'
-	compile 'org.slf4j:slf4j-log4j12:1.7.22'
+	compile 'org.slf4j:slf4j-api:1.7.21'
 
 	compile 'com.google.guava:guava:20.0'
 
@@ -82,14 +76,6 @@ sourceSets {
 			srcDir 'src/test'
 		}
 	}
-}
-
-if (JavaVersion.current().isJava8Compatible()) {
-    allprojects {
-        tasks.withType(Javadoc) {
-            options.addStringOption('Xdoclint:none', '-quiet')
-        }
-    }
 }
 
 javadoc {  options.encoding = "UTF-8" }
