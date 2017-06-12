@@ -45,7 +45,7 @@ public final class NameRepositories {
         return new ImmutableNameRepository(NameRepositories.mapNamesFrom(constantsContainers));
     }
 
-    private static final Map<Object, String> mapNamesFrom(List<ConstantsContainer> constantContainers) {
+    private static Map<Object, String> mapNamesFrom(List<ConstantsContainer> constantContainers) {
         //@formatter:off
         return constantContainers.stream()
                 .flatMap(constants -> Stream.of(constants.getClass().getFields()))
@@ -55,12 +55,12 @@ public final class NameRepositories {
         //@formatter:on
     }
 
-    private static final boolean isPublicConstant(Field field) {
+    private static boolean isPublicConstant(Field field) {
         final int modifiers = field.getModifiers();
         return isStatic(modifiers) && isFinal(modifiers) && isPublic(modifiers);
     }
 
-    private static final Object valueOfField(Field field) {
+    private static Object valueOfField(Field field) {
         try {
             return field.get(null);
         } catch (IllegalArgumentException | IllegalAccessException e) {
@@ -68,7 +68,7 @@ public final class NameRepositories {
         }
     }
 
-    private static final String nameOfField(Field field) {
+    private static String nameOfField(Field field) {
         return field.getName();
     }
 

@@ -28,10 +28,9 @@ import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.streamfactory.OverlapBufferStreamFactory;
 
 /**
- * Provide an overlapping buffer for the specified {@link #sourceId}. The buffer begins whenever {@link #startId} stream
- * emits an item and ends when the same item is emitted on the {@link #endId} stream. Optionally, it is possible to
- * specify a timeout for the closing stream in case it does not emit items. In the case of a timeout, the buffers will
- * be closed by whichever emit first, {@link #endId} or timout.
+ * Provide an overlapping buffer for the specified {@link #sourceId}. The buffer begins whenever {@link BufferSpecification#startId()} stream
+ * emits an item and ends when one of the {@link BufferSpecification#endStreamMatchers()} } matches an end. Optionally, it is possible to
+ * specify a timeout for the closing stream in case it does not emit items.
  * <p>
  * The behavior is very similar to the {@code  buffer(Observable<TOpening> bufferOpenings, Func1<TOpening, Observable
  * <TClosing>> bufferClosingSelector)} RxJava 1 operator.

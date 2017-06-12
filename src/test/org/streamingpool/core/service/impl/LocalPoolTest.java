@@ -29,10 +29,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.service.StreamId;
-import org.streamingpool.core.service.impl.LocalPool;
 
 /**
- * Standard unit tests covering {@link SimplePool}
+ * Standard unit tests covering {@link LocalPool}
  * 
  * @author mgalilee
  */

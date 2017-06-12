@@ -81,7 +81,7 @@ public class StreamFactoryMock<T> {
     }
 
     /**
-     * When the factory is asked to create {@code id}, a {@link ReactiveStream} that contains the {@code value} will be
+     * When the factory is asked to create {@code id}, a {@link org.reactivestreams.Publisher} that contains the {@code value} will be
      * provided.
      * 
      * @param id the id that triggers the stream creation
@@ -95,7 +95,7 @@ public class StreamFactoryMock<T> {
     /**
      * When the factory is asked to create {@code id}, it will invoke the specified {@link BiFunction}. This gives the
      * power to provide custom behavior in tests, the {@link BiFunction} will receive the {@link StreamId} and a
-     * {@link DiscoveryService} and must produce a {@link ReactiveStream}.
+     * {@link DiscoveryService} and must produce a {@link org.reactivestreams.Publisher}.
      * 
      * @param id the id that triggers the bifuction invocation
      * @param bifunction the function that will be invoked
@@ -113,8 +113,8 @@ public class StreamFactoryMock<T> {
         final StreamFactory factoryMock = mock(StreamFactory.class);
         when(factoryMock.create(any(), any())).thenAnswer(args -> {
             @SuppressWarnings("unchecked")
-            StreamId<T> streamId = args.getArgumentAt(0, StreamId.class);
-            DiscoveryService discovery = args.getArgumentAt(1, DiscoveryService.class);
+            StreamId<T> streamId = args.getArgument(0);
+            DiscoveryService discovery = args.getArgument(1);
 
             if (withIdDiscover.containsKey(streamId)) {
                 return ErrorStreamPair.ofData(Flowable.merge(

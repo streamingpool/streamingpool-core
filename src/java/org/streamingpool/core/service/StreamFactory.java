@@ -32,7 +32,7 @@ import org.streamingpool.core.domain.ErrorStreamPair;
  * create a stream given an implementation of {@link StreamId} and a {@link DiscoveryService}. During the creation of a
  * stream it is allowed to discover other streams. This allow the possibility to create streams that merge other streams
  * while performing transformations.
- * </p>
+ * <p>
  * <strong>NOTE</strong>: it is not allowed to discover other streams using the provided {@link DiscoveryService} in
  * multiple threads. In other words, do not use new threads inside the stream creation. The provided
  * {@link DiscoveryService} checks that subsequent discoveries are performed on the same thread, otherwise an exception
@@ -48,7 +48,7 @@ public interface StreamFactory {
      * Given an implementation of {@link StreamId} and a {@link DiscoveryService} this method creates a
      * {@link Publisher<T>}. The provided {@link DiscoveryService} can be used to discover other streams that are
      * needed in the creation process (stream combination, transformation, etc.)
-     * </p>
+     * <p>
      * <strong>NOTE</strong>: it is strongly discouraged the use of multiple threads inside this method (see
      * {@link TypedStreamFactory} documentation).
      * 

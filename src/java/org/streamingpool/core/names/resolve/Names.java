@@ -61,7 +61,7 @@ public class Names {
         return null;
     }
 
-    private static final boolean isToStringOverriden(Object object) {
+    private static boolean isToStringOverriden(Object object) {
         try {
             return !object.getClass().getMethod(TO_STRING_METHOD_NAME).getDeclaringClass().equals(Object.class);
         } catch (Exception e) {
@@ -70,7 +70,7 @@ public class Names {
         return false;
     }
 
-    private static final String nameFromMethodOfName(Object object, String methodName) {
+    private static String nameFromMethodOfName(Object object, String methodName) {
         Method nameMethod;
         try {
             nameMethod = object.getClass().getMethod(methodName);

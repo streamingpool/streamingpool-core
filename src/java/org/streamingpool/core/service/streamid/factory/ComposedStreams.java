@@ -47,7 +47,7 @@ import org.streamingpool.core.service.streamid.factory.function.ZipCompositionFu
 
 import io.reactivex.Flowable;
 /**
- * Factory class which provides {@link StreamId}s that identify general purpose {@link ReactiveStream}s based on stream
+ * Factory class which provides {@link StreamId}s that identify general purpose {@link org.reactivestreams.Publisher}s based on stream
  * composition. This class is experimental.
  *
  * @author timartin
@@ -58,11 +58,11 @@ public final class ComposedStreams {
     }
 
     /**
-     * Creates a {@link StreamId} that will be used to create a {@link ReactiveStream} which will emit items based on a
-     * {@link ReactiveStream} identified by the provided {@link StreamId}. The conversion function always returns an
+     * Creates a {@link StreamId} that will be used to create a {@link org.reactivestreams.Publisher} which will emit items based on a
+     * {@link org.reactivestreams.Publisher} identified by the provided {@link StreamId}. The conversion function always returns an
      * {@link Optional}, if the value is present then it will be emitted, otherwise nothing will be emitted.
      *
-     * @param sourceStreamId {@link StreamId} which identifies a {@link ReactiveStream} that will be used as the source
+     * @param sourceStreamId {@link StreamId} which identifies a {@link org.reactivestreams.Publisher} that will be used as the source
      *                       of the converted objects.
      * @param conversion     {@link Function} used to convert the objects.
      * @return A {@link StreamId}.
@@ -78,12 +78,12 @@ public final class ComposedStreams {
 
     /**
      * EXPERIMENTAL
-     * Creates a {@link StreamId} that will identify a {@link ReactiveStream} which will emit items based on a
-     * {@link ReactiveStream} identified by the provided {@link StreamId}. The conversion function always returns a
-     * {@link ReactiveStream} which will used as the source of the objects to be flattened, if the stream emits values
+     * Creates a {@link StreamId} that will identify a {@link org.reactivestreams.Publisher} which will emit items based on a
+     * {@link org.reactivestreams.Publisher} identified by the provided {@link StreamId}. The conversion function always returns a
+     * {@link org.reactivestreams.Publisher} which will used as the source of the objects to be flattened, if the stream emits values
      * then these will be emitted, otherwise nothing will be emitted.
      *
-     * @param sourceStreamId {@link StreamId} which identifies the {@link ReactiveStream} that will be used as the
+     * @param sourceStreamId {@link StreamId} which identifies the {@link org.reactivestreams.Publisher} that will be used as the
      *                       source of the converted objects.
      * @param conversion     {@link Function} used to convert the objects.
      * @return A {@link StreamId}.
@@ -100,11 +100,11 @@ public final class ComposedStreams {
 
     /**
      * EXPERIMENTAL
-     * Creates a {@link StreamId} that will be used to create a {@link ReactiveStream} which will emit all the items
-     * emitted by the {@link ReactiveStream}s identified by the provided {@link StreamId}s.
+     * Creates a {@link StreamId} that will be used to create a {@link org.reactivestreams.Publisher} which will emit all the items
+     * emitted by the {@link org.reactivestreams.Publisher}s identified by the provided {@link StreamId}s.
      *
-     * @param sourceStreamIds {@link List} of {@link StreamId}s which identify {@link ReactiveStream}s that will be used
-     *                        as the source of the new {@link ReactiveStream}.
+     * @param sourceStreamIds {@link List} of {@link StreamId}s which identify {@link org.reactivestreams.Publisher}s that will be used
+     *                        as the source of the new {@link org.reactivestreams.Publisher}.
      * @return A {@link StreamId}.
      * @throws IllegalArgumentException If the provided list of source stream ids is null or empty.
      * @see Flowable#merge(Iterable)
@@ -121,10 +121,10 @@ public final class ComposedStreams {
     }
 
     /**
-     * Creates a {@link StreamId} that will be used to create a {@link ReactiveStream} which will filter and re-emit the
-     * items emitted by the {@link ReactiveStream}s identified by the provided {@link StreamId}.
+     * Creates a {@link StreamId} that will be used to create a {@link org.reactivestreams.Publisher} which will filter and re-emit the
+     * items emitted by the {@link org.reactivestreams.Publisher}s identified by the provided {@link StreamId}.
      *
-     * @param sourceStreamId {@link StreamId} which identifies the {@link ReactiveStream} that will be used as the
+     * @param sourceStreamId {@link StreamId} which identifies the {@link org.reactivestreams.Publisher} that will be used as the
      *                       source of the filtered objects.
      * @param predicate      {@link Predicate} that will be used to filter the items emitted by the source.
      * @return A {@link StreamId}.
@@ -139,10 +139,10 @@ public final class ComposedStreams {
     }
 
     /**
-     * Creates a {@link StreamId} that will be used to create a {@link ReactiveStream} which will re-emit all the items
-     * emitted by the {@link ReactiveStream}s identified by the provided {@link StreamId} with the specified delay.
+     * Creates a {@link StreamId} that will be used to create a {@link org.reactivestreams.Publisher} which will re-emit all the items
+     * emitted by the {@link org.reactivestreams.Publisher}s identified by the provided {@link StreamId} with the specified delay.
      *
-     * @param sourceStreamId {@link StreamId} which identifies the {@link ReactiveStream} that will be used as the
+     * @param sourceStreamId {@link StreamId} which identifies the {@link org.reactivestreams.Publisher} that will be used as the
      *                       source of the emitted objects.
      * @param duration       {@link Duration} that will be used as the delay before re-emitting.
      * @return A {@link StreamId}.
@@ -157,17 +157,16 @@ public final class ComposedStreams {
 
     /**
      * EXPERIMENTAL
-     * Creates a {@link StreamId} that will identify a {@link ReactiveStream} which will emit items generated using the
-     * provided method and the values emitted by the {@link ReactiveStream}s identified by the provided {@link StreamId}
+     * Creates a {@link StreamId} that will identify a {@link org.reactivestreams.Publisher} which will emit items generated using the
+     * provided method and the values emitted by the {@link org.reactivestreams.Publisher}s identified by the provided {@link StreamId}
      * s. The zip function always returns an {@link Optional}, if the value is present then it will be emitted,
      * otherwise nothing will be emitted.
      *
-     * @param sourceStreamId1 {@link StreamId} which identifies the {@link ReactiveStream} that will be used as the
+     * @param sourceStreamId1 {@link StreamId} which identifies the {@link org.reactivestreams.Publisher} that will be used as the
      *                        source of the objects used by the zip function.
-     * @param sourceStreamId2 {@link StreamId} which identifies the {@link ReactiveStream} that will be used as the
+     * @param sourceStreamId2 {@link StreamId} which identifies the {@link org.reactivestreams.Publisher} that will be used as the
      *                        source of the objects used by the zip function.
-     * @param zip             A {@link BiFunction} which will convert both objects emitted by the
-     *                        {@link ReactiveStreams} into a single new instance of type T.
+     * @param zip             A {@link BiFunction} which will merge both objects into a single new instance of type T.
      * @return A {@link StreamId}.
      * @throws NullPointerException If any of the provided source stream ids or zip function are null.
      * @see ZipCompositionFunction
@@ -182,7 +181,7 @@ public final class ComposedStreams {
                 new ZipCompositionFunction<>(zip));
     }
 
-    private static final void checkCollectionAndThrow(Collection<?> collection, String collectionName) {
+    private static void checkCollectionAndThrow(Collection<?> collection, String collectionName) {
         if (CollectionUtils.isEmpty(collection)) {
             throw new IllegalArgumentException("The collection " + collectionName + " cannot be null nor empty");
         }

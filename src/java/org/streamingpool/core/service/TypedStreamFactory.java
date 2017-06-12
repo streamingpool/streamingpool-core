@@ -45,7 +45,7 @@ public interface TypedStreamFactory<X, T extends StreamId<X>> extends StreamFact
     /**
      * Default implementation of the {@link StreamFactory#create(StreamId, DiscoveryService)} method. Is uses
      * {@link #createReactiveStream(StreamId, DiscoveryService)} and {@link #streamIdClass()} to provide a more
-     * developer friendly way of creating {@link ReactiveStream}s.
+     * developer friendly way of creating {@link org.reactivestreams.Publisher}s.
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -58,7 +58,7 @@ public interface TypedStreamFactory<X, T extends StreamId<X>> extends StreamFact
     }
 
     /**
-     * Actually create the {@link ReactiveStream} from the given id. It is much like
+     * Actually create the {@link org.reactivestreams.Publisher} from the given id. It is much like
      * {@link StreamFactory#create(StreamId, DiscoveryService)} but with typed {@link StreamId}.
      */
     Publisher<X> createReactiveStream(T id, DiscoveryService discoveryService);

@@ -35,7 +35,7 @@ import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.streamid.CompositionStreamId;
 
 /**
- * EXPERIMENTAL {@link StreamFactory} which provides a flexible way to create {@link ReactiveStream}s based on
+ * EXPERIMENTAL {@link StreamFactory} which provides a flexible way to create {@link org.reactivestreams.Publisher}s based on
  * composition of streams.
  *
  * @author timartin

@@ -25,5 +25,5 @@ package org.streamingpool.core.service.streamid;
 import org.streamingpool.core.service.StreamId;
 
 public enum StreamingPoolHook implements StreamId<StreamId<?>> {
-    NEW_STREAM_HOOK;
+    NEW_STREAM_HOOK
 }

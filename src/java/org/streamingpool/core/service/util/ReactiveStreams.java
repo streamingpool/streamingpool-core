@@ -30,7 +30,7 @@ import akka.stream.javadsl.Source;
 import io.reactivex.Flowable;
 
 /**
- * Utility methods for working with {@link ReactiveStream}s.
+ * Utility methods for working with {@link org.reactivestreams.Publisher}s.
  * 
  * @deprecated with the dependency on {@link Publisher} directly, no need for these methods anymore. Use technology
  *             specific
@@ -58,7 +58,6 @@ public final class ReactiveStreams {
 
     /**
      * @deprecated useless
-     * @see ReactiveStreams#fromRx(Flowable)
      */
     public static <T> Publisher<T> publisherFrom(Flowable<T> source) {
         return source;

@@ -42,8 +42,8 @@ import org.streamingpool.core.service.impl.ImmutableIdentifiedStreamCreator;
 import io.reactivex.Flowable;
 
 /**
- * {@link TypedStreamFactory} specifically designed to create {@link ReactiveStream}s using {@link StreamCreator}s. In
- * order to use the right {@link StreamCreator} for creating the {@link ReactiveStream}, it uses
+ * {@link TypedStreamFactory} specifically designed to create {@link org.reactivestreams.Publisher}s using {@link StreamCreator}s. In
+ * order to use the right {@link StreamCreator} for creating the {@link org.reactivestreams.Publisher}, it uses
  * {@link ImmutableIdentifiedStreamCreator} to map a specific {@link StreamId} to the correspondent
  * {@link StreamCreator}.
  * 
