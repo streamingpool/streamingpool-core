@@ -31,7 +31,7 @@ import java.time.Instant;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamId;
@@ -78,7 +78,7 @@ public class DelayedStreamIdStreamTest {
 
     private DiscoveryService mockDiscoveryService() {
         DiscoveryService discoveryService = mock(DiscoveryService.class);
-        when(discoveryService.discover(Matchers.eq(SOURCE_STREAM_ID))).thenReturn(SOURCE_STREAM);
+        when(discoveryService.discover(ArgumentMatchers.eq(SOURCE_STREAM_ID))).thenReturn(SOURCE_STREAM);
         return discoveryService;
     }
 

@@ -28,7 +28,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -97,7 +96,7 @@ public class StreamFactoryMock<T> {
      * power to provide custom behavior in tests, the {@link BiFunction} will receive the {@link StreamId} and a
      * {@link DiscoveryService} and must produce a {@link org.reactivestreams.Publisher}.
      * 
-     * @param id the id that triggers the bifuction invocation
+     * @param id the id that triggers the bifunction invocation
      * @param bifunction the function that will be invoked
      */
     public StreamFactoryMock<T> withIdInvoke(StreamId<T> id,
