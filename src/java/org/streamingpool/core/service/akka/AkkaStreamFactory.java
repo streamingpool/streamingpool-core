@@ -26,7 +26,6 @@ import static akka.stream.javadsl.AsPublisher.WITH_FANOUT;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
