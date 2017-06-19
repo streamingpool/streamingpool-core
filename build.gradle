@@ -1,44 +1,54 @@
 buildscript {
+    project.ext.CERN_VM = System.getProperty('CERN_TECHNET_VM')
+    project.ext.TRAVIS_CI = System.getProperty('TRAVIS')
+    project.ext.POM = [
+            groupId   : 'streamingpool',
+            artifactId: 'streamingpool-core',
+            description: 'This project is an high level abstraction over Reactive Streams libraries that is currently used inside CERN.'
+    ]
+    project.ext.INFO = [
+            repo: 'https://github.com/streamingpool/streamingpool-core.git',
+            url: 'http://www.streamingpool.org/',
+            github: 'https://github.com/streamingpool/streamingpool-core',
+            githubIssues: 'https://github.com/streamingpool/streamingpool-core/issues'
+    ]
+    project.ext.BINTRAY = [
+            repo: 'streamingpool-core',
+            name: 'streamingpool-repos',
+            organization: 'streamingpool',
+            userName: 'streamingpool-dev',
+            apiToken: System.getProperty('BINTRAY_API_TOKEN')
+    ]
     repositories {
-        if (System.getenv('BUILD_SERVER') || System.getProperty('CERN_TECHNET_VM')) {
-            maven {
-                url 'http://artifactory.cern.ch/repo'
-            }
-            maven {
-                url 'http://artifactory.cern.ch/jcenter'
-            }
+        if (CERN_VM) {
+            maven { url 'http://artifactory.cern.ch/repo' }
+            maven { url 'http://artifactory.cern.ch/jcenter' }
         } else {
-            mavenCentral()
             jcenter()
         }
     }
-    dependencies {
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.9.0"
-    }
+}
+
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'maven'
+    id 'maven-publish'
+    id 'nebula.maven-publish' version '5.1.0'
+    id 'com.jfrog.bintray' version '1.7.3'
 }
 
 repositories {
-    if (System.getenv('BUILD_SERVER') || System.getProperty('CERN_TECHNET_VM')) {
-        maven {
-            url 'http://artifactory.cern.ch/repo'
-        }
-        maven {
-            url 'http://artifactory.cern.ch/jcenter'
-        }
+    if (CERN_VM) {
+        maven { url 'http://artifactory.cern.ch/repo' }
+        maven { url 'http://artifactory.cern.ch/jcenter' }
     } else {
-        mavenCentral()
         jcenter()
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'signing'
-apply plugin: 'jacoco'
-
-if (System.getenv('TRAVIS')) {
-    apply plugin: 'io.codearte.nexus-staging'
-    apply from: './scripts/deploy.gradle'
+if (TRAVIS_CI) {
+    apply from: './scripts/bintray-deploy.gradle'
 }
 
 group 'org.streamingpool'
