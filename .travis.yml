@@ -9,6 +9,7 @@ addons:
 before_install:
   - chmod +x ./gradlew
 deploy:
+  provider: script
   skip_cleanup: true
   script: ./gradlew bintrayUpload -PdeploymentVersion=${TRAVIS_TAG} -PvcsTag=${TRAVIS_TAG} --info
   on:
