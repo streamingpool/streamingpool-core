@@ -11,7 +11,7 @@ before_install:
 deploy:
   provider: script
   skip_cleanup: true
-  script: ./gradlew bintrayUpload -PdeploymentVersion=$TRAVIS_TAG -PvcsTag=$TRAVIS_TAG -DDEPLOYMENT=1 --info
+  script: /bin/sh ./scripts/deploy.sh
   on:
     tags: true
 script:
