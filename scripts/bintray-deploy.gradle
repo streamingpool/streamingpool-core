@@ -13,7 +13,7 @@ project.ext.getVcsTag = {
     if (!project.hasProperty('vcsTag')) {
         throw new RuntimeException("vcsTag not provided. You must specify a 'vcsTag' project variable (gradlew -PvcsTag=..)")
     }
-    return project.hasProperty('vcsTag');
+    return vcsTag;
 }
 
 bintray {

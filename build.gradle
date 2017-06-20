@@ -13,8 +13,8 @@ buildscript {
             githubIssues: 'https://github.com/streamingpool/streamingpool-core/issues'
     ]
     project.ext.BINTRAY = [
-            repo: 'streamingpool-core',
-            name: 'streamingpool-repos',
+            repo: 'streamingpool-repos',
+            name: 'streamingpool-core',
             organization: 'streamingpool',
             userName: 'streamingpool-dev',
             apiToken: System.getProperty('BINTRAY_API_TOKEN')
