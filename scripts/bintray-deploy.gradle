@@ -1,23 +1,13 @@
 project.ext.getDeploymentVersion = {
-    if (!project.hasProperty('deploymentVersion')) {
-        throw new RuntimeException("deploymentVersion not provided. You must specify a 'deploymentVersion' project variable (gradlew -PdeploymentVersion=..)")
-    }
-    String tmpDeploymentVersion = deploymentVersion.replaceFirst("v", "");
+    String tmpDeploymentVersion = VCS_TAG.replaceFirst("v", "");
     if (!tmpDeploymentVersion.matches("\\d+\\.\\d+\\.\\d+")) {
         throw new RuntimeException("Version is not valid. Correct format is like 1.0.2 but was " + tmpDeploymentVersion)
     }
     return tmpDeploymentVersion;
 }
 
-project.ext.getVcsTag = {
-    if (!project.hasProperty('vcsTag')) {
-        throw new RuntimeException("vcsTag not provided. You must specify a 'vcsTag' project variable (gradlew -PvcsTag=..)")
-    }
-    return vcsTag;
-}
-
 bintrayUpload.doFirst {
-    println "Deploying version ${getDeploymentVersion()} from vscTag ${vcsTag()}"
+    println "Deploying version ${getDeploymentVersion()} from vscTag ${VCS_TAG}"
 }
 
 bintray {
@@ -42,7 +32,7 @@ bintray {
         version {
             name = getDeploymentVersion()
             released = new Date()
-            vcsTag = getVcsTag()
+            vcsTag = VCS_TAG
             gpg { sign = true }
         }
     }

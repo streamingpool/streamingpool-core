@@ -1,8 +1,10 @@
 buildscript {
     project.ext.CERN_VM = System.getProperty('CERN_TECHNET_VM')
     project.ext.TRAVIS_CI = System.getProperty('TRAVIS')
+    project.ext.DEPLOYMENT = System.getProperty('DEPLOYMENT')
+    project.ext.VCS_TAG = System.getProperty('TRAVIS_TAG') ?: ''
     project.ext.POM = [
-            groupId   : 'streamingpool',
+            groupId   : 'org.streamingpool',
             artifactId: 'streamingpool-core',
             description: 'This project is an high level abstraction over Reactive Streams libraries that is currently used inside CERN.'
     ]
@@ -47,7 +49,7 @@ repositories {
     }
 }
 
-if (TRAVIS_CI) {
+if (TRAVIS_CI && DEPLOYMENT) {
     apply from: './scripts/bintray-deploy.gradle'
 }
 
