@@ -1,6 +1,7 @@
 buildscript {
     project.ext.CERN_VM = System.getProperty('CERN_TECHNET_VM') ?: System.getenv('CERN_TECHNET_VM') ?: false
     project.ext.TRAVIS_CI = System.getenv('TRAVIS') ?: false
+    project.ext.DEPLOYMENT = System.getProperty('deployment') ?: false
     project.ext.VCS_TAG = System.getenv('TRAVIS_TAG')
     project.ext.POM = [
             groupId   : 'org.streamingpool',
@@ -18,7 +19,7 @@ buildscript {
             name: 'streamingpool-core',
             organization: 'streamingpool',
             userName: 'streamingpool-dev',
-            apiToken: System.getProperty('BINTRAY_API_TOKEN')
+            apiToken: System.getenv('BINTRAY_API_TOKEN')
     ]
     repositories {
         if (CERN_VM) {
@@ -52,7 +53,7 @@ repositories {
     }
 }
 
-if (TRAVIS_CI) {
+if (DEPLOYMENT) {
     println 'Applying deployment scripts'
     apply from: './scripts/bintray-deploy.gradle'
 }
