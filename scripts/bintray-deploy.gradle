@@ -16,7 +16,7 @@ bintray {
 
     publications = ['nebula']
     // When uploading Maven-based publication files. Nebula is because we're using the netflix plugins and they use nebula as default name for a publication
-    dryRun = TRAVIS_CI // Whether to run this as dry-run, without deploying
+    dryRun = !TRAVIS_CI // Whether to run this as dry-run, without deploying
     publish = false // Whether version should be auto published after an upload
     override = false // Whether to override version artifacts already published
 
