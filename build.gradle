@@ -26,6 +26,7 @@ buildscript {
             maven { url 'http://artifactory.cern.ch/repo' }
             maven { url 'http://artifactory.cern.ch/jcenter' }
         } else {
+            mavenCentral()
             jcenter()
         }
     }
@@ -47,6 +48,7 @@ repositories {
         maven { url 'http://artifactory.cern.ch/repo' }
         maven { url 'http://artifactory.cern.ch/jcenter' }
     } else {
+        mavenCentral()
         jcenter()
     }
 }
