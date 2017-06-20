@@ -11,7 +11,7 @@ before_install:
 deploy:
   provider: script
   skip_cleanup: true
-  script: /bin/sh ./scripts/deploy.sh
+  script: ./gradlew bintrayUpload
   on:
     tags: true
 script:
