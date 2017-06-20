@@ -11,7 +11,7 @@ before_install:
 deploy:
   provider: script
   skip_cleanup: true
-  script: ./gradlew bintrayUpload -PdeploymentVersion=${TRAVIS_TAG} -PvcsTag=${TRAVIS_TAG} --info
+  script: ./gradlew bintrayUpload -PdeploymentVersion=$TRAVIS_TAG -PvcsTag=$TRAVIS_TAG --info
   on:
     tags: true
 script:
@@ -19,4 +19,3 @@ script:
   - ./gradlew jacocoTestReport
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-    

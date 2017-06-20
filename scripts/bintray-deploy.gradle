@@ -16,12 +16,17 @@ project.ext.getVcsTag = {
     return vcsTag;
 }
 
+bintrayUpload.doFirst {
+    println "Deploying version ${getDeploymentVersion()} from vscTag ${vcsTag()}"
+}
+
 bintray {
     user = "${BINTRAY.userName}"
     key = "${BINTRAY.apiToken}"
 
-    publications = ['nebula'] // When uploading Maven-based publication files. Nebula is because we're using the netflix plugins and they use nebula as default name for a publication
-    dryRun = !TRAVIS_CI // Whether to run this as dry-run, without deploying
+    publications = ['nebula']
+    // When uploading Maven-based publication files. Nebula is because we're using the netflix plugins and they use nebula as default name for a publication
+    dryRun = TRAVIS_CI // Whether to run this as dry-run, without deploying
     publish = false // Whether version should be auto published after an upload
     override = false // Whether to override version artifacts already published
 
