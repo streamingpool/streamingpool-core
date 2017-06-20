@@ -29,16 +29,18 @@ buildscript {
             jcenter()
         }
     }
+    dependencies {
+        classpath 'com.netflix.nebula:nebula-publishing-plugin:5.1.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+    }
 }
 
-plugins {
-    id 'java'
-    id 'jacoco'
-    id 'maven'
-    id 'maven-publish'
-    id 'nebula.maven-publish' version '5.1.0'
-    id 'com.jfrog.bintray' version '1.7.3'
-}
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'nebula.maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 repositories {
     if (CERN_VM) {
@@ -108,7 +110,7 @@ artifacts { archives javadocJar, sourcesJar }
 jacocoTestReport {
     reports {
         xml.enabled true
-        xml.destination "${buildDir}/reports/jacoco/report.xml"
+        xml.destination new File("${buildDir}/reports/jacoco/report.xml")
         html.enabled true
         csv.enabled false
     }
