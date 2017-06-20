@@ -50,6 +50,7 @@ repositories {
 }
 
 if (TRAVIS_CI && DEPLOYMENT) {
+    println 'Applying deployment scripts'
     apply from: './scripts/bintray-deploy.gradle'
 }
 
