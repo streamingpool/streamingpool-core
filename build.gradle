@@ -16,7 +16,7 @@ buildscript {
     ]
     project.ext.BINTRAY = [
             repo: 'streamingpool-repos',
-            name: 'streamingpool-core',
+            name: 'org.streamingpool:streamingpool-core',
             organization: 'streamingpool',
             userName: 'streamingpool-dev',
             apiToken: System.getenv('BINTRAY_API_TOKEN')
