@@ -16,8 +16,8 @@ bintray {
 
     publications = ['nebula']
     // When uploading Maven-based publication files. Nebula is because we're using the netflix plugins and they use nebula as default name for a publication
-    dryRun = !TRAVIS_CI // Whether to run this as dry-run, without deploying
-    publish = false // Whether version should be auto published after an upload
+    dryRun = !DEPLOYMENT // Whether to run this as dry-run, without deploying
+    publish = DEPLOYMENT // Whether version should be auto published after an upload
     override = false // Whether to override version artifacts already published
 
     pkg {
@@ -49,6 +49,13 @@ def pomExtraInfo = {
         license {
             name 'The Apache License, Version 2.0'
             url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        }
+    }
+    developers {
+        developer {
+            id 'streamingpool-dev'
+            name 'Streamingpool Developers'
+            email 'streamingpool-dev@cern.ch'
         }
     }
 }
