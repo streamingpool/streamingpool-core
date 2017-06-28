@@ -20,7 +20,8 @@ import io.reactivex.subjects.PublishSubject;
  * Provides different ways to intercept exceptions from streams (or lambdas) and deflect the caught exceptions onto an
  * error stream. The error stream (subject) is created internally. It can be retrieved by the {@link #errorSubject()}
  * method in order to post external events onto it. Further it will be included in the errors stream pair in case the
- * two factory methods for these are used ({@link #stream(Publisher)} or {@link #streamNonEmpty(Publisher)}). <br/>
+ * two factory methods for these are used ({@link #stream(Publisher)} or {@link #streamNonEmpty(Publisher)}).
+ * <p>
  * Since one error stream usually corresponds to one data stream, each time a new stream is created, a new instance of
  * an error deflector should be created, so that the contained error stream is not shared between different data
  * streams.
