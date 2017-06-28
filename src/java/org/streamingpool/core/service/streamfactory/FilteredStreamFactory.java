@@ -2,7 +2,7 @@
 /**
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
-* 
+*
 * Copyright (c) 2017-present, CERN. All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-* 
+*
 */
 // @formatter:on
 
@@ -35,7 +35,7 @@ import io.reactivex.Flowable;
 
 /**
  * {@link StreamFactory} for the {@link FilteredStreamId}
- * 
+ *
  * @see FilteredStreamId
  * @author acalia
  */
@@ -51,7 +51,7 @@ public class FilteredStreamFactory implements StreamFactory {
         StreamId<T> source = filteredId.sourceStreamId();
         Predicate<T> predicate = filteredId.predicate();
 
-        ErrorDeflector ed = new ErrorDeflector();
+        ErrorDeflector ed = ErrorDeflector.create();
         return ed.stream(Flowable.fromPublisher(discoveryService.discover(source)).filter(ed.falseOnError(predicate)));
     }
 
