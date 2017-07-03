@@ -13,7 +13,7 @@ public class ErrorStreamId<S extends StreamId<?>> implements StreamId<Throwable>
 	}
 
 	public static <S extends StreamId<?>> ErrorStreamId<S> of(S sourceId) {
-        return new ErrorStreamId<S>(sourceId);
+        return new ErrorStreamId<>(sourceId);
     }
 	
 	public S sourceId() {
@@ -52,7 +52,7 @@ public class ErrorStreamId<S extends StreamId<?>> implements StreamId<Throwable>
 
 	@Override
 	public String toString() {
-		return "DiagnosticStreamId [sourceId=" + sourceId + "]";
+		return "ErrorStreamId [sourceId=" + sourceId + "]";
 	}
 
 }
