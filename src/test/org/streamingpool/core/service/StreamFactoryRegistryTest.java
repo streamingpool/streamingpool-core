@@ -4,7 +4,7 @@
 
 package org.streamingpool.core.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -15,8 +15,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.streamingpool.core.conf.EmbeddedPoolConfiguration;
 import org.streamingpool.core.domain.ErrorStreamPair;
-
-import com.oracle.webservices.internal.impl.internalspi.encoding.StreamDecoder;
 
 import io.reactivex.Flowable;
 
@@ -33,9 +31,9 @@ public class StreamFactoryRegistryTest {
 
     @Test
     public void test() {
-        
+
         // registry.addIntercept(new MyFactory())
-        
+
         Publisher<String> stream = discoveryService.discover(ID);
 
         fail("Not yet implemented");
@@ -46,7 +44,7 @@ public class StreamFactoryRegistryTest {
     private static class MyStreamId implements StreamId<String> {
 
     }
-    
+
     private static class MyFactory implements StreamFactory {
 
         @Override
@@ -56,7 +54,7 @@ public class StreamFactoryRegistryTest {
             }
             return ErrorStreamPair.empty();
         }
-        
+
     }
 
 }
