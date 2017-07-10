@@ -28,7 +28,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.reactivestreams.Publisher;
@@ -39,8 +38,6 @@ import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
-
-import com.sun.prism.impl.FactoryResetException;
 
 /**
  * Special implementation of a {@link DiscoveryService}. It is able to discover streams recursively while preventing
@@ -111,17 +108,19 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
     }
 
     private <T> ErrorStreamPair<T> createFromFactories(StreamId<T> newId) {
-        for (StreamFactory factory : factories) {
-            ErrorStreamPair<T> factoryResult = factory.create(newId, cloneDiscoveryServiceIncluding(newId));
+        synchronized (factories) {
+            for (StreamFactory factory : factories) {
+                ErrorStreamPair<T> factoryResult = factory.create(newId, cloneDiscoveryServiceIncluding(newId));
 
-            if (factoryResult == null) {
-                throw new IllegalStateException(format(
-                        "Factory %s returned null instead of a valid stream object for the id %s", factory, newId));
-            }
+                if (factoryResult == null) {
+                    throw new IllegalStateException(format(
+                            "Factory %s returned null instead of a valid stream object for the id %s", factory, newId));
+                }
 
-            if (factoryResult.isPresent()) {
-                LOGGER.info(format("Stream from id '%s' was successfully created by factory '%s'", newId, factory));
-                return factoryResult;
+                if (factoryResult.isPresent()) {
+                    LOGGER.info(format("Stream from id '%s' was successfully created by factory '%s'", newId, factory));
+                    return factoryResult;
+                }
             }
         }
         return ErrorStreamPair.empty();
