@@ -66,8 +66,9 @@ public class StreamFactoryRegistryTest {
         @SuppressWarnings("unchecked")
         @Override
         public <T> ErrorStreamPair<T> create(StreamId<T> id, DiscoveryService discoveryService) {
-            if (!id.equals(ID))
+            if (!id.equals(ID)) {
                 return ErrorStreamPair.empty();
+            }
 
             return (ErrorStreamPair<T>) ErrorStreamPair.ofData(Flowable.just(ANY_VALUE_1));
         }
@@ -79,8 +80,9 @@ public class StreamFactoryRegistryTest {
         @SuppressWarnings("unchecked")
         @Override
         public <T> ErrorStreamPair<T> create(StreamId<T> id, DiscoveryService discoveryService) {
-            if (!id.equals(ID))
+            if (!id.equals(ID)) {
                 return ErrorStreamPair.empty();
+            }
 
             return (ErrorStreamPair<T>) ErrorStreamPair.ofData(Flowable.just(ANY_VALUE_2));
         }

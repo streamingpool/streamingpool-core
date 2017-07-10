@@ -24,10 +24,9 @@ package org.streamingpool.core.service.impl;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -56,11 +55,12 @@ public class LocalPool implements DiscoveryService, ProvidingService, StreamFact
     private final PoolContent content = new PoolContent();
 
     public LocalPool() {
-        this(new LinkedList<>());
+        this(Collections.emptyList());
     }
 
     public LocalPool(List<StreamFactory> factories) {
-        this.factories = Collections.synchronizedList(new ArrayList<>(factories));
+        java.util.Objects.requireNonNull(factories,"Factories can not be null");
+        this.factories = new CopyOnWriteArrayList<>(factories);
         LOGGER.info("Available Stream Factories: " + factories);
     }
 
