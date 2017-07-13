@@ -22,11 +22,6 @@
 
 package org.streamingpool.core.service.streamfactory;
 
-import static io.reactivex.Flowable.never;
-import static io.reactivex.Flowable.timer;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
-import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -66,7 +61,7 @@ public class OverlapBufferStreamFactory implements StreamFactory {
         StreamId<?> startId = bufferSpecification.startId();
         StreamId<?> sourceId = analysisId.sourceId();
 
-        Duration timeout = bufferSpecification.timeout();
+        Flowable<?> timeout = bufferSpecification.timeout();
 
         ConnectableFlowable<?> startStream = Flowable.fromPublisher(discoveryService.discover(startId)).publish();
         ConnectableFlowable<?> sourceStream = Flowable.fromPublisher(discoveryService.discover(sourceId)).publish();
@@ -76,36 +71,29 @@ public class OverlapBufferStreamFactory implements StreamFactory {
                 .collect(Collectors.toMap(m -> (EndStreamMatcher<Object, Object>) m,
                         m -> Flowable.fromPublisher(discoveryService.discover(m.endStreamId())).publish()));
 
+        StreamConnector sourceStreamConnector = new StreamConnector(sourceStream);
         Flowable<?> bufferStream = sourceStream
                 .compose(new DoAfterFirstSubscribe<>(() -> {
                     endStreams.values().forEach(ConnectableFlowable::connect);
                     startStream.connect();
                 }))
                 .buffer(startStream,
-                opening -> closingStreamFor(opening, endStreams, timeout, new StreamConnector(sourceStream)));
+                        opening -> closingStreamFor(opening, endStreams, timeout, sourceStreamConnector));
         return ErrorStreamPair.ofData((Publisher<T>) bufferStream);
     }
 
     private Flowable<?> closingStreamFor(Object opening,
-            Map<EndStreamMatcher<Object, Object>, ConnectableFlowable<?>> endStreams, Duration timeout,
+            Map<EndStreamMatcher<Object, Object>, ConnectableFlowable<?>> endStreams, Flowable<?> timeout,
             StreamConnector sourceStreamConnector) {
-        Flowable<?> timeoutStream = timeoutStreamOf(timeout);
 
         Set<Flowable<?>> matchingEndStreams = endStreams.entrySet().stream()
                 .map(e -> e.getValue().filter(v -> e.getKey().matching().test(opening, v))).collect(Collectors.toSet());
 
-        matchingEndStreams.add(timeoutStream);
+        matchingEndStreams.add(timeout);
 
         return Flowable.merge(matchingEndStreams)
                 .compose(new DoAfterFirstSubscribe<>(sourceStreamConnector::connect))
                 .take(1);
-    }
-
-    private Flowable<?> timeoutStreamOf(Duration timeout) {
-        if (timeout.isNegative()) {
-            return never();
-        }
-        return timer(timeout.toMillis(), MILLISECONDS);
     }
 
     // Connects only once the given ConnectableFlowable
