@@ -41,7 +41,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableSet;
@@ -57,7 +56,6 @@ import org.streamingpool.core.service.streamid.BufferSpecification;
 import org.streamingpool.core.service.streamid.BufferSpecification.EndStreamMatcher;
 import org.streamingpool.core.service.streamid.OverlapBufferStreamId;
 
-@Ignore("hangs")
 public class OverlapBufferStreamTest {
 
     private LocalPool pool;
