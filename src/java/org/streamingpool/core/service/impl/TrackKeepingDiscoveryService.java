@@ -28,7 +28,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.reactivestreams.Publisher;
@@ -39,8 +38,6 @@ import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
-
-import com.sun.prism.impl.FactoryResetException;
 
 /**
  * Special implementation of a {@link DiscoveryService}. It is able to discover streams recursively while preventing

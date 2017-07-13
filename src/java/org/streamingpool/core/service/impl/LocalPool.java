@@ -24,7 +24,9 @@ package org.streamingpool.core.service.impl;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -33,10 +35,9 @@ import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.ProvidingService;
 import org.streamingpool.core.service.StreamFactory;
+import org.streamingpool.core.service.StreamFactoryRegistry;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.TypedStreamFactory;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * Local pool for providing and discovery of {@link Publisher}s. (this class is both a {@link DiscoveryService} and a
@@ -46,7 +47,7 @@ import com.google.common.collect.ImmutableList;
  * {@link TrackKeepingDiscoveryService} then tries to create the stream using the provided {@link TypedStreamFactory}s
  * if no matching {@link StreamId} has already been provided.
  */
-public class LocalPool implements DiscoveryService, ProvidingService {
+public class LocalPool implements DiscoveryService, ProvidingService, StreamFactoryRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalPool.class);
 
@@ -54,11 +55,12 @@ public class LocalPool implements DiscoveryService, ProvidingService {
     private final PoolContent content = new PoolContent();
 
     public LocalPool() {
-        this(ImmutableList.of());
+        this(Collections.emptyList());
     }
 
     public LocalPool(List<StreamFactory> factories) {
-        this.factories = ImmutableList.copyOf(factories);
+        java.util.Objects.requireNonNull(factories,"Factories can not be null");
+        this.factories = new CopyOnWriteArrayList<>(factories);
         LOGGER.info("Available Stream Factories: " + factories);
     }
 
@@ -77,6 +79,18 @@ public class LocalPool implements DiscoveryService, ProvidingService {
     public <T> Publisher<T> discover(StreamId<T> id) {
         requireNonNull(id, "Cannot discover a null id");
         return new TrackKeepingDiscoveryService(factories, content).discover(id);
+    }
+
+    @Override
+    public void addIntercept(StreamFactory interceptFactory) {
+        factories.add(0, interceptFactory);
+        LOGGER.info("Intercept {} has been added to the factories" + interceptFactory);
+    }
+
+    @Override
+    public void addFallback(StreamFactory fallbackFactory) {
+        factories.add(factories.size(), fallbackFactory);
+        LOGGER.info("Fallback {} has been added to the factories" + fallbackFactory);
     }
 
 }
