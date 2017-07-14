@@ -26,7 +26,11 @@ import static org.streamingpool.core.util.MoreCollections.emptyIfNull;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.streamingpool.core.service.StreamFactory;
@@ -48,6 +52,8 @@ import org.streamingpool.core.service.impl.LocalPool;
 @Configuration
 public class EmbeddedPoolConfiguration {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedPoolConfiguration.class);
+
     /**
      * A list of stream factories which will be automatically collected by Spring. Since there will be at least one (the
      * below created factory) we can keep the required=true (default).
@@ -55,8 +61,18 @@ public class EmbeddedPoolConfiguration {
     @Autowired(required = false)
     private List<StreamFactory> streamFactories;
 
+    @Value( "${bufferSize}" )
+    private int bufferSize;
+
+    @Bean
+    public String post(){
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAA "+bufferSize);
+        return "marek";
+    }
+
     @Bean
     public LocalPool pool() {
+       LOGGER.error("AAAAAAAAAAAAAAAAAAAAAAA "+bufferSize);
         return new LocalPool(emptyIfNull(streamFactories));
     }
 

@@ -30,9 +30,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
+import org.reactivestreams.Publisher;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
 import org.streamingpool.core.service.DiscoveryService;
@@ -51,17 +54,20 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
     private final List<StreamFactory> factories;
     private final PoolContent content;
     private final Thread contextOfExecution;
+    private final Scheduler scheduler;
 
-    public TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content) {
-        this(factories, content, new HashSet<>(), Thread.currentThread());
+    public TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content, Scheduler scheduler) {
+        this(factories, content, new HashSet<>(), Thread.currentThread(), scheduler);
+
     }
 
-    public TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content,
-            Set<StreamId<?>> idsOfStreamsUnderCreation, Thread contextOfExecution) {
+    private TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content,
+            Set<StreamId<?>> idsOfStreamsUnderCreation, Thread contextOfExecution, Scheduler scheduler) {
         this.factories = requireNonNull(factories, "factories must not be null");
         this.content = requireNonNull(content, "activeStreams must not be null");
         this.idsOfStreamsUnderCreation = Collections.unmodifiableSet(idsOfStreamsUnderCreation);
         this.contextOfExecution = requireNonNull(contextOfExecution, "contextOfExecution must not be null");
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -71,7 +77,14 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
         content.synchronousPutIfAbsent(id, () -> createFromFactories(id));
 
-        return getStreamWithIdOrElseThrow(id);
+        Publisher<T> publisher = getStreamWithIdOrElseThrow(id);
+        return applyBackpressure(publisher);
+    }
+
+    private <T> Publisher<T> applyBackpressure(Publisher<T> publisher) {
+        return Flowable.fromPublisher(publisher)
+                .onBackpressureLatest()
+                .observeOn(scheduler, false, 1);
     }
 
     private <T> Publisher<T> getStreamWithIdOrElseThrow(StreamId<T> id) {
@@ -104,7 +117,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
     private <T> TrackKeepingDiscoveryService cloneDiscoveryServiceIncluding(StreamId<T> newId) {
         Set<StreamId<?>> newSet = new HashSet<>(idsOfStreamsUnderCreation);
         newSet.add(newId);
-        return new TrackKeepingDiscoveryService(factories, content, newSet, contextOfExecution);
+        return new TrackKeepingDiscoveryService(factories, content, newSet, contextOfExecution, scheduler);
     }
 
     private <T> ErrorStreamPair<T> createFromFactories(StreamId<T> newId) {
@@ -118,7 +131,8 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
             if (factoryResult.isPresent()) {
                 LOGGER.info(format("Stream from id '%s' was successfully created by factory '%s'", newId, factory));
-                return factoryResult;
+                Flowable<T> sharedDataStream = Flowable.fromPublisher(factoryResult.data()).share();
+                return ErrorStreamPair.ofDataError(sharedDataStream, factoryResult.error());
             }
         }
         return ErrorStreamPair.empty();

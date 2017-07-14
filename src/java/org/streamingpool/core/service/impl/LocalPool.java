@@ -27,10 +27,15 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
+import org.reactivestreams.Publisher;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.ProvidingService;
@@ -50,6 +55,9 @@ import org.streamingpool.core.service.TypedStreamFactory;
 public class LocalPool implements DiscoveryService, ProvidingService, StreamFactoryRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalPool.class);
+
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(11);
+    private static final Scheduler SCHEDULER = Schedulers.from(EXECUTOR_SERVICE);
 
     private final List<StreamFactory> factories;
     private final PoolContent content = new PoolContent();
@@ -78,7 +86,7 @@ public class LocalPool implements DiscoveryService, ProvidingService, StreamFact
     @Override
     public <T> Publisher<T> discover(StreamId<T> id) {
         requireNonNull(id, "Cannot discover a null id");
-        return new TrackKeepingDiscoveryService(factories, content).discover(id);
+        return new TrackKeepingDiscoveryService(factories, content, SCHEDULER).discover(id);
     }
 
     @Override
