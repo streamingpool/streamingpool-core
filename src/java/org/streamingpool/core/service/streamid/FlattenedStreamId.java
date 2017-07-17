@@ -80,7 +80,7 @@ public class FlattenedStreamId<T> implements StreamId<T> {
 
     @Override
     public String toString() {
-        return "SimpleDerivedStreamId [sourceStreamId=" + sourceStreamId + "]";
+        return "FlattenedStreamId [sourceStreamId=" + sourceStreamId + "]";
     }
 
 }
