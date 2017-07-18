@@ -2,7 +2,7 @@
 /**
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
-* 
+*
 * Copyright (c) 2017-present, CERN. All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,22 +16,19 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-* 
+*
 */
 // @formatter:on
 
 package org.streamingpool.core.service.util;
 
 import org.reactivestreams.Publisher;
-import org.streamingpool.core.service.StreamId;
 
-import akka.NotUsed;
-import akka.stream.javadsl.Source;
 import io.reactivex.Flowable;
 
 /**
  * Utility methods for working with {@link org.reactivestreams.Publisher}s.
- * 
+ *
  * @deprecated with the dependency on {@link Publisher} directly, no need for these methods anymore. Use technology
  *             specific
  */
@@ -61,18 +58,6 @@ public final class ReactiveStreams {
      */
     public static <T> Publisher<T> publisherFrom(Flowable<T> source) {
         return source;
-    }
-
-    /**
-     * @deprecated {@link Source} has a {@link Source#fromPublisher(Publisher)} method
-     */
-    public static <T> Source<T, NotUsed> sourceFrom(Publisher<T> stream) {
-        return Source.fromPublisher(stream);
-    }
-
-    @SuppressWarnings("unused")
-    public static <T> Source<T, NotUsed> sourceFrom(StreamId<T> streamId) {
-        throw new UnsupportedOperationException("Not yet implemented.");
     }
 
 }
