@@ -32,11 +32,6 @@ import java.util.List;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
-import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
-import org.streamingpool.core.service.DiscoveryService;
-import org.streamingpool.core.service.StreamFactory;
-import org.streamingpool.core.service.StreamId;
-import org.streamingpool.core.service.TypedStreamFactory;
 import org.streamingpool.core.service.impl.LocalPool;
 import org.streamingpool.core.testing.StreamFactoryMock;
 

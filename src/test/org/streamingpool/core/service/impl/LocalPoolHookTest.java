@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.service.StreamId;
-import org.streamingpool.core.service.impl.LocalPool;
 import org.streamingpool.core.service.streamid.StreamingPoolHook;
 
 import io.reactivex.Flowable;

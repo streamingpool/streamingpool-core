@@ -4,8 +4,6 @@
 
 package org.streamingpool.core.domain;
 
-import static org.junit.Assert.*;
-
 import java.util.Optional;
 
 import org.junit.Test;

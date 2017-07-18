@@ -25,9 +25,6 @@ package org.streamingpool.core.service.streamfactory;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.streamingpool.core.domain.ErrorDeflector;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;

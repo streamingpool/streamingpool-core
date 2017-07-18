@@ -2,10 +2,11 @@ package org.streamingpool.core.service.util;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.reactivestreams.Publisher;
+
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
-import org.reactivestreams.Publisher;
 
 /**
  * This transformer runs the given action after the first subscription.

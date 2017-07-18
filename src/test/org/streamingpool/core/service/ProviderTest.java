@@ -30,9 +30,6 @@ import org.junit.runner.RunWith;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.streamingpool.core.service.DiscoveryService;
-import org.streamingpool.core.service.ProvidingService;
-import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.testing.AbstractStreamTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.domain.ErrorStreamPair;

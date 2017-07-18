@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.reactivestreams.Publisher;
-import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.support.RxStreamSupport;
 import org.streamingpool.core.testing.AbstractStreamTest;
 import org.streamingpool.core.testing.NamedStreamId;

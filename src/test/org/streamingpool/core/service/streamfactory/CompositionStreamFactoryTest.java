@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 
 import org.junit.Test;
@@ -35,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamId;
-import org.streamingpool.core.service.streamfactory.CompositionStreamFactory;
 import org.streamingpool.core.service.streamid.CompositionStreamId;
 import org.streamingpool.core.support.RxStreamSupport;
 import org.streamingpool.core.testing.AbstractStreamTest;

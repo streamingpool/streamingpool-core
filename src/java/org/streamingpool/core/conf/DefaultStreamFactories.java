@@ -25,7 +25,12 @@ package org.streamingpool.core.conf;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.streamingpool.core.service.TypedStreamFactory;
-import org.streamingpool.core.service.streamfactory.*;
+import org.streamingpool.core.service.streamfactory.CombineWithLatestStreamFactory;
+import org.streamingpool.core.service.streamfactory.CompositionStreamFactory;
+import org.streamingpool.core.service.streamfactory.DelayedStreamFactory;
+import org.streamingpool.core.service.streamfactory.DerivedStreamFactory;
+import org.streamingpool.core.service.streamfactory.FilteredStreamFactory;
+import org.streamingpool.core.service.streamfactory.OverlapBufferStreamFactory;
 
 /**
  * Configuration for including the {@link TypedStreamFactory}s provided in the core project.

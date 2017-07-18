@@ -30,8 +30,6 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
 import org.streamingpool.core.incubation.akka.IdBasedSource;
-import org.streamingpool.core.service.DiscoveryService;
-import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.impl.LocalPool;
 
 import com.google.common.collect.Lists;

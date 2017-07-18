@@ -27,8 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.function.Function;
 
 import org.junit.Test;
-import org.streamingpool.core.names.resolve.Chains;
-import org.streamingpool.core.names.resolve.Names;
 
 public class NamesTest {
 
