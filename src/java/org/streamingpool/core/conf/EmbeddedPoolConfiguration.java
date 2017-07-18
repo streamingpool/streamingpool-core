@@ -2,7 +2,7 @@
 /**
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
-* 
+*
 * Copyright (c) 2017-present, CERN. All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-* 
+*
 */
 // @formatter:on
 
@@ -36,13 +36,13 @@ import org.streamingpool.core.service.impl.LocalPool;
 /**
  * The spring configuration which shall be used in any application that will have the spring pool embedded. It provides
  * a pool which will pick up the following beans automatically:
- * </p>
+ * <p>
  * Dependency injection:
  * <ul>
  * <li>{@link TypedStreamFactory}: Any additional Stream factory will be automatically plugged into the pool to be used for
  * stream discovery.
  * </ul>
- * 
+ *
  * @author kfuchsbe
  */
 @Configuration
@@ -54,7 +54,7 @@ public class EmbeddedPoolConfiguration {
      */
     @Autowired(required = false)
     private List<StreamFactory> streamFactories;
-    
+
     @Bean
     public LocalPool pool() {
         return new LocalPool(emptyIfNull(streamFactories));

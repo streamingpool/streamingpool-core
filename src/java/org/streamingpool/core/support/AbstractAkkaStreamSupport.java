@@ -31,7 +31,7 @@ import akka.stream.Materializer;
 /**
  * Support class for working with Akka streams. It automatically discovers {@link AkkaSourceProvidingService} and
  * {@link ActorMaterializer} in order to fulfill the requirements of {@link AkkaStreamSupport}.
- * </p>
+ * <p>
  * Dependency injection:
  * <ul>
  * <li>{@link AkkaSourceProvidingService}</li>

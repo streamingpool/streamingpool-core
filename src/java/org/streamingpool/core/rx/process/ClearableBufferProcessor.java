@@ -50,10 +50,7 @@ import io.reactivex.processors.BehaviorProcessor;
  * <p>
  * The possible options are:
  * <ul>
- * <li>{@link #setBufferSize(int)}: The size of the buffers. The default value for this is {@value #DEFAULT_BUFFER_SIZE}
- * .
- * <li>{@link #setSkip(int)}: the number items of the input variable to skip. The default value for this is
- * {@value #DEFAULT_SKIP}.
+ * <li>{@link #setBufferSize(int)}: The size of the buffers.
  * <li>{@link #setMinEmitSize(int)}: This is the first index at which the first buffer starts emitting. This buffer then
  * fills up and is emitted when it is full. All following buffers are only emitted once. The default value for this is
  * {@value #DEFAULT_MIN_EMIT_SIZE}.

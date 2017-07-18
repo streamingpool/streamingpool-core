@@ -24,5 +24,5 @@ package org.streamingpool.core.rx.process;
 
 public enum RunState {
     PAUSED,
-    RUNNING;
+    RUNNING
 }

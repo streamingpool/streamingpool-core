@@ -28,28 +28,28 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.streamid.CompositionStreamId;
 
 /**
- * EXPERIMENTAL
- * {@link StreamFactory} which provides a flexible way to create {@link ReactiveStream}s based on composition of
- * streams.
+ * EXPERIMENTAL {@link StreamFactory} which provides a flexible way to create {@link org.reactivestreams.Publisher}s based on
+ * composition of streams.
  *
  * @author timartin
  */
 public final class CompositionStreamFactory implements StreamFactory {
     @Override
-    public <T> Optional<Publisher<T>> create(StreamId<T> id, DiscoveryService discoveryService) {
+    public <T> ErrorStreamPair<T> create(StreamId<T> id, DiscoveryService discoveryService) {
         Objects.requireNonNull(discoveryService, "discoveryService");
         if (!(id instanceof CompositionStreamId)) {
-            return Optional.empty();
+            return ErrorStreamPair.empty();
         }
         @SuppressWarnings("unchecked")
         CompositionStreamId<?, T> compositionStreamId = (CompositionStreamId<?, T>) id;
-        return Optional.of(createStream(compositionStreamId, discoveryService));
+        return ErrorStreamPair.ofData(createStream(compositionStreamId, discoveryService));
     }
 
     private <X, T> Publisher<T> createStream(CompositionStreamId<X, T> id, DiscoveryService discoveryService) {
@@ -58,7 +58,7 @@ public final class CompositionStreamFactory implements StreamFactory {
     }
 
     private <X> List<Publisher<X>> extractStreams(Collection<StreamId<X>> streamIds,
-                                                       DiscoveryService discoveryService) {
+            DiscoveryService discoveryService) {
         List<Publisher<X>> sourceReactiveStreams = new ArrayList<>();
         for (StreamId<X> streamId : streamIds) {
             sourceReactiveStreams.add(discoveryService.discover(streamId));

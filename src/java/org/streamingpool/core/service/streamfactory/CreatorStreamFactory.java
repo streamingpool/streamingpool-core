@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.CreatorProvidingService;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamCreator;
@@ -41,8 +42,8 @@ import org.streamingpool.core.service.impl.ImmutableIdentifiedStreamCreator;
 import io.reactivex.Flowable;
 
 /**
- * {@link TypedStreamFactory} specifically designed to create {@link ReactiveStream}s using {@link StreamCreator}s. In
- * order to use the right {@link StreamCreator} for creating the {@link ReactiveStream}, it uses
+ * {@link TypedStreamFactory} specifically designed to create {@link org.reactivestreams.Publisher}s using {@link StreamCreator}s. In
+ * order to use the right {@link StreamCreator} for creating the {@link org.reactivestreams.Publisher}, it uses
  * {@link ImmutableIdentifiedStreamCreator} to map a specific {@link StreamId} to the correspondent
  * {@link StreamCreator}.
  * 
@@ -61,12 +62,12 @@ public class CreatorStreamFactory implements CreatorProvidingService, StreamFact
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Optional<Publisher<T>> create(StreamId<T> newId, DiscoveryService discoveryService) {
+    public <T> ErrorStreamPair<T> create(StreamId<T> newId, DiscoveryService discoveryService) {
         StreamCreator<?> streamCreator = suppliers.get(newId);
         if (streamCreator == null) {
-            return Optional.empty();
+            return ErrorStreamPair.empty();
         }
-        return Optional.of((Flowable<T>) streamCreator.createWith(discoveryService));
+        return ErrorStreamPair.ofData((Flowable<T>) streamCreator.createWith(discoveryService));
     }
 
     @Override

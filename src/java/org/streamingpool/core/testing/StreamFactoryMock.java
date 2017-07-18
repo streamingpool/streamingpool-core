@@ -28,11 +28,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
@@ -80,7 +80,7 @@ public class StreamFactoryMock<T> {
     }
 
     /**
-     * When the factory is asked to create {@code id}, a {@link ReactiveStream} that contains the {@code value} will be
+     * When the factory is asked to create {@code id}, a {@link org.reactivestreams.Publisher} that contains the {@code value} will be
      * provided.
      * 
      * @param id the id that triggers the stream creation
@@ -94,9 +94,9 @@ public class StreamFactoryMock<T> {
     /**
      * When the factory is asked to create {@code id}, it will invoke the specified {@link BiFunction}. This gives the
      * power to provide custom behavior in tests, the {@link BiFunction} will receive the {@link StreamId} and a
-     * {@link DiscoveryService} and must produce a {@link ReactiveStream}.
+     * {@link DiscoveryService} and must produce a {@link org.reactivestreams.Publisher}.
      * 
-     * @param id the id that triggers the bifuction invocation
+     * @param id the id that triggers the bifunction invocation
      * @param bifunction the function that will be invoked
      */
     public StreamFactoryMock<T> withIdInvoke(StreamId<T> id,
@@ -112,23 +112,23 @@ public class StreamFactoryMock<T> {
         final StreamFactory factoryMock = mock(StreamFactory.class);
         when(factoryMock.create(any(), any())).thenAnswer(args -> {
             @SuppressWarnings("unchecked")
-            StreamId<T> streamId = args.getArgumentAt(0, StreamId.class);
-            DiscoveryService discovery = args.getArgumentAt(1, DiscoveryService.class);
+            StreamId<T> streamId = args.getArgument(0);
+            DiscoveryService discovery = args.getArgument(1);
 
             if (withIdDiscover.containsKey(streamId)) {
-                return Optional.of(Flowable.merge(
+                return ErrorStreamPair.ofData(Flowable.merge(
                         withIdDiscover.get(streamId).stream().map(discovery::discover).collect(Collectors.toList())));
             }
 
             if (withIdProvideStreamWithValue.containsKey(streamId)) {
-                return Optional.of(Flowable.just(withIdProvideStreamWithValue.get(streamId)));
+                return ErrorStreamPair.ofData(Flowable.just(withIdProvideStreamWithValue.get(streamId)));
             }
 
             if (withIdInvoke.containsKey(streamId)) {
-                return Optional.of(withIdInvoke.get(streamId).apply(streamId, discovery));
+                return ErrorStreamPair.ofData(withIdInvoke.get(streamId).apply(streamId, discovery));
             }
 
-            return Optional.empty();
+            return ErrorStreamPair.empty();
         });
         return factoryMock;
     }

@@ -32,7 +32,7 @@ import org.streamingpool.core.service.StreamId;
 
 /**
  * This class provides support for the discovery and for providing streams.
- * </p>
+ * <p>
  * Dependency injection:
  * <ul>
  * <li>{@link DiscoveryService}</li>

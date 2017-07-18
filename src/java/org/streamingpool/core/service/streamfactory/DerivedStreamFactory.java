@@ -23,10 +23,13 @@
 package org.streamingpool.core.service.streamfactory;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.streamingpool.core.domain.ErrorDeflector;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
@@ -36,27 +39,22 @@ import io.reactivex.Flowable;
 
 public class DerivedStreamFactory implements StreamFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DerivedStreamFactory.class);
-
     @Override
-    public <T> Optional<Publisher<T>> create(StreamId<T> id, DiscoveryService discoveryService) {
+    public <T> ErrorStreamPair<T> create(StreamId<T> id, DiscoveryService discoveryService) {
         if (!(id instanceof DerivedStreamId)) {
-            return Optional.empty();
+            return ErrorStreamPair.empty();
         }
         @SuppressWarnings("unchecked")
         DerivedStreamId<?, T> derivedStreamId = (DerivedStreamId<?, T>) id;
-        return Optional.of(createDerivedStream(derivedStreamId, discoveryService));
+        return createDerivedStream(derivedStreamId, discoveryService);
     }
 
-    private <S, T> Flowable<T> createDerivedStream(DerivedStreamId<S, T> id, DiscoveryService discoveryService) {
+    private <S, T> ErrorStreamPair<T> createDerivedStream(DerivedStreamId<S, T> id, DiscoveryService discoveryService) {
         Flowable<S> sourceStream = Flowable.fromPublisher(discoveryService.discover(id.sourceStreamId()));
-        return sourceStream.map(val -> {
-            try {
-                return Optional.<T> of(id.conversion().apply(val));
-            } catch (Exception e) {
-                LOGGER.error("Error while converting '" + val + "' by derived stream id '" + id + "'.", e);
-                return Optional.<T> empty();
-            }
-        }).filter(Optional::isPresent).map(Optional::get);
+        Function<S, T> conversion = id.conversion();
+
+        ErrorDeflector ed = ErrorDeflector.create();
+        return ed.stream(sourceStream.map(ed.emptyOnError(conversion)).filter(Optional::isPresent).map(Optional::get));
     }
+
 }

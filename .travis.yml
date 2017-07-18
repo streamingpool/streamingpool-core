@@ -11,11 +11,11 @@ before_install:
 deploy:
   provider: script
   skip_cleanup: true
-  script: /bin/sh ./scripts/deploy-jars.sh
+  script: ./gradlew bintrayUpload -Ddeployment=true
   on:
     tags: true
-
+script:
+  - ./gradlew check
+  - ./gradlew jacocoTestReport
 after_success:
-  - ./gradlew cobertura 
   - bash <(curl -s https://codecov.io/bash)
-    

@@ -22,25 +22,29 @@
 
 package org.streamingpool.core.service.streamid;
 
+import static io.reactivex.Flowable.never;
+import static io.reactivex.Flowable.timer;
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
 
+import io.reactivex.Flowable;
 import org.streamingpool.core.service.StreamId;
 
 public class BufferSpecification {
 
     private StreamId<?> startId;
     private Set<EndStreamMatcher<?, ?>> endStreamMatchers;
-    private Duration timeout;
+    private Flowable<?> timeout;
 
     private static final Duration NO_TIMEOUT = Duration.ofSeconds(-1);
 
     private BufferSpecification(StreamId<?> startStreamId, Set<EndStreamMatcher<?, ?>> endStreamMatchers,
-            Duration timeout) {
+            Flowable<?> timeout) {
         this.startId = requireNonNull(startStreamId, "startStreamId must not be null.");
         this.endStreamMatchers = requireNonNull(endStreamMatchers, "endStreamId must not be null.");
         this.timeout = requireNonNull(timeout, "timeout must not be null");
@@ -48,12 +52,24 @@ public class BufferSpecification {
 
     public static BufferSpecification ofStartEndTimeout(StreamId<?> startStreamId,
             Set<EndStreamMatcher<?, ?>> endStreamMatchers, Duration timeout) {
+        return new BufferSpecification(startStreamId, endStreamMatchers, timeoutStreamOf(timeout));
+    }
+
+    public static BufferSpecification ofStartEndTimeout(StreamId<?> startStreamId,
+            Set<EndStreamMatcher<?, ?>> endStreamMatchers, Flowable<?> timeout) {
         return new BufferSpecification(startStreamId, endStreamMatchers, timeout);
     }
 
     public static BufferSpecification ofStartEnd(StreamId<?> startStreamId,
             Set<EndStreamMatcher<?, ?>> endStreamMatchers) {
-        return new BufferSpecification(startStreamId, endStreamMatchers, NO_TIMEOUT);
+        return new BufferSpecification(startStreamId, endStreamMatchers, timeoutStreamOf(NO_TIMEOUT));
+    }
+
+    private static Flowable<?> timeoutStreamOf(Duration timeout) {
+        if (timeout.isNegative()) {
+            return never();
+        }
+        return timer(timeout.toMillis(), MILLISECONDS);
     }
 
     public StreamId<?> startId() {
@@ -64,7 +80,7 @@ public class BufferSpecification {
         return endStreamMatchers;
     }
 
-    public Duration timeout() {
+    public Flowable<?> timeout() {
         return timeout;
     }
 

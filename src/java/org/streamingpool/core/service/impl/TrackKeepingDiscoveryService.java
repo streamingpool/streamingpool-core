@@ -28,12 +28,12 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
@@ -107,26 +107,21 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         return new TrackKeepingDiscoveryService(factories, content, newSet, contextOfExecution);
     }
 
-    private <T> Publisher<T> createFromFactories(StreamId<T> newId) {
+    private <T> ErrorStreamPair<T> createFromFactories(StreamId<T> newId) {
         for (StreamFactory factory : factories) {
-            Optional<Publisher<T>> factoryResult = factory.create(newId, cloneDiscoveryServiceIncluding(newId));
+            ErrorStreamPair<T> factoryResult = factory.create(newId, cloneDiscoveryServiceIncluding(newId));
 
             if (factoryResult == null) {
-                throw new IllegalStateException(
-                        format("Factory %s returned null instead of a valid Optional for the id %s", factory, newId));
+                throw new IllegalStateException(format(
+                        "Factory %s returned null instead of a valid stream object for the id %s", factory, newId));
             }
 
             if (factoryResult.isPresent()) {
-                Publisher<T> stream = factoryResult.get();
-                if (stream == null) {
-                    throw new IllegalStateException(
-                            format("Factory %s returned a null stream for the id %s", factory, newId));
-                }
                 LOGGER.info(format("Stream from id '%s' was successfully created by factory '%s'", newId, factory));
-                return stream;
+                return factoryResult;
             }
         }
-        return null;
+        return ErrorStreamPair.empty();
     }
 
 }

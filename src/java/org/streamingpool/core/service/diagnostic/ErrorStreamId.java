@@ -6,12 +6,16 @@ import org.streamingpool.core.service.StreamId;
 
 public class ErrorStreamId<S extends StreamId<?>> implements StreamId<Throwable> {
 
-	private final S sourceId;
+    private final S sourceId;
 
-	public ErrorStreamId(S sourceId) {
+	private ErrorStreamId(S sourceId) {
 		this.sourceId = requireNonNull(sourceId, "sourceId must not be null");
 	}
 
+	public static <S extends StreamId<?>> ErrorStreamId<S> of(S sourceId) {
+        return new ErrorStreamId<>(sourceId);
+    }
+	
 	public S sourceId() {
 		return sourceId;
 	}
@@ -48,7 +52,7 @@ public class ErrorStreamId<S extends StreamId<?>> implements StreamId<Throwable>
 
 	@Override
 	public String toString() {
-		return "DiagnosticStreamId [sourceId=" + sourceId + "]";
+		return "ErrorStreamId [sourceId=" + sourceId + "]";
 	}
 
 }

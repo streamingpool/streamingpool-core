@@ -1,44 +1,61 @@
 buildscript {
-	repositories {
-        if (System.getenv('BUILD_SERVER') || System.getProperty('CERN_TECHNET_VM')) {
-            maven {
-                url 'http://artifactory.cern.ch/repo'
-                url 'http://artifactory.cern.ch/jcenter'
-            }
+    project.ext.CERN_VM = System.getProperty('CERN_TECHNET_VM') ?: System.getenv('CERN_TECHNET_VM') ?: false
+    project.ext.TRAVIS_CI = System.getProperty('TRAVIS') ?: System.getenv('TRAVIS') ?: false
+    project.ext.DEPLOYMENT = System.getProperty('deployment') ?: false
+    project.ext.VCS_TAG = System.getProperty('TRAVIS_TAG') ?: System.getenv('TRAVIS_TAG')
+    project.ext.POM = [
+            groupId   : 'org.streamingpool',
+            artifactId: 'streamingpool-core',
+            description: 'This project is an high level abstraction over Reactive Streams libraries that is currently used inside CERN.'
+    ]
+    project.ext.INFO = [
+            repo: 'https://github.com/streamingpool/streamingpool-core.git',
+            url: 'http://www.streamingpool.org/',
+            github: 'https://github.com/streamingpool/streamingpool-core',
+            githubIssues: 'https://github.com/streamingpool/streamingpool-core/issues'
+    ]
+    project.ext.BINTRAY = [
+            repo: 'streamingpool-repos',
+            name: 'org.streamingpool:streamingpool-core',
+            organization: 'streamingpool',
+            userName: 'streamingpool-dev',
+            apiToken: System.getenv('BINTRAY_API_TOKEN')
+    ]
+    repositories {
+        if (CERN_VM) {
+            maven { url 'http://artifactory.cern.ch/repo' }
+            maven { url 'http://artifactory.cern.ch/jcenter' }
         } else {
-			mavenCentral()
-			jcenter()
+            mavenCentral()
+            jcenter()
         }
-	}
-	dependencies {
-			classpath 'net.saliman:gradle-cobertura-plugin:2.4.0'
-			classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
-	}
-}
-
-repositories {
-    if (System.getenv('BUILD_SERVER') || System.getProperty('CERN_TECHNET_VM')) {
-        maven {
-            url 'http://artifactory.cern.ch/repo'
-            url 'http://artifactory.cern.ch/jcenter'
-        }
-    } else {
-		mavenCentral()
-		jcenter()
+    }
+    dependencies {
+        classpath 'com.netflix.nebula:nebula-publishing-plugin:5.1.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
     }
 }
 
 apply plugin: 'java'
+apply plugin: 'jacoco'
 apply plugin: 'maven'
-apply plugin: 'signing'
+apply plugin: 'maven-publish'
+apply plugin: 'nebula.maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
-if(System.getenv('TRAVIS')){
-    apply plugin: 'cobertura'
-    apply plugin: 'io.codearte.nexus-staging'
-    apply from : './scripts/deploy.gradle'
+repositories {
+    if (CERN_VM) {
+        maven { url 'http://artifactory.cern.ch/repo' }
+        maven { url 'http://artifactory.cern.ch/jcenter' }
+    } else {
+        mavenCentral()
+        jcenter()
+    }
+}
 
-    cobertura.coverageFormats = ['html', 'xml']
-    cobertura.coverageSourceDirs = sourceSets.main.java.srcDirs
+if (DEPLOYMENT) {
+    println 'Applying deployment scripts'
+    apply from: './scripts/bintray-deploy.gradle'
 }
 
 group 'org.streamingpool'
@@ -46,51 +63,42 @@ group 'org.streamingpool'
 sourceCompatibility = 1.8
 
 dependencies {
-	compile 'org.reactivestreams:reactive-streams:1.0.0'
+    compile 'org.reactivestreams:reactive-streams:1.0.0'
+    compile 'io.reactivex.rxjava2:rxjava:2.1.+'
+    //compile 'com.typesafe.akka:akka-stream_2.11:2.4.16'
 
-	compile 'io.reactivex.rxjava2:rxjava:2.0.5'
+    compile group: 'com.typesafe.akka', name: 'akka-stream_2.11', version:'2.5.3'
+    testCompile group: 'com.typesafe.akka', name: 'akka-stream-testkit_2.11', version:'2.5.3'
 
-	compile 'com.typesafe.akka:akka-stream_2.11:2.4.16'
+    compile 'org.springframework:spring-core:4.3.9.RELEASE'
+    compile 'org.springframework:spring-context:4.3.9.RELEASE'
+    compile 'org.springframework:spring-test:4.3.9.RELEASE' // Testing utils in /src/java for the moment
 
-	compile 'org.springframework:spring-core:4.3.5.RELEASE'
-	compile 'org.springframework:spring-context:4.3.5.RELEASE'
-	compile 'org.springframework:spring-test:4.3.5.RELEASE' // Testing utils in /src/java for the moment
+    compile 'org.slf4j:slf4j-api:1.7.+'
 
-	compile 'org.slf4j:slf4j-api:1.7.21'
-	compile 'org.slf4j:slf4j-log4j12:1.7.22'
+    compile 'com.google.guava:guava:22.0'
 
-	compile 'com.google.guava:guava:20.0'
-
-	compile 'junit:junit:4.12' // Testing utils in /src/java for the moment
-	testCompile 'org.hamcrest:hamcrest-all:1.3'
-	compile 'org.mockito:mockito-core:1.10.19' // Testing utils in /src/java for the moment
-	testCompile 'org.assertj:assertj-core:3.6.1'
+    compile 'junit:junit:4.12' // Testing utils in /src/java for the moment
+    compile 'org.mockito:mockito-core:2.8.+' // Testing utils in /src/java for the moment
+    testCompile 'org.assertj:assertj-core:3.8.+'
 }
 
 sourceSets {
-	main {
-		java {
-			srcDir 'src/java'
-		}
-	}
-	test {
-		java {
-			srcDir 'src/test'
-		}
-	}
-}
-
-if (JavaVersion.current().isJava8Compatible()) {
-    allprojects {
-        tasks.withType(Javadoc) {
-            options.addStringOption('Xdoclint:none', '-quiet')
+    main {
+        java {
+            srcDir 'src/java'
+        }
+    }
+    test {
+        java {
+            srcDir 'src/test'
         }
     }
 }
 
-javadoc {  options.encoding = "UTF-8" }
+javadoc { options.encoding = "UTF-8" }
 
-task wrapper(type: Wrapper) { gradleVersion = '3.3' }
+task wrapper(type: Wrapper) { gradleVersion = '4.0' }
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
@@ -103,3 +111,12 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts { archives javadocJar, sourcesJar }
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        xml.destination new File("${buildDir}/reports/jacoco/report.xml")
+        html.enabled true
+        csv.enabled false
+    }
+}

@@ -31,10 +31,12 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.StreamId;
+import org.streamingpool.core.service.diagnostic.ErrorStreamId;
 import org.streamingpool.core.service.streamid.StreamingPoolHook;
 
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.processors.ReplayProcessor;
 
 /**
  * Encapsulate the state of a streaming pool.
@@ -44,21 +46,24 @@ import io.reactivex.processors.PublishProcessor;
 public class PoolContent {
 
     private final ConcurrentMap<StreamId<?>, Publisher<?>> activeStreams = new ConcurrentHashMap<>();
-    private final PublishProcessor<StreamId<?>> newStreamHook = PublishProcessor.create();
+    private final ReplayProcessor<StreamId<?>> newStreamHook = ReplayProcessor.create();
     private final ExecutorService hookExecutor = Executors.newSingleThreadExecutor();
 
     public PoolContent() {
         addStreamHooks();
     }
 
-    public <T> boolean synchronousPutIfAbsent(StreamId<T> id, Supplier<Publisher<T>> supplier) {
+    public <T> boolean synchronousPutIfAbsent(StreamId<T> id, Supplier<ErrorStreamPair<T>> supplier) {
         if (!activeStreams.containsKey(id)) {
             synchronized (activeStreams) {
                 if (!activeStreams.containsKey(id)) {
-                    Publisher<T> reactStream = supplier.get();
-                    if (reactStream != null) {
-                        activeStreams.put(id, reactStream);
+                    ErrorStreamPair<T> stream = supplier.get();
+                    if (stream.isPresent()) {
+                        ErrorStreamId<StreamId<T>> errorStreamId = ErrorStreamId.of(id);
+                        activeStreams.put(id, stream.data());
+                        activeStreams.put(errorStreamId, stream.error());
                         hookExecutor.submit(() -> newStreamHook.onNext(id));
+                        hookExecutor.submit(() -> newStreamHook.onNext(errorStreamId));
                         return true;
                     }
                 }

@@ -33,8 +33,8 @@ import org.streamingpool.core.service.StreamId;
  * {@link org.streamingpool.core.service.streamfactory.CompositionStreamFactory} allows for the easy creation of
  * general purpose streams based on composition of streams. This class is experimental.
  *
- * @param <X> The type of objects emitted by the source {@link ReactiveStream}s.
- * @param <T> The type of objects emitted by the new created {@link ReactiveStream}.
+ * @param <X> The type of objects emitted by the source {@link org.reactivestreams.Publisher}s.
+ * @param <T> The type of objects emitted by the new created {@link org.reactivestreams.Publisher}.
  * @author timartin
  */
 public final class CompositionStreamId<X, T> implements StreamId<T> {
@@ -44,9 +44,9 @@ public final class CompositionStreamId<X, T> implements StreamId<T> {
     /**
      * Creates a {@link CompositionStreamId} with the provided sourceStreamId and function.
      *
-     * @param sourceStreamId A {@link StreamId} that identifies the {@link ReactiveStream} passed to the
+     * @param sourceStreamId A {@link StreamId} that identifies the {@link org.reactivestreams.Publisher} passed to the
      *                       transformation function.
-     * @param transformation The transformation {@link Function} to be used on the {@link ReactiveStream} identified by
+     * @param transformation The transformation {@link Function} to be used on the {@link org.reactivestreams.Publisher} identified by
      *                       the provided {@link StreamId}.
      */
     public CompositionStreamId(StreamId<X> sourceStreamId, Function<List<Publisher<X>>, Publisher<T>> transformation) {
@@ -56,9 +56,9 @@ public final class CompositionStreamId<X, T> implements StreamId<T> {
     /**
      * Creates a {@link CompositionStreamId} with the provided sourceStreamIds and function.
      *
-     * @param sourceStreamIds A {@link List} of {@link StreamId}s that will identifies the {@link ReactiveStream} passed
+     * @param sourceStreamIds A {@link List} of {@link StreamId}s that will identifies the {@link org.reactivestreams.Publisher} passed
      *                        to the transformation function.
-     * @param transformation  The transformation {@link Function} to be used on the {@link ReactiveStream}s identified by
+     * @param transformation  The transformation {@link Function} to be used on the {@link org.reactivestreams.Publisher}s identified by
      *                        the provided {@link List} of {@link StreamId}s.
      */
     public CompositionStreamId(List<StreamId<X>> sourceStreamIds,

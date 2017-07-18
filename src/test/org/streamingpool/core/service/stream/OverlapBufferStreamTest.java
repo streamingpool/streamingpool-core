@@ -1,8 +1,8 @@
 // @formatter:off
-/**
+/*
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
-* 
+*
 * Copyright (c) 2017-present, CERN. All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-* 
+*
 */
 // @formatter:on
 
@@ -26,44 +26,48 @@ import static io.reactivex.Flowable.interval;
 import static io.reactivex.Flowable.just;
 import static io.reactivex.Flowable.merge;
 import static io.reactivex.Flowable.never;
+import static io.reactivex.Flowable.timer;
+import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableSet;
+import io.reactivex.Flowable;
+import io.reactivex.flowables.ConnectableFlowable;
+import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.subscribers.TestSubscriber;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.impl.LocalPool;
 import org.streamingpool.core.service.streamfactory.DelayedStreamFactory;
 import org.streamingpool.core.service.streamfactory.OverlapBufferStreamFactory;
 import org.streamingpool.core.service.streamid.BufferSpecification;
-import org.streamingpool.core.service.streamid.OverlapBufferStreamId;
 import org.streamingpool.core.service.streamid.BufferSpecification.EndStreamMatcher;
-
-import com.google.common.collect.ImmutableSet;
-
-import io.reactivex.Flowable;
-import io.reactivex.flowables.ConnectableFlowable;
-import io.reactivex.subscribers.TestSubscriber;
+import org.streamingpool.core.service.streamid.OverlapBufferStreamId;
 
 public class OverlapBufferStreamTest {
 
-    private OverlapBufferStreamFactory factory;
     private LocalPool pool;
+    private TestSubscriber<List<Long>> testSubscriber;
+    private TestScheduler testScheduler;
 
     @Before
     public void setUp() {
-        factory = new OverlapBufferStreamFactory();
-        pool = new LocalPool(Arrays.asList(factory, new DelayedStreamFactory()));
+        OverlapBufferStreamFactory factory = new OverlapBufferStreamFactory();
+        pool = new LocalPool(asList(factory, new DelayedStreamFactory()));
+        testSubscriber = new TestSubscriber<>();
+        testScheduler = new TestScheduler();
     }
 
     @Test
@@ -86,95 +90,104 @@ public class OverlapBufferStreamTest {
 
     @Test
     public void dataStreamEndsBeforeEndStreamEmitsShouldBufferEverything() throws InterruptedException {
-        StreamId<Long> sourceId = registerRx(oneSecondIntervalOfLength(5));
-        StreamId<Object> startId = registerRx(merge(just(new Object()).delay(2, SECONDS), never()));
+        StreamId<Long> sourceId = registerRx(interval(1, SECONDS, testScheduler).take(5));
+        StreamId<Object> startId = registerRx(merge(just(new Object()).delay(2, SECONDS, testScheduler), never()));
         StreamId<Object> endId = registerRx(never());
 
-        OverlapBufferStreamId<Long> bufferId = OverlapBufferStreamId.of(sourceId,
-                BufferSpecification.ofStartEnd(startId, Collections.singleton(EndStreamMatcher.endingOnEvery(endId))));
+        subscribe(OverlapBufferStreamId.of(sourceId,
+                BufferSpecification.ofStartEnd(startId, Collections.singleton(EndStreamMatcher.endingOnEvery(endId)))));
 
-        CountDownLatch sync = new CountDownLatch(1);
-        Flowable.fromPublisher(pool.discover(bufferId)).doOnNext(v -> sync.countDown()).subscribe();
-        if (sync.await(1, SECONDS)) {
-            fail("OnNext event should not happen if the end trigger does not yield any value");
-        }
+        testScheduler.advanceTimeBy(10, DAYS);
+        //OnNext event should not happen if the end trigger does not yield any value (and the start stream does not complete)
+        testSubscriber.assertValueCount(0);
+
     }
 
     @Test
-    public void dataStreamEndsBeforeStartStreamEmitsShouldNotEmitEnything() {
-        StreamId<Long> sourceId = registerRx(oneSecondIntervalOfLength(10));
+    public void dataStreamEndsBeforeStartStreamEmitsShouldNotEmitAnything() {
+        StreamId<Long> sourceId = registerRx(interval(1, SECONDS, testScheduler).take(10));
         StreamId<Object> startId = registerRx(never());
         StreamId<Object> endId = registerRx(never());
 
-        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId,
-                BufferSpecification.ofStartEnd(startId, Collections.singleton(EndStreamMatcher.endingOnEvery(endId)))));
+        OverlapBufferStreamId<Long> buffer = OverlapBufferStreamId.of(sourceId,
+                BufferSpecification.ofStartEnd(startId, Collections.singleton(EndStreamMatcher.endingOnEvery(endId))));
 
-        assertThat(values).isEmpty();
+        subscribe(buffer);
+        testScheduler.advanceTimeBy(365, TimeUnit.DAYS);
+        testSubscriber.assertEmpty();
     }
 
     @Test
     public void bufferEndsStreamUsingDelayedStart() {
-        Flowable<Object> startStream = shiftedBy500Ms(ofObject(interval(3, SECONDS)));
+        Flowable<Object> startStream = interval(0,3, SECONDS, testScheduler).cast(Object.class);
 
-        StreamId<Long> sourceId = registerRx(oneSecondIntervalOfLength(10));
+        StreamId<Long> sourceId = registerRx(interval(1,1000, MILLISECONDS, testScheduler).take(10));
         StreamId<Object> startId = registerRx(startStream);
-        StreamId<Object> endId = registerRx(startStream.delay(3, SECONDS));
+        StreamId<Object> endId = registerRx(startStream.delay(3, SECONDS, testScheduler));
 
-        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification
+        subscribe(OverlapBufferStreamId.of(sourceId, BufferSpecification
                 .ofStartEnd(startId, Collections.singleton(EndStreamMatcher.endingOnMatch(endId, Objects::equals)))));
 
-        assertThat(values).contains(Arrays.asList(3L, 4L, 5L));
-        assertThat(values).contains(Arrays.asList(6L, 7L, 8L));
-        assertThat(values).contains(Arrays.asList(9L));
+        testScheduler.advanceTimeBy(3, SECONDS);
+        testSubscriber.assertValueCount(1);
+        testSubscriber.assertValueAt(0, v -> asList(0L, 1L, 2L).equals(v));
+        testScheduler.advanceTimeBy(3, SECONDS);
+        testSubscriber.assertValueCount(2);
+        testSubscriber.assertValueAt(1,v -> asList(3L, 4L, 5L).equals(v));
+        testScheduler.advanceTimeBy(3, SECONDS);
+        testSubscriber.assertValueCount(3);
+        testSubscriber.assertValueAt(2, v -> asList(6L, 7L, 8L).equals(v));
+        testScheduler.advanceTimeBy(3, SECONDS);
+        testSubscriber.assertValueCount(4);
+        testSubscriber.assertValueAt(3, v -> asList(9L).equals(v));
+
     }
 
     @Test
     public void bufferEndsWithTimeout() {
-        Flowable<Object> startStream = shiftedBy500Ms(ofObject(interval(3, SECONDS)).take(3));
+        Flowable<Object> startStream = interval(0, 3, SECONDS, testScheduler).take(3).cast(Object.class);
 
-        StreamId<Long> sourceId = registerRx(oneSecondIntervalOfLength(10));
+        StreamId<Long> sourceId = registerRx(interval(0,1, SECONDS, testScheduler).take(10));
         StreamId<Object> startId = registerRx(startStream);
         StreamId<Object> endId = registerRx(never());
 
-        Duration timeout = Duration.ofSeconds(5);
+        Flowable<?> timeout = timer(5200, MILLISECONDS, testScheduler);
 
-        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification
+        subscribe(OverlapBufferStreamId.of(sourceId, BufferSpecification
                 .ofStartEndTimeout(startId, ImmutableSet.of(EndStreamMatcher.endingOnEvery(endId)), timeout)));
 
-        assertThat(values).contains(Arrays.asList(3L, 4L, 5L, 6L, 7L));
-        assertThat(values).contains(Arrays.asList(6L, 7L, 8L, 9L));
-        assertThat(values).contains(Arrays.asList(9L));
+        testScheduler.advanceTimeBy(5300L, MILLISECONDS);
+        testSubscriber.assertValueCount(1);
+        testSubscriber.assertValueAt(0, v -> asList(0L, 1L, 2L, 3L, 4L, 5L).equals(v));
+
+        testScheduler.advanceTimeBy(3100L, MILLISECONDS);
+        testSubscriber.assertValueCount(2);
+        testSubscriber.assertValueAt(1, v -> asList(3L, 4L, 5L, 6L, 7L, 8L).equals(v));
+
+        testScheduler.advanceTimeBy(3100L, MILLISECONDS);
+        testSubscriber.assertValueCount(3);
+        testSubscriber.assertValueAt(2, v -> asList(6L, 7L, 8L, 9L).equals(v));
+
     }
 
     @Test
     public void bufferCompletelyOverlap() {
-        StreamId<Long> sourceId = registerRx(oneSecondIntervalOfLength(10));
-        StreamId<Object> startId = registerRx(shiftedBy500Ms(just(new Object(), new Object()).delay(5, SECONDS)));
+        StreamId<Long> sourceId = registerRx(interval(1, SECONDS, testScheduler).take(10));
+        StreamId<Object> startId = registerRx(just(new Object(), new Object()).delay(5500, MILLISECONDS, testScheduler));
         StreamId<Object> endId = registerRx(never());
 
-        Duration timeout = Duration.ofSeconds(5);
+        Flowable<?> timeout = timer(5200, MILLISECONDS, testScheduler);
 
-        List<List<Long>> values = subscribeAndWait(OverlapBufferStreamId.of(sourceId, BufferSpecification
+        subscribe(OverlapBufferStreamId.of(sourceId, BufferSpecification
                 .ofStartEndTimeout(startId, ImmutableSet.of(EndStreamMatcher.endingOnEvery(endId)), timeout)));
 
-        assertThat(values).hasSize(2);
-        assertThat(values.get(0)).containsExactlyElementsOf(values.get(1));
+        testScheduler.advanceTimeBy(11, SECONDS);
+        testSubscriber.assertValueCount(2);
+       assertThat( testSubscriber.values().get(0)).containsExactlyElementsOf( testSubscriber.values().get(1));
     }
 
-    private Flowable<Long> oneSecondIntervalOfLength(int length) {
-        return interval(1, SECONDS).take(length);
-    }
-
-    private List<List<Long>> subscribeAndWait(OverlapBufferStreamId<Long> bufferId) {
-        TestSubscriber<List<Long>> subscriber = TestSubscriber.create();
-        CountDownLatch sync = new CountDownLatch(1);
-        Flowable.fromPublisher(pool.discover(bufferId)).doOnTerminate(sync::countDown).subscribe(subscriber);
-        try {
-            sync.await();
-        } catch (InterruptedException e) {
-            /* Tests.. */
-        }
-        return subscriber.values();
+    private void subscribe(OverlapBufferStreamId<Long> bufferId) {
+        Flowable.fromPublisher(pool.discover(bufferId)).subscribe(testSubscriber);
     }
 
     private <T> StreamId<T> registerRx(Flowable<T> stream) {
@@ -182,18 +195,6 @@ public class OverlapBufferStreamTest {
         StreamId<T> id = mock(StreamId.class);
         pool.provide(id, stream);
         return id;
-    }
-
-    /**
-     * This is used to have the start and stop stream to not conflict with the data stream. Setting a 500 delay shift
-     * should be ok for tests.
-     */
-    private <T> Flowable<T> shiftedBy500Ms(Flowable<T> source) {
-        return source.delay(500, MILLISECONDS);
-    }
-
-    private Flowable<Object> ofObject(Flowable<?> source) {
-        return source.cast(Object.class);
     }
 
 }

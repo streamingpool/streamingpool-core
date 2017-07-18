@@ -25,6 +25,7 @@ package org.streamingpool.core.service;
 import java.util.Optional;
 
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.domain.ErrorStreamPair;
 
 /**
  * Typed version of a {@link StreamFactory}. A {@link StreamFactory} can create any type of streams, but sometimes there
@@ -44,20 +45,20 @@ public interface TypedStreamFactory<X, T extends StreamId<X>> extends StreamFact
     /**
      * Default implementation of the {@link StreamFactory#create(StreamId, DiscoveryService)} method. Is uses
      * {@link #createReactiveStream(StreamId, DiscoveryService)} and {@link #streamIdClass()} to provide a more
-     * developer friendly way of creating {@link ReactiveStream}s.
+     * developer friendly way of creating {@link org.reactivestreams.Publisher}s.
      */
     @SuppressWarnings("unchecked")
     @Override
-    default <Y> Optional<Publisher<Y>> create(StreamId<Y> id, DiscoveryService discoveryService) {
+    default <Y> ErrorStreamPair<Y> create(StreamId<Y> id, DiscoveryService discoveryService) {
         if (!streamIdClass().isAssignableFrom(id.getClass())) {
-            return Optional.empty();
+            return ErrorStreamPair.empty();
         }
 
-        return Optional.of((Publisher<Y>) createReactiveStream((T) id, discoveryService));
+        return ErrorStreamPair.ofData((Publisher<Y>) createReactiveStream((T) id, discoveryService));
     }
 
     /**
-     * Actually create the {@link ReactiveStream} from the given id. It is much like
+     * Actually create the {@link org.reactivestreams.Publisher} from the given id. It is much like
      * {@link StreamFactory#create(StreamId, DiscoveryService)} but with typed {@link StreamId}.
      */
     Publisher<X> createReactiveStream(T id, DiscoveryService discoveryService);
