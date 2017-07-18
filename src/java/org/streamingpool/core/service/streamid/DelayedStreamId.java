@@ -2,7 +2,7 @@
 /**
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
-* 
+*
 * Copyright (c) 2017-present, CERN. All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-* 
+*
 */
 // @formatter:on
 
@@ -24,6 +24,7 @@ package org.streamingpool.core.service.streamid;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.Serializable;
 import java.time.Duration;
 
 import org.streamingpool.core.service.StreamId;
@@ -31,12 +32,13 @@ import org.streamingpool.core.service.streamfactory.DelayedStreamFactory;
 
 /**
  * Delay the items emitted by the stream created with the target {@link StreamId} by the specified {@link Duration}
- * 
+ *
  * @see DelayedStreamFactory
  * @author acalia
  * @param <T> type of the original data stream
  */
-public class DelayedStreamId<T> implements StreamId<T> {
+public class DelayedStreamId<T> implements StreamId<T>, Serializable {
+    private static final long serialVersionUID = 1L;
 
     private final StreamId<T> target;
     private final Duration delay;

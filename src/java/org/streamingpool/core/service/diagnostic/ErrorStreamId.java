@@ -2,9 +2,12 @@ package org.streamingpool.core.service.diagnostic;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.Serializable;
+
 import org.streamingpool.core.service.StreamId;
 
-public class ErrorStreamId<S extends StreamId<?>> implements StreamId<Throwable> {
+public class ErrorStreamId<S extends StreamId<?>> implements StreamId<Throwable>, Serializable {
+    private static final long serialVersionUID = 1L;
 
     private final S sourceId;
 
@@ -15,7 +18,7 @@ public class ErrorStreamId<S extends StreamId<?>> implements StreamId<Throwable>
 	public static <S extends StreamId<?>> ErrorStreamId<S> of(S sourceId) {
         return new ErrorStreamId<>(sourceId);
     }
-	
+
 	public S sourceId() {
 		return sourceId;
 	}

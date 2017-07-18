@@ -2,7 +2,7 @@
 /**
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
-* 
+*
 * Copyright (c) 2017-present, CERN. All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-* 
+*
 */
 // @formatter:on
 
@@ -24,6 +24,7 @@ package org.streamingpool.core.service.streamid;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.Serializable;
 import java.util.function.BiFunction;
 
 import org.streamingpool.core.service.StreamId;
@@ -33,14 +34,15 @@ import org.streamingpool.core.service.streamfactory.CombineWithLatestStreamFacto
  * Given a data stream and a stream of triggering events, the resulting stream emits as soon as the trigger stream
  * emits. The emitted value is determined by the comining function, and can thus be computed from the emitted value of
  * the triggered stream and the latest emitted item of the data stream. stream at the moment of each triggering event
- * 
+ *
  * @see CombineWithLatestStreamFactory
  * @author acalia, caguiler
  * @param <T> Type of the stream which will trigger the emitting of a new element
  * @param <D> Type of the original data stream
  * @param <R> Type of the returned value (= type of the resulting stream)
  */
-public class CombineWithLatestStreamId<T, D, R> implements StreamId<R> {
+public class CombineWithLatestStreamId<T, D, R> implements StreamId<R>, Serializable {
+    private static final long serialVersionUID = 1L;
 
     private final StreamId<T> trigger;
     private final StreamId<D> data;
