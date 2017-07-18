@@ -22,8 +22,6 @@
 
 package org.streamingpool.core.service;
 
-import java.util.Optional;
-
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.domain.ErrorStreamPair;
 

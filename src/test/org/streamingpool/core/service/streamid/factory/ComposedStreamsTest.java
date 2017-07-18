@@ -36,7 +36,6 @@ import java.util.function.Predicate;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.service.StreamId;
-import org.streamingpool.core.service.streamid.factory.ComposedStreams;
 import org.streamingpool.core.support.RxStreamSupport;
 import org.streamingpool.core.testing.AbstractStreamTest;
 

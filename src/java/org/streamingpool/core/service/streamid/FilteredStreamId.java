@@ -2,7 +2,7 @@
 /**
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
-* 
+*
 * Copyright (c) 2017-present, CERN. All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-* 
+*
 */
 // @formatter:on
 
@@ -24,6 +24,7 @@ package org.streamingpool.core.service.streamid;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.Serializable;
 import java.util.function.Predicate;
 
 import org.streamingpool.core.service.StreamId;
@@ -31,12 +32,13 @@ import org.streamingpool.core.service.streamfactory.FilteredStreamFactory;
 
 /**
  * Filter the items of the stream by applying the specified {@link #predicate()}.
- * 
+ *
  * @author acalia
  * @see FilteredStreamFactory
  * @param <T> the type of the data items
  */
-public class FilteredStreamId<T> implements StreamId<T> {
+public class FilteredStreamId<T> implements StreamId<T>, Serializable {
+    private static final long serialVersionUID = 1L;
 
     private final StreamId<T> sourceStreamId;
     private final Predicate<T> predicate;

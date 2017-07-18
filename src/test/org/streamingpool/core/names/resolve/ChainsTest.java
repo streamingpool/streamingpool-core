@@ -27,7 +27,6 @@ import java.util.function.Function;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.streamingpool.core.names.resolve.Chains;
 
 public class ChainsTest {
 

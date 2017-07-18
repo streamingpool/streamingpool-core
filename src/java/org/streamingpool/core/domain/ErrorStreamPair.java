@@ -6,8 +6,6 @@ package org.streamingpool.core.domain;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
-
 import org.reactivestreams.Publisher;
 
 import io.reactivex.Flowable;

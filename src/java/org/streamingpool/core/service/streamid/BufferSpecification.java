@@ -32,8 +32,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
 
-import io.reactivex.Flowable;
 import org.streamingpool.core.service.StreamId;
+
+import io.reactivex.Flowable;
 
 public class BufferSpecification {
 

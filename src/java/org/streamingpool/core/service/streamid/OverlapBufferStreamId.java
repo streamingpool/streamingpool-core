@@ -2,7 +2,7 @@
 /**
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
-* 
+*
 * Copyright (c) 2017-present, CERN. All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,13 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-* 
+*
 */
 // @formatter:on
 
 package org.streamingpool.core.service.streamid;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.streamingpool.core.service.StreamId;
@@ -34,14 +35,15 @@ import org.streamingpool.core.service.streamfactory.OverlapBufferStreamFactory;
  * <p>
  * The behavior is very similar to the {@code  buffer(Observable<TOpening> bufferOpenings, Func1<TOpening, Observable
  * <TClosing>> bufferClosingSelector)} RxJava 1 operator.
- * 
+ *
  * @see OverlapBufferStreamFactory
  * @see <a href="http://reactivex.io/RxJava/javadoc/rx/Observable.html#buffer(rx.Observable,%20rx.functions.Func1)">
  *      RxJava 1 buffer documentation</a>
  * @author acalia
  * @param <T> the type of the data stream
  */
-public class OverlapBufferStreamId<T> implements StreamId<List<T>> {
+public class OverlapBufferStreamId<T> implements StreamId<List<T>>, Serializable {
+    private static final long serialVersionUID = 1L;
 
     private final BufferSpecification bufferSpecification;
     private final StreamId<T> sourceId;

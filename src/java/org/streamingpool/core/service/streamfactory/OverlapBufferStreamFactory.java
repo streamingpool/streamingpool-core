@@ -27,8 +27,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import io.reactivex.Flowable;
-import io.reactivex.flowables.ConnectableFlowable;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
@@ -38,6 +36,9 @@ import org.streamingpool.core.service.streamid.BufferSpecification;
 import org.streamingpool.core.service.streamid.BufferSpecification.EndStreamMatcher;
 import org.streamingpool.core.service.streamid.OverlapBufferStreamId;
 import org.streamingpool.core.service.util.DoAfterFirstSubscribe;
+
+import io.reactivex.Flowable;
+import io.reactivex.flowables.ConnectableFlowable;
 
 /**
  * Factory for {@link OverlapBufferStreamId}

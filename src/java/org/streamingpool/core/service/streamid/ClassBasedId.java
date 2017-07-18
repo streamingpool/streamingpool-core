@@ -2,7 +2,7 @@
 /**
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
-* 
+*
 * Copyright (c) 2017-present, CERN. All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,22 +16,25 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-* 
+*
 */
 // @formatter:on
 
 package org.streamingpool.core.service.streamid;
 
+import java.io.Serializable;
+
 import org.streamingpool.core.service.StreamId;
 
-public class ClassBasedId <T> implements StreamId<T> {
-    
+public final class ClassBasedId <T> implements StreamId<T>, Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final Class<?> targetClass;
 
     private ClassBasedId(Class<?> targetClass) {
         this.targetClass = targetClass;
     }
-    
+
     public static <T> ClassBasedId<T> of(Class<?> targetClass) {
         return new ClassBasedId<>(targetClass);
     }
@@ -46,21 +49,31 @@ public class ClassBasedId <T> implements StreamId<T> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
-        @SuppressWarnings("rawtypes")
-        ClassBasedId other = (ClassBasedId) obj;
+        }
+        ClassBasedId<?> other = (ClassBasedId<?>) obj;
         if (targetClass == null) {
-            if (other.targetClass != null)
+            if (other.targetClass != null) {
                 return false;
-        } else if (!targetClass.equals(other.targetClass))
+            }
+        } else if (!targetClass.equals(other.targetClass)) {
             return false;
+        }
         return true;
     }
-    
+
+    @Override
+    public String toString() {
+        return "ClassBasedId [targetClass=" + targetClass + "]";
+    }
+
+
 
 }

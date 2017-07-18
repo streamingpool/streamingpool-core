@@ -32,10 +32,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import io.reactivex.Flowable;
-import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subscribers.TestSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamId;
@@ -44,6 +40,10 @@ import org.streamingpool.core.service.streamid.BufferSpecification.EndStreamMatc
 import org.streamingpool.core.service.streamid.OverlapBufferStreamId;
 import org.streamingpool.core.support.RxStreamSupport;
 import org.streamingpool.core.testing.AbstractStreamTest;
+
+import io.reactivex.Flowable;
+import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * Unit tests for {@link OverlapBufferStreamFactory}.

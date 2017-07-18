@@ -52,7 +52,7 @@ public class FilteredStreamFactory implements StreamFactory {
         Predicate<T> predicate = filteredId.predicate();
 
         ErrorDeflector ed = ErrorDeflector.create();
-        return ed.stream(Flowable.fromPublisher(discoveryService.discover(source)).filter(ed.falseOnError(predicate)));
+        return ed.stream(Flowable.fromPublisher(discoveryService.discover(source)).filter(ed.falseOnException(predicate)));
     }
 
 }

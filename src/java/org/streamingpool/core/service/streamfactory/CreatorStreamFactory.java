@@ -24,11 +24,9 @@ package org.streamingpool.core.service.streamfactory;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.reactivestreams.Publisher;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.CreatorProvidingService;
 import org.streamingpool.core.service.DiscoveryService;

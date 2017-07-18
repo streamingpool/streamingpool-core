@@ -67,8 +67,8 @@ dependencies {
     compile 'io.reactivex.rxjava2:rxjava:2.1.+'
     //compile 'com.typesafe.akka:akka-stream_2.11:2.4.16'
 
-    compile group: 'com.typesafe.akka', name: 'akka-stream_2.11', version:'2.5.3'
-    testCompile group: 'com.typesafe.akka', name: 'akka-stream-testkit_2.11', version:'2.5.3'
+    //compile group: 'com.typesafe.akka', name: 'akka-stream_2.11', version:'2.5.3'
+    //testCompile group: 'com.typesafe.akka', name: 'akka-stream-testkit_2.11', version:'2.5.3'
 
     compile 'org.springframework:spring-core:4.3.9.RELEASE'
     compile 'org.springframework:spring-context:4.3.9.RELEASE'
@@ -81,6 +81,8 @@ dependencies {
     compile 'junit:junit:4.12' // Testing utils in /src/java for the moment
     compile 'org.mockito:mockito-core:2.8.+' // Testing utils in /src/java for the moment
     testCompile 'org.assertj:assertj-core:3.8.+'
+    testCompile 'pl.pragmatists:JUnitParams:1.1.0'
+    testCompile 'com.openpojo:openpojo:0.8.6'
 }
 
 sourceSets {
