@@ -27,7 +27,6 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
@@ -43,7 +42,6 @@ import org.streamingpool.core.testing.AbstractStreamTest;
  * 
  * @author acalia
  */
-@Ignore // bug will be fixed in RxJava 2.2
 public class CombineWithLatestStreamIdStreamTest extends AbstractStreamTest implements RxStreamSupport {
 
     private TestSubscriber<Long> subscriber;
