@@ -26,7 +26,8 @@ import org.streamingpool.core.service.streamfactory.FlattenedStreamFactory;
 import static java.util.Objects.requireNonNull;
 
 /**
- * A stream id, that flattens all of the values emitted by another stream of iterables.
+ * A stream id, that flattens all of the values emitted by another stream of iterables, null values are excluded from
+ * the resulting stream.
  *
  * @param <T> the type of the final stream
  * @author timartin

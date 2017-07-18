@@ -53,9 +53,8 @@ public class FlattenedStreamFactory implements StreamFactory {
 
     private <T> ErrorStreamPair<T> createFlattenedStream(FlattenedStreamId<T> id, DiscoveryService discoveryService) {
         Flowable<Iterable<T>> sourceStream = Flowable.fromPublisher(discoveryService.discover(id.sourceStreamId()));
-        ErrorDeflector ed = ErrorDeflector.create();
 
-        return ed.stream(sourceStream.flatMap(iterable -> {
+        return ErrorStreamPair.ofData(sourceStream.flatMap(iterable -> {
             Stream<T> stream = StreamSupport.stream(iterable.spliterator(), false).filter(Objects::nonNull);
             return Flowable.fromIterable(stream.collect(Collectors.toList()));
         }));
