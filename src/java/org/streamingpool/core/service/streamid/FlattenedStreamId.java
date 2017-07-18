@@ -34,6 +34,7 @@ import static java.util.Objects.requireNonNull;
  * @see FlattenedStreamFactory
  */
 public class FlattenedStreamId<T> implements StreamId<T> {
+    private static final long serialVersionUID = 1L;
 
     private final StreamId<Iterable<T>> sourceStreamId;
 
