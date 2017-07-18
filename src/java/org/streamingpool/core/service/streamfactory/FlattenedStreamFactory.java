@@ -22,18 +22,17 @@ package org.streamingpool.core.service.streamfactory;
 
 import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.domain.ErrorDeflector;
+import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
-import org.streamingpool.core.service.streamid.FilteredStreamId;
 import org.streamingpool.core.service.streamid.FlattenedStreamId;
 
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * {@link StreamFactory} for the {@link FlattenedStreamId}s
@@ -42,18 +41,23 @@ import static java.util.Optional.of;
  * @see FlattenedStreamId
  */
 public class FlattenedStreamFactory implements StreamFactory {
-
     @Override
-    public <T> Optional<Publisher<T>> create(StreamId<T> id, DiscoveryService discoveryService) {
+    public <T> ErrorStreamPair<T> create(StreamId<T> id, DiscoveryService discoveryService) {
         if (!(id instanceof FlattenedStreamId)) {
-            return empty();
+            return ErrorStreamPair.empty();
         }
-        FlattenedStreamId<T> filteredId = (FlattenedStreamId<T>) id;
-        StreamId<Iterable<T>> source = filteredId.sourceStreamId();
 
-        return Optional.of(Flowable.fromPublisher(discoveryService.discover(source))
-                .filter(Objects::nonNull)
-                .flatMap(Flowable::fromIterable)
-                .filter(Objects::nonNull));
+        FlattenedStreamId<T> flattenedStreamId = (FlattenedStreamId<T>) id;
+        return createFlattenedStream(flattenedStreamId, discoveryService);
+    }
+
+    private <T> ErrorStreamPair<T> createFlattenedStream(FlattenedStreamId<T> id, DiscoveryService discoveryService) {
+        Flowable<Iterable<T>> sourceStream = Flowable.fromPublisher(discoveryService.discover(id.sourceStreamId()));
+        ErrorDeflector ed = ErrorDeflector.create();
+
+        return ed.stream(sourceStream.flatMap(iterable -> {
+            Stream<T> stream = StreamSupport.stream(iterable.spliterator(), false).filter(Objects::nonNull);
+            return Flowable.fromIterable(stream.collect(Collectors.toList()));
+        }));
     }
 }
