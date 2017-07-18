@@ -66,9 +66,9 @@ public class OverlapBufferStreamTest {
     @Before
     public void setUp() {
         OverlapBufferStreamFactory factory = new OverlapBufferStreamFactory();
-        pool = new LocalPool(asList(factory, new DelayedStreamFactory()));
-        testSubscriber = new TestSubscriber<>();
         testScheduler = new TestScheduler();
+        pool = new LocalPool(asList(factory, new DelayedStreamFactory()), testScheduler);
+        testSubscriber = new TestSubscriber<>();
     }
 
     @Test
@@ -118,6 +118,7 @@ public class OverlapBufferStreamTest {
         testSubscriber.assertEmpty();
     }
 
+
     @Test
     public void bufferEndsStreamUsingDelayedStart() {
         Flowable<Object> startStream = interval(0,3, SECONDS, testScheduler).cast(Object.class);
@@ -143,6 +144,7 @@ public class OverlapBufferStreamTest {
         testSubscriber.assertValueAt(3, v -> asList(9L).equals(v));
 
     }
+
 
     @Test
     public void bufferEndsWithTimeout() {
@@ -174,7 +176,7 @@ public class OverlapBufferStreamTest {
     @Test
     public void bufferCompletelyOverlap() {
         StreamId<Long> sourceId = registerRx(interval(1, SECONDS, testScheduler).take(10));
-        StreamId<Object> startId = registerRx(just(new Object(), new Object()).delay(5500, MILLISECONDS, testScheduler));
+        StreamId<Object> startId = registerRx(just(new Object(), new Object()).delay(5500, MILLISECONDS, testScheduler).onBackpressureBuffer());
         StreamId<Object> endId = registerRx(never());
 
         Flowable<?> timeout = timer(5200, MILLISECONDS, testScheduler);
@@ -183,6 +185,7 @@ public class OverlapBufferStreamTest {
                 .ofStartEndTimeout(startId, ImmutableSet.of(EndStreamMatcher.endingOnEvery(endId)), timeout)));
 
         testScheduler.advanceTimeBy(11, SECONDS);
+        testSubscriber.awaitCount(2);
         testSubscriber.assertValueCount(2);
        assertThat( testSubscriber.values().get(0)).containsExactlyElementsOf( testSubscriber.values().get(1));
     }

@@ -8,6 +8,8 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFOR
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -16,8 +18,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.streamingpool.core.conf.EmbeddedPoolConfiguration;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.testing.NamedStreamId;
-
-import io.reactivex.Flowable;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { EmbeddedPoolConfiguration.class })
@@ -43,22 +43,22 @@ public class StreamFactoryRegistryTest {
     public void testInterceptor() {
         factoryRegistry.addIntercept(new InterceptStreamFactory());
         Publisher<String> publisher = service.discover(ID);
-        Flowable.fromPublisher(publisher).test().assertValue(ANY_VALUE_1);
+        Flowable.fromPublisher(publisher).test().awaitCount(1).assertValue(ANY_VALUE_1);
     }
 
     @Test
     public void testFallback() {
         factoryRegistry.addFallback(new FallbackStreamFactory());
         Publisher<String> publisher = service.discover(ID);
-        Flowable.fromPublisher(publisher).test().assertValue(ANY_VALUE_2);
+        Flowable.fromPublisher(publisher).test().awaitCount(1).assertValue(ANY_VALUE_2);
     }
 
     @Test
-    public void testIntereceptorFirst() {
+    public void testInterceptorFirst() {
         factoryRegistry.addIntercept(new InterceptStreamFactory());
         factoryRegistry.addFallback(new FallbackStreamFactory());
         Publisher<String> publisher = service.discover(ID);
-        Flowable.fromPublisher(publisher).test().assertValue(ANY_VALUE_1);
+        Flowable.fromPublisher(publisher).test().awaitCount(1).assertValue(ANY_VALUE_1);
     }
 
     private static class InterceptStreamFactory implements StreamFactory {

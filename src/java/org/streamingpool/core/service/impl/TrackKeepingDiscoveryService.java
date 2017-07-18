@@ -1,5 +1,5 @@
 // @formatter:off
-/**
+/*
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
 * 
@@ -83,7 +83,6 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
     private <T> Publisher<T> applyBackpressure(Publisher<T> publisher) {
         return Flowable.fromPublisher(publisher)
-                .onBackpressureLatest()
                 .observeOn(scheduler, false, 1);
     }
 
@@ -131,7 +130,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
             if (factoryResult.isPresent()) {
                 LOGGER.info(format("Stream from id '%s' was successfully created by factory '%s'", newId, factory));
-                Flowable<T> sharedDataStream = Flowable.fromPublisher(factoryResult.data()).share();
+                Flowable<T> sharedDataStream = Flowable.fromPublisher(factoryResult.data());
                 return ErrorStreamPair.ofDataError(sharedDataStream, factoryResult.error());
             }
         }

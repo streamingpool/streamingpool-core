@@ -22,37 +22,44 @@
 
 package org.streamingpool.core.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.streamingpool.core.support.RxStreamSupport;
 import org.streamingpool.core.testing.AbstractStreamTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class ProviderTest extends AbstractStreamTest {
-
-    private static final Publisher ANY_REACTIVE_STREAM = mock(Publisher.class);
+public class ProviderTest extends AbstractStreamTest implements RxStreamSupport{
+    private static final Publisher ANY_REACTIVE_STREAM = Flowable.just(1);
     private static final StreamId ANY_STREAM_ID = mock(StreamId.class);
     
     @Autowired
     ProvidingService providingService;
-    @Autowired
-    DiscoveryService discoveryService;
 
     @Test
     public void testProvidedStreamCanBeDiscovered() {
         providingService.provide(ANY_STREAM_ID, ANY_REACTIVE_STREAM);
-        assertThat(discoveryService.discover(ANY_STREAM_ID)).isNotNull().isEqualTo(ANY_REACTIVE_STREAM);
+
+        TestSubscriber test = rxFrom(ANY_STREAM_ID).test();
+        test.awaitTerminalEvent();
+        test.assertValueCount(1);
+        test.assertValue(1);
     }
 
     @Test
     public void testProvidedUsingHelpersIsDiscovered() {
         provide(ANY_REACTIVE_STREAM).as(ANY_STREAM_ID);
-        assertThat(discover(ANY_STREAM_ID)).isNotNull().isEqualTo(ANY_REACTIVE_STREAM);
+        TestSubscriber test = rxFrom(ANY_STREAM_ID).test();
+        test.awaitTerminalEvent();
+        test.assertValueCount(1);
+        test.assertValue(1);
     }
 }

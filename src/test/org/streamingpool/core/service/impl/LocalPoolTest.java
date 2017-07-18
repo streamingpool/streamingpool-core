@@ -22,11 +22,11 @@
 
 package org.streamingpool.core.service.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.service.StreamId;
 
@@ -67,13 +67,6 @@ public class LocalPoolTest {
         pool.provide(ID_A, STREAM_A);
     }
 
-    @Test
-    public void provideNewSupplier() {
-        pool.provide(ID_B, STREAM_B);
-        Publisher<Object> stream = pool.discover(ID_B);
-
-        assertEquals(STREAM_B, stream);
-    }
 
     @Test(expected = NullPointerException.class)
     public void discoverNullId() {
@@ -83,13 +76,6 @@ public class LocalPoolTest {
     @Test(expected = IllegalArgumentException.class)
     public void discoverUnavailableStream() {
         pool.discover(ID_B);
-    }
-
-    @Test
-    public void discoverAvailableStream() {
-        Publisher<Object> stream = pool.discover(ID_A);
-
-        assertEquals(STREAM_A, stream);
     }
 
     @Test(expected = IllegalArgumentException.class)
