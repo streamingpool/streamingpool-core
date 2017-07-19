@@ -35,18 +35,12 @@ import org.streamingpool.core.service.streamid.StreamingPoolHook;
 
 import io.reactivex.Flowable;
 import io.reactivex.subscribers.TestSubscriber;
+import org.streamingpool.core.testing.AbstractStreamTest;
 
 /**
  * Testing the behavior of new {@link StreamingPoolHook} hooks.
  */
-public class LocalPoolHookTest {
-
-    private LocalPool pool;
-
-    @Before
-    public void setUp() {
-        this.pool = new LocalPool();
-    }
+public class LocalPoolHookTest extends AbstractStreamTest {
 
     @Test
     public void newStreamHookExists() {
@@ -60,7 +54,7 @@ public class LocalPoolHookTest {
         TestSubscriber<StreamId<?>> subscriber = new TestSubscriber<>();
         Flowable.fromPublisher(newStreamHook()).take(1).subscribe(subscriber);
 
-        pool.provide(anyStreamId, mock(Publisher.class));
+        provide(mock(Publisher.class)).as(anyStreamId);
 
         subscriber.awaitTerminalEvent(2, SECONDS);
         subscriber.assertValues(anyStreamId);
@@ -76,7 +70,7 @@ public class LocalPoolHookTest {
     }
 
     private Publisher<StreamId<?>> newStreamHook() {
-        return pool.discover(NEW_STREAM_HOOK);
+        return discover(NEW_STREAM_HOOK);
     }
 
 }

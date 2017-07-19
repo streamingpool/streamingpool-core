@@ -130,8 +130,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
             if (factoryResult.isPresent()) {
                 LOGGER.info(format("Stream from id '%s' was successfully created by factory '%s'", newId, factory));
-                Flowable<T> sharedDataStream = Flowable.fromPublisher(factoryResult.data());
-                return ErrorStreamPair.ofDataError(sharedDataStream, factoryResult.error());
+                return ErrorStreamPair.ofDataError(factoryResult.data(), factoryResult.error());
             }
         }
         return ErrorStreamPair.empty();

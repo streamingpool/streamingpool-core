@@ -60,18 +60,6 @@ public class LocalPool implements DiscoveryService, ProvidingService, StreamFact
     private final List<StreamFactory> factories;
     private final PoolContent content = new PoolContent();
 
-    public LocalPool() {
-        this(Collections.emptyList());
-    }
-
-    public LocalPool(List<StreamFactory> factories) {
-        this(factories, defaultScheduler());
-    }
-
-    private static Scheduler defaultScheduler() {
-        return Schedulers.from(Executors.newFixedThreadPool(DEFAULT_THREAD_POOL_SIZE));
-    }
-
     public LocalPool(List<StreamFactory> factories, Scheduler scheduler) {
         java.util.Objects.requireNonNull(factories,"Factories can not be null");
         this.factories = new CopyOnWriteArrayList<>(factories);

@@ -27,7 +27,9 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
+import java.util.concurrent.Executors;
 
+import io.reactivex.schedulers.Schedulers;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
@@ -57,11 +59,11 @@ public class CreatorStreamTest {
     private final IdentifiedStreamCreator<Object> creator = ImmutableIdentifiedStreamCreator.of(ID_A,
             discovery -> STREAM_A);
     private final CreatorStreamFactory factory = new CreatorStreamFactory(Arrays.asList(creator));
-    private final DiscoveryService discoveryService = new LocalPool(Arrays.asList(factory));
+    private final DiscoveryService discoveryService = new LocalPool(Arrays.asList(factory), Schedulers.from(Executors.newSingleThreadExecutor()));
 
     @Test(expected = CycleInStreamDiscoveryDetectedException.class)
     public void testCycleLoopDetectedUsingStreamCreators() {
-        DiscoveryService loopingDiscoveryService = new LocalPool(Arrays.asList(createLoopCreatorStreamFactory()));
+        DiscoveryService loopingDiscoveryService = new LocalPool(Arrays.asList(createLoopCreatorStreamFactory()), Schedulers.from(Executors.newSingleThreadExecutor()));
 
         loopingDiscoveryService.discover(ID_A);
     }

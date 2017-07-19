@@ -4,22 +4,27 @@ buildscript {
     project.ext.DEPLOYMENT = System.getProperty('deployment') ?: false
     project.ext.VCS_TAG = System.getProperty('TRAVIS_TAG') ?: System.getenv('TRAVIS_TAG')
     project.ext.POM = [
-            groupId   : 'org.streamingpool',
-            artifactId: 'streamingpool-core',
-            description: 'This project is an high level abstraction over Reactive Streams libraries that is currently used inside CERN.'
+            groupId    : 'org.streamingpool',
+            artifactId : 'streamingpool-core',
+            description: 'This project is an high level abstraction over Reactive Streams libraries that is currently used inside CERN.',
+            developers : [[
+                                  id   : 'streamingpool-dev',
+                                  name : 'Streamingpool Developers',
+                                  email: 'streamingpool-dev@cern.ch'
+                          ]]
     ]
     project.ext.INFO = [
-            repo: 'https://github.com/streamingpool/streamingpool-core.git',
-            url: 'http://www.streamingpool.org/',
-            github: 'https://github.com/streamingpool/streamingpool-core',
+            repo        : 'https://github.com/streamingpool/streamingpool-core.git',
+            url         : 'http://www.streamingpool.org/',
+            github      : 'https://github.com/streamingpool/streamingpool-core',
             githubIssues: 'https://github.com/streamingpool/streamingpool-core/issues'
     ]
     project.ext.BINTRAY = [
-            repo: 'streamingpool-repos',
-            name: 'org.streamingpool:streamingpool-core',
+            repo        : 'streamingpool-repos',
+            name        : 'org.streamingpool:streamingpool-core',
             organization: 'streamingpool',
-            userName: 'streamingpool-dev',
-            apiToken: System.getenv('BINTRAY_API_TOKEN')
+            userName    : 'streamingpool-dev',
+            apiToken    : System.getenv('BINTRAY_API_TOKEN')
     ]
     repositories {
         if (CERN_VM) {

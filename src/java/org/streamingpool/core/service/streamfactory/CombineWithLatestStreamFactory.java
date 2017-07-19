@@ -54,7 +54,7 @@ public class CombineWithLatestStreamFactory implements StreamFactory {
         Flowable<D> data = Flowable.fromPublisher(discoveryService.discover(streamId.dataStream()));
         Flowable<T> trigger = Flowable.fromPublisher(discoveryService.discover(streamId.triggerStream()));
 
-        //TODO remove the Flux once RxJava2 has been released with the bug fix (version 2.2)
+        /* TODO remove the Flux once RxJava2 has been released with the bug fix (version 2.2) */
         return Flux.from(trigger).withLatestFrom(data, streamId.combiner()::apply);
     }
 
