@@ -145,7 +145,7 @@ public final class ErrorDeflector {
 
     public <T> ErrorStreamPair<T> stream(Publisher<T> dataPublisher) {
         return ErrorStreamPair.ofDataError(dataPublisher,
-                errorStream.toSerialized().onBackpressureBuffer(10,
+                errorStream.toSerialized().onBackpressureBuffer(Flowable.bufferSize(),
                         () -> LOGGER.error("Discarding exception due to backpressure buffer limit"),
                         BackpressureOverflowStrategy.DROP_OLDEST));
     }
