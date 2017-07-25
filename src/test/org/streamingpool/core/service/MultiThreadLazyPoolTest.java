@@ -24,7 +24,6 @@ package org.streamingpool.core.service;
 
 import static org.mockito.Mockito.mock;
 
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -32,7 +31,6 @@ import java.util.concurrent.Future;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.streamingpool.core.service.impl.LocalPool;
 import org.streamingpool.core.testing.AbstractStreamTest;
 import org.streamingpool.core.testing.StreamFactoryMock;
 

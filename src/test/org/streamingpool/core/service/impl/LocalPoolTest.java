@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.service.StreamId;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.Executors;
 
@@ -47,7 +46,6 @@ public class LocalPoolTest {
     private static final StreamId<Object> ID_B = mock(StreamId.class);
     private static final StreamId<Object> ID_NOT_PROVIDED = mock(StreamId.class);
     private static final Publisher<Object> STREAM_A = mock(Publisher.class);
-    private static final Publisher<Object> STREAM_B = mock(Publisher.class);
 
     private LocalPool pool;
 

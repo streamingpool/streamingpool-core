@@ -55,8 +55,8 @@ public class OverlapBufferStreamFactoryTest extends AbstractStreamTest implement
     private OverlapBufferStreamFactory overlapBufferStreamFactory;
 
     /**
-     * This test ensures that the first element of the source stream is not ignored,
-     * and that the correct amount of values are buffered.
+     * This test ensures that the first element of the source stream is not ignored, and that the correct amount of
+     * values are buffered.
      */
     @Test
     public void testBufferWithInterval() {
@@ -69,9 +69,9 @@ public class OverlapBufferStreamFactoryTest extends AbstractStreamTest implement
         StreamId<Long> sourceId = Mockito.mock(StreamId.class);
         StreamId<Long> startStreamId = Mockito.mock(StreamId.class);
         StreamId<Long> endStreamId = Mockito.mock(StreamId.class);
-        EndStreamMatcher endStreamMatcher = EndStreamMatcher.endingOnEvery(endStreamId);
+        EndStreamMatcher<?, ?> endStreamMatcher = EndStreamMatcher.endingOnEvery(endStreamId);
         BufferSpecification bufferSpecification = ofStartEnd(startStreamId, singleton(endStreamMatcher));
-        OverlapBufferStreamId streamId = OverlapBufferStreamId.of(sourceId, bufferSpecification);
+        OverlapBufferStreamId<?> streamId = OverlapBufferStreamId.of(sourceId, bufferSpecification);
 
         when(discoveryService.discover(sourceId)).thenReturn(source);
         when(discoveryService.discover(startStreamId)).thenReturn(start);

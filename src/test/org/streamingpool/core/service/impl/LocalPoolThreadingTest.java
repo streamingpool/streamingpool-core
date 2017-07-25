@@ -20,7 +20,7 @@ public class LocalPoolThreadingTest extends AbstractStreamTest implements RxStre
     }
 
     @Test(timeout = 500)
-    public void shouldObserveOnThreadPool() throws InterruptedException {
+    public void shouldObserveOnThreadPool() {
         Flowable<Long> source = Flowable.just(1L, 2L, 3L, 4L)
                 .share()
                 .onBackpressureLatest();

@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.streamingpool.core.service.streamid.StreamingPoolHook.NEW_STREAM_HOOK;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.service.StreamId;

@@ -90,7 +90,7 @@ public class OverlapBufferStreamTest {
     }
 
     @Test
-    public void dataStreamEndsBeforeEndStreamEmitsShouldBufferEverything() throws InterruptedException {
+    public void dataStreamEndsBeforeEndStreamEmitsShouldBufferEverything() {
         StreamId<Long> sourceId = registerRx(interval(1, SECONDS, testScheduler).take(5));
         StreamId<Object> startId = registerRx(merge(just(new Object()).delay(2, SECONDS, testScheduler), never()));
         StreamId<Object> endId = registerRx(never());

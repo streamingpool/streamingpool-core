@@ -15,24 +15,22 @@ import org.streamingpool.core.testing.AbstractStreamTest;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class LocalPoolSingleThreadingTest extends AbstractStreamTest implements RxStreamSupport {
 
-    public LocalPoolSingleThreadingTest(){
+    public LocalPoolSingleThreadingTest() {
         System.setProperty(STREAMINGPOOL_THREAD_POOL_SIZE, "1");
     }
 
     @Test(expected = LocalPoolSingleThreadingTestException.class)
     public void shouldObserveOnASingleThread() {
-        Flowable<Long> source = Flowable.just(1L, 2L, 3L, 4L)
-                .share()
-                .onBackpressureLatest();
+        Flowable<Long> source = Flowable.just(1L, 2L, 3L, 4L).share().onBackpressureLatest();
         StreamId<Long> streamId = provide(source).withUniqueStreamId();
         rxFrom(streamId).subscribe(i -> SECONDS.sleep(10));
-        rxFrom(streamId).test().awaitCount(2, () ->  {throw new LocalPoolSingleThreadingTestException();}, 100);
+        rxFrom(streamId).test().awaitCount(2, () -> {
+            throw new LocalPoolSingleThreadingTestException();
+        } , 100);
     }
 
-    private static class LocalPoolSingleThreadingTestException extends RuntimeException{
-
+    private static class LocalPoolSingleThreadingTestException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
     }
-
-
 
 }
