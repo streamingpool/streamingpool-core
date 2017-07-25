@@ -52,10 +52,12 @@ def pomExtraInfo = {
         }
     }
     developers {
-        developer {
-            id 'streamingpool-dev'
-            name 'Streamingpool Developers'
-            email 'streamingpool-dev@cern.ch'
+        POM.developers.each { dev ->
+            developer {
+                id dev.id
+                name dev.name
+                email dev.email
+            }
         }
     }
 }

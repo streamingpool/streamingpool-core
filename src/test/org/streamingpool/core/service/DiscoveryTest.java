@@ -28,7 +28,9 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
 
+import io.reactivex.schedulers.Schedulers;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
@@ -109,7 +111,7 @@ public class DiscoveryTest {
     }
 
     private DiscoveryService prepareDiscoveryService(final List<StreamFactory> factories) {
-        return new LocalPool(factories);
+        return new LocalPool(factories, Schedulers.from(Executors.newSingleThreadExecutor()));
     }
 
     private List<String> toList(Publisher<String> result) {

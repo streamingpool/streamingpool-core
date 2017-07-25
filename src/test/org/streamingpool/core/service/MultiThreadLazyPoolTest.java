@@ -24,14 +24,13 @@ package org.streamingpool.core.service;
 
 import static org.mockito.Mockito.mock;
 
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.junit.Test;
 import org.reactivestreams.Publisher;
-import org.streamingpool.core.service.impl.LocalPool;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.streamingpool.core.testing.AbstractStreamTest;
 import org.streamingpool.core.testing.StreamFactoryMock;
 
@@ -41,6 +40,9 @@ import org.streamingpool.core.testing.StreamFactoryMock;
 public class MultiThreadLazyPoolTest extends AbstractStreamTest {
 
     private static final String ANY_VALUE = "ANY_STRING";
+
+    @Autowired
+    private StreamFactoryRegistry factoryRegistry;
 
     @SuppressWarnings("unchecked")
     @Test(expected = RuntimeException.class)
@@ -65,10 +67,10 @@ public class MultiThreadLazyPoolTest extends AbstractStreamTest {
         StreamFactory factoryForAnyValue = StreamFactoryMock.newFactory(String.class)
                 .withIdProvideStreamWithValue(idB, ANY_VALUE).build();
 
-        prepareDiscoveryService(multiThreadFactory, factoryForAnyValue).discover(idA);
+        factoryRegistry.addIntercept(multiThreadFactory);
+        factoryRegistry.addIntercept(factoryForAnyValue);
+
+        discover(idA);
     }
 
-    private LocalPool prepareDiscoveryService(StreamFactory markerIdFactory, StreamFactory factoryForAnyValue) {
-        return new LocalPool(Arrays.asList(markerIdFactory, factoryForAnyValue));
-    }
 }

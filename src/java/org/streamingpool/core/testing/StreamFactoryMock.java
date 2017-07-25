@@ -111,7 +111,6 @@ public class StreamFactoryMock<T> {
     public StreamFactory build() {
         final StreamFactory factoryMock = mock(StreamFactory.class);
         when(factoryMock.create(any(), any())).thenAnswer(args -> {
-            @SuppressWarnings("unchecked")
             StreamId<T> streamId = args.getArgument(0);
             DiscoveryService discovery = args.getArgument(1);
 

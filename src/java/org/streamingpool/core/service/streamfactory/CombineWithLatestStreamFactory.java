@@ -22,14 +22,14 @@
 
 package org.streamingpool.core.service.streamfactory;
 
+import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.streamid.CombineWithLatestStreamId;
-
-import io.reactivex.Flowable;
+import reactor.core.publisher.Flux;
 
 /**
  * Factory for {@link CombineWithLatestStreamId}
@@ -54,7 +54,8 @@ public class CombineWithLatestStreamFactory implements StreamFactory {
         Flowable<D> data = Flowable.fromPublisher(discoveryService.discover(streamId.dataStream()));
         Flowable<T> trigger = Flowable.fromPublisher(discoveryService.discover(streamId.triggerStream()));
 
-        return trigger.withLatestFrom(data, streamId.combiner()::apply);
+        /* TODO remove the Flux once RxJava2 has been released with the bug fix (version 2.2) */
+        return Flux.from(trigger).withLatestFrom(data, streamId.combiner()::apply);
     }
 
 }

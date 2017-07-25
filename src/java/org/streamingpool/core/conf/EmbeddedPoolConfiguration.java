@@ -1,5 +1,5 @@
 // @formatter:off
-/**
+/*
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
 *
@@ -26,9 +26,11 @@ import static org.streamingpool.core.util.MoreCollections.emptyIfNull;
 
 import java.util.List;
 
+import io.reactivex.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.TypedStreamFactory;
 import org.streamingpool.core.service.impl.LocalPool;
@@ -46,6 +48,7 @@ import org.streamingpool.core.service.impl.LocalPool;
  * @author kfuchsbe
  */
 @Configuration
+@Import({TestSchedulerConfiguration.class, DefaultSchedulerConfiguration.class})
 public class EmbeddedPoolConfiguration {
 
     /**
@@ -55,9 +58,12 @@ public class EmbeddedPoolConfiguration {
     @Autowired(required = false)
     private List<StreamFactory> streamFactories;
 
+    @Autowired
+    private Scheduler scheduler;
+
     @Bean
     public LocalPool pool() {
-        return new LocalPool(emptyIfNull(streamFactories));
+        return new LocalPool(emptyIfNull(streamFactories), scheduler);
     }
 
 }

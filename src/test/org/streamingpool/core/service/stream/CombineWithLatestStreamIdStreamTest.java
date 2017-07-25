@@ -28,14 +28,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.streamfactory.CombineWithLatestStreamFactory;
 import org.streamingpool.core.service.streamid.CombineWithLatestStreamId;
 import org.streamingpool.core.support.RxStreamSupport;
 import org.streamingpool.core.testing.AbstractStreamTest;
-
-import io.reactivex.Flowable;
-import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * Unit tests for {@link CombineWithLatestStreamFactory}

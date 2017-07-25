@@ -4,23 +4,24 @@
 
 package org.streamingpool.core.domain;
 
-import static io.reactivex.BackpressureStrategy.DROP;
-
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import io.reactivex.BackpressureOverflowStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.processors.PublishProcessor;
 
 /**
  * Provides different ways to intercept exceptions from streams (or lambdas) and deflect the caught exceptions onto an
- * error stream. The error stream (subject) is created internally. It can be retrieved by the {@link #errorSubject()}
- * method in order to post external events onto it. Further it will be included in the errors stream pair in case the
- * two factory methods for these are used ({@link #stream(Publisher)} or {@link #streamNonEmpty(Publisher)}).
+ * error stream. The error stream (subject) is created internally. An external event can be pushed onto it bu using the
+ * {@link #publishException(Throwable)} method. Further it will be included in the errors stream pair in case the two
+ * factory methods for these are used ({@link #stream(Publisher)} or {@link #streamNonEmpty(Publisher)}).
  * <p>
  * Since one error stream usually corresponds to one data stream, each time a new stream is created, a new instance of
  * an error deflector should be created, so that the contained error stream is not shared between different data
@@ -28,8 +29,10 @@ import io.reactivex.subjects.PublishSubject;
  */
 public final class ErrorDeflector {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ErrorDeflector.class);
+
     /** The subject onto which all the errors will be forwarded */
-    private final PublishSubject<Throwable> errorStream = PublishSubject.create();
+    private final PublishProcessor<Throwable> errorStream = PublishProcessor.create();
 
     /**
      * Private constructor to avoid instantiation. Use the factory method {@link #create()}.
@@ -125,8 +128,8 @@ public final class ErrorDeflector {
         return falseOnException(predicate);
     }
 
-    public PublishSubject<Throwable> errorSubject() {
-        return this.errorSubject();
+    public void publishException(Throwable exception) {
+        errorStream.onNext(exception);
     }
 
     private <T> void deflectOperationIncomingError(Object operation, T incoming, Exception e) {
@@ -141,7 +144,10 @@ public final class ErrorDeflector {
     }
 
     public <T> ErrorStreamPair<T> stream(Publisher<T> dataPublisher) {
-        return ErrorStreamPair.ofDataError(dataPublisher, errorStream.toFlowable(DROP));
+        return ErrorStreamPair.ofDataError(dataPublisher,
+                errorStream.toSerialized().onBackpressureBuffer(Flowable.bufferSize(),
+                        () -> LOGGER.error("Discarding exception due to backpressure buffer limit"),
+                        BackpressureOverflowStrategy.DROP_OLDEST));
     }
 
     public <T> ErrorStreamPair<T> streamNonEmpty(Publisher<Optional<T>> optionalPublisher) {
