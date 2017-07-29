@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.implementations.MultiGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +57,8 @@ public class LocalPool implements DiscoveryService, ProvidingService, StreamFact
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalPool.class);
     private static final int DEFAULT_THREAD_POOL_SIZE = 100;
+
+    public static Graph graph = new MultiGraph("LocalPool graph");
 
     private final Scheduler scheduler;
     private final List<StreamFactory> factories;

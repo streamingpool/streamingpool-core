@@ -29,7 +29,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +52,8 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrackKeepingDiscoveryService.class);
 
-    private final Set<StreamId<?>> idsOfStreamsUnderCreation;
+    public final Set<StreamId<?>> idsOfStreamsUnderCreation;
+    public final Set<StreamId<?>> idsOfDiscoveredStreams;
     private final List<StreamFactory> factories;
     private final PoolContent content;
     private final Thread contextOfExecution;
@@ -62,20 +65,25 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
     }
 
     private TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content,
-            Set<StreamId<?>> idsOfStreamsUnderCreation, Thread contextOfExecution, Scheduler scheduler) {
+                                         Set<StreamId<?>> idsOfStreamsUnderCreation, Thread contextOfExecution, Scheduler scheduler) {
         this.factories = requireNonNull(factories, "factories must not be null");
         this.content = requireNonNull(content, "activeStreams must not be null");
         this.idsOfStreamsUnderCreation = Collections.unmodifiableSet(idsOfStreamsUnderCreation);
         this.contextOfExecution = requireNonNull(contextOfExecution, "contextOfExecution must not be null");
         this.scheduler = scheduler;
+
+        this.idsOfDiscoveredStreams = new HashSet<>();
     }
 
     @Override
     public <T> Publisher<T> discover(StreamId<T> id) {
+        idsOfDiscoveredStreams.add(id);
+        //System.out.println(String.format("For id %s: %s", id.getClass().getSimpleName(), idsOfStreamsUnderCreation.stream().map(Object::getClass).map(Class::getSimpleName).collect(Collectors.toList())));
         checkSameContexOfExecution();
         checkForRecursiveCycles(id);
 
         content.synchronousPutIfAbsent(id, () -> createFromFactories(id));
+
 
         Publisher<T> publisher = getStreamWithIdOrElseThrow(id);
         return applyBackpressure(publisher);
@@ -121,7 +129,8 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
     private <T> ErrorStreamPair<T> createFromFactories(StreamId<T> newId) {
         for (StreamFactory factory : factories) {
-            ErrorStreamPair<T> factoryResult = factory.create(newId, cloneDiscoveryServiceIncluding(newId));
+            TrackKeepingDiscoveryService innerDiscovery = cloneDiscoveryServiceIncluding(newId);
+            ErrorStreamPair<T> factoryResult = factory.create(newId, innerDiscovery);
 
             if (factoryResult == null) {
                 throw new IllegalStateException(format(
@@ -129,6 +138,19 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
             }
 
             if (factoryResult.isPresent()) {
+                String idName = newId.getClass().getSimpleName() + newId.hashCode();
+                if (LocalPool.graph.getNode(idName) == null) {
+                    LocalPool.graph.addNode(idName).addAttribute("label", idName);
+                }
+                innerDiscovery.idsOfDiscoveredStreams.forEach(dep -> {
+                    String depName = dep.getClass().getSimpleName() + dep.hashCode();
+                    if (LocalPool.graph.getNode(depName) == null) {
+                        LocalPool.graph.addNode(depName).addAttribute("label", depName);
+                    }
+
+                    LocalPool.graph.addEdge(depName + "-" + idName, depName, idName, true);
+                });
+                System.out.println(String.format("For id %s: %s", idName, innerDiscovery.idsOfDiscoveredStreams.stream().map(Object::getClass).map(Class::getSimpleName).collect(Collectors.toList())));
                 LOGGER.info(format("Stream from id '%s' was successfully created by factory '%s'", newId, factory));
                 return ErrorStreamPair.ofDataError(factoryResult.data(), factoryResult.error());
             }
