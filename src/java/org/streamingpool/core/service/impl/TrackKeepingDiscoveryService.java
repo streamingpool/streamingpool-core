@@ -129,7 +129,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
             }
 
             if (factoryResult.isPresent()) {
-                LOGGER.info(format("Stream from id '%s' was successfully created by factory '%s'", newId, factory));
+                LOGGER.info("Stream from id '{}' was successfully created by factory '{}'", newId, factory);
                 return ErrorStreamPair.ofDataError(factoryResult.data(), factoryResult.error());
             }
         }

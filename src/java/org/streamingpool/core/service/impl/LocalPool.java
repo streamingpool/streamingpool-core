@@ -24,17 +24,12 @@ package org.streamingpool.core.service.impl;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
 
+import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.reactivex.Scheduler;
-import io.reactivex.schedulers.Schedulers;
-import org.reactivestreams.Publisher;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.ProvidingService;
@@ -42,6 +37,8 @@ import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamFactoryRegistry;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.TypedStreamFactory;
+
+import io.reactivex.Scheduler;
 
 /**
  * Local pool for providing and discovery of {@link Publisher}s. (this class is both a {@link DiscoveryService} and a
@@ -54,16 +51,15 @@ import org.streamingpool.core.service.TypedStreamFactory;
 public class LocalPool implements DiscoveryService, ProvidingService, StreamFactoryRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalPool.class);
-    private static final int DEFAULT_THREAD_POOL_SIZE = 100;
 
     private final Scheduler scheduler;
     private final List<StreamFactory> factories;
     private final PoolContent content = new PoolContent();
 
     public LocalPool(List<StreamFactory> factories, Scheduler scheduler) {
-        java.util.Objects.requireNonNull(factories,"Factories can not be null");
+        requireNonNull(factories,"Factories can not be null");
         this.factories = new CopyOnWriteArrayList<>(factories);
-        LOGGER.info("Available Stream Factories: " + factories);
+        LOGGER.info("Available Stream Factories: {}", factories);
         this.scheduler = scheduler;
     }
 
@@ -87,13 +83,13 @@ public class LocalPool implements DiscoveryService, ProvidingService, StreamFact
     @Override
     public void addIntercept(StreamFactory interceptFactory) {
         factories.add(0, interceptFactory);
-        LOGGER.info("Intercept {} has been added to the factories" + interceptFactory);
+        LOGGER.info("Intercept {} has been added to the factories", interceptFactory);
     }
 
     @Override
     public void addFallback(StreamFactory fallbackFactory) {
         factories.add(factories.size(), fallbackFactory);
-        LOGGER.info("Fallback {} has been added to the factories" + fallbackFactory);
+        LOGGER.info("Fallback {} has been added to the factories", fallbackFactory);
     }
 
 }
