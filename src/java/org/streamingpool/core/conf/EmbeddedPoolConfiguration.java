@@ -25,6 +25,8 @@ package org.streamingpool.core.conf;
 import static org.streamingpool.core.util.MoreCollections.emptyIfNull;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.reactivex.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +65,25 @@ public class EmbeddedPoolConfiguration {
 
     @Bean
     public LocalPool pool() {
-        return new LocalPool(emptyIfNull(streamFactories), scheduler);
+        LocalPool localPool = new LocalPool(emptyIfNull(streamFactories), scheduler);
+        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+        String style = Stream.of(
+                "shape: box;",
+                "size: 5px, 5px;",
+                "fill-mode: plain;",
+                "text-alignment: right;",
+                "text-padding: 5px;",
+                "text-offset: 6px, 0px;",
+                "fill-color: red;",
+                "stroke-mode: plain;",
+                "stroke-color: blue;").collect(Collectors.joining());
+
+        LocalPool.graph.addAttribute("ui.quality");
+        LocalPool.graph.addAttribute("ui.antialias");
+        
+        LocalPool.graph.setAttribute("ui.stylesheet", "node {" + style + "}");
+        LocalPool.graph.display();
+        return localPool;
     }
 
 }
