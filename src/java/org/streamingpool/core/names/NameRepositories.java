@@ -2,7 +2,7 @@
 /**
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
-* 
+*
 * Copyright (c) 2017-present, CERN. All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-* 
+*
 */
 // @formatter:on
 
@@ -35,6 +35,11 @@ import java.util.stream.Stream;
 
 import org.streamingpool.core.names.impl.ImmutableNameRepository;
 
+/**
+ * @deprecated Should not be necessary anymore, because of classpathscanning from tensorics
+ * @author kfuchsbe
+ */
+@Deprecated
 public final class NameRepositories {
 
     private NameRepositories() {

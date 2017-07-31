@@ -2,7 +2,7 @@
 /**
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
-* 
+*
 * Copyright (c) 2017-present, CERN. All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-* 
+*
 */
 // @formatter:on
 
@@ -31,6 +31,11 @@ import java.util.function.Predicate;
 
 import com.google.common.collect.ImmutableList;
 
+/**
+ * @deprecated use the one from tensorics
+ * @author kfuchsbe
+ */
+@Deprecated
 public final class Chains {
 
     private Chains() {
@@ -39,6 +44,11 @@ public final class Chains {
 
     public static <R> ChainBuilder<Object, R, Function<Object, R>> chain() {
         return newFunctionBuilder();
+    }
+
+    public static <R> ChainBuilder<Object, R, Function<Object, R>> chain(Function<Object, R> mapperWithCallback) {
+        ChainBuilder<Object, R, Function<Object, R>> builder = newFunctionBuilder();
+        return builder.or(mapperWithCallback);
     }
 
     public static <R> ChainBuilder<Object, R, Function<Object, R>> chain(

@@ -2,7 +2,7 @@
 /**
 *
 * This file is part of streaming pool (http://www.streamingpool.org).
-* 
+*
 * Copyright (c) 2017-present, CERN. All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-* 
+*
 */
 // @formatter:on
 
@@ -33,16 +33,18 @@ import com.google.common.collect.ImmutableMap;
 /**
  * Immutable repository for object's name backed by a {@link Map}. Resolves the name of an object using the {@link Map}
  * specified in the constructor. In case no name can be found within the map, then {@code null is returned}.
- * 
+ *
+ * @deprecated use the one from tensorics
  * @see #nameFor(Object)
  */
+@Deprecated
 public class ImmutableNameRepository implements NameRepository {
 
     private final Map<Object, String> objectNames;
 
     /**
      * Creates a new name repository backed by the given map.
-     * 
+     *
      * @param objectNames the mapping from objects to names
      */
     public ImmutableNameRepository(Map<Object, String> objectNames) {
