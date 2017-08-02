@@ -102,7 +102,7 @@ public class DerivedStreamId<S, T> implements StreamId<T>, Serializable {
 
     @Override
     public String toString() {
-        return "SimpleDerivedStreamId [sourceStreamId=" + sourceStreamId + ", conversion=" + conversion + "]";
+        return getClass().getSimpleName() + " [sourceStreamId=" + sourceStreamId + ", conversion=" + conversion + "]";
     }
 
 }
