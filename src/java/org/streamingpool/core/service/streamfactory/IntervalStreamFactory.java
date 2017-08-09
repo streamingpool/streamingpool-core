@@ -24,11 +24,11 @@ public class IntervalStreamFactory implements StreamFactory {
             return ErrorStreamPair.empty();
         }
 
-        IntervalStreamId intervalStreamId = (IntervalStreamId) id;
+        IntervalStreamId typedId = (IntervalStreamId) id;
         ErrorDeflector ed = ErrorDeflector.create();
 
-        Publisher<Long> dataPublisher = Flowable.interval(intervalStreamId.getInitialDelay(),
-                intervalStreamId.getPeriod(), intervalStreamId.getUnit());
+        Publisher<Long> dataPublisher = Flowable.interval(typedId.getPeriod(), typedId.getPeriodTimeUnit())
+                .delay(typedId.getInitialDelay(), typedId.getInitialDelayTimeUnit());
         return ed.stream((Publisher<T>) dataPublisher);
     }
 

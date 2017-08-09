@@ -6,27 +6,53 @@ package org.streamingpool.core.service.streamid;
 
 import java.util.concurrent.TimeUnit;
 
-public class IntervalStreamId {
-    private final TimeUnit timeUnit;
-    private final long period;
-    private final long initialDelay;
+import org.streamingpool.core.service.StreamId;
 
-    private IntervalStreamId(long initialDelay, long period, TimeUnit timeUnit) {
-        this.timeUnit = timeUnit;
+/**
+ * A stream id, which emits values periodically.
+ * 
+ * @author mhruska, mpocwier
+ */
+public class IntervalStreamId implements StreamId<Long> {
+    private static final long serialVersionUID = 1L;
+
+    private final long period;
+    private final TimeUnit periodTimeUnit;
+    private final long initialDelay;
+    private final TimeUnit initialDelayTimeUnit;
+
+    private IntervalStreamId(long initialDelay, TimeUnit initialDelayTimeUnit, long period, TimeUnit periodTimeUnit) {
+        this.periodTimeUnit = periodTimeUnit;
+        this.initialDelayTimeUnit = initialDelayTimeUnit;
         this.period = period;
         this.initialDelay = initialDelay;
     }
 
+    /**
+     * Creates stream id that emits sequentially increasing number with specified interval. First value is emitted
+     * immediately.
+     * 
+     * @param period Specifies how often values should be emitted.
+     * @param timeUnit Time unit for period.
+     * @return IntervalStreamId
+     */
     public static final IntervalStreamId every(long period, TimeUnit timeUnit) {
-        return new IntervalStreamId(0, period, timeUnit);
+        return new IntervalStreamId(0, TimeUnit.SECONDS, period, timeUnit);
     }
 
-    public final IntervalStreamId initiallyDelayedBy(long newInitialDelay) {
-        return new IntervalStreamId(newInitialDelay, period, timeUnit);
+    /**
+     * Creates stream id with the same period as the current one, but delayed by specific time.
+     * 
+     * @param newInitialDelay Time by which to delay the stream
+     * @param timeUnit Time unit for newInitialDelay
+     * @return IntervalStreamId
+     */
+    public final IntervalStreamId delayedBy(long newInitialDelay, TimeUnit timeUnit) {
+        return new IntervalStreamId(newInitialDelay, timeUnit, period, periodTimeUnit);
     }
 
-    public TimeUnit getUnit() {
-        return timeUnit;
+    public TimeUnit getPeriodTimeUnit() {
+        return periodTimeUnit;
     }
 
     public long getInitialDelay() {
@@ -37,13 +63,17 @@ public class IntervalStreamId {
         return period;
     }
 
+    public TimeUnit getInitialDelayTimeUnit() {
+        return initialDelayTimeUnit;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + (int) (initialDelay ^ (initialDelay >>> 32));
         result = prime * result + (int) (period ^ (period >>> 32));
-        result = prime * result + ((timeUnit == null) ? 0 : timeUnit.hashCode());
+        result = prime * result + ((periodTimeUnit == null) ? 0 : periodTimeUnit.hashCode());
         return result;
     }
 
@@ -60,14 +90,14 @@ public class IntervalStreamId {
             return false;
         if (period != other.period)
             return false;
-        if (timeUnit != other.timeUnit)
+        if (periodTimeUnit != other.periodTimeUnit)
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "IntervalStreamId [timeUnit=" + timeUnit + ", period=" + period + ", initialDelay=" + initialDelay + "]";
+        return "IntervalStreamId [period=" + period + ", periodTimeUnit=" + periodTimeUnit + ", initialDelay="
+                + initialDelay + ", initialDelayTimeUnit=" + initialDelayTimeUnit + "]";
     }
-
 }

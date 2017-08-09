@@ -31,6 +31,7 @@ import org.streamingpool.core.service.streamfactory.CompositionStreamFactory;
 import org.streamingpool.core.service.streamfactory.DelayedStreamFactory;
 import org.streamingpool.core.service.streamfactory.DerivedStreamFactory;
 import org.streamingpool.core.service.streamfactory.FilteredStreamFactory;
+import org.streamingpool.core.service.streamfactory.IntervalStreamFactory;
 import org.streamingpool.core.service.streamfactory.OverlapBufferStreamFactory;
 
 /**
@@ -39,7 +40,7 @@ import org.streamingpool.core.service.streamfactory.OverlapBufferStreamFactory;
  * @author acalia
  */
 @Configuration
-@Import({StreamCreatorFactoryConfiguration.class})
+@Import({ StreamCreatorFactoryConfiguration.class })
 public class DefaultStreamFactories {
 
     @Bean
@@ -61,7 +62,7 @@ public class DefaultStreamFactories {
     public DerivedStreamFactory derivedStreamIdStreamFactory() {
         return new DerivedStreamFactory();
     }
-    
+
     @Bean
     public OverlapBufferStreamFactory overlapBufferStreamFactory() {
         return new OverlapBufferStreamFactory();
@@ -71,5 +72,9 @@ public class DefaultStreamFactories {
     public FilteredStreamFactory filteredStreamFactory() {
         return new FilteredStreamFactory();
     }
-    
+
+    @Bean
+    public  IntervalStreamFactory intervalStreamFactory() {
+        return new IntervalStreamFactory();
+    }
 }
