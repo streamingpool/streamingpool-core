@@ -11,14 +11,18 @@ public class IntervalStreamId {
     private final long period;
     private final long initialDelay;
 
-    public IntervalStreamId(TimeUnit timeUnit, long period) {
-        this(timeUnit, period, 0);
-    }
-
-    public IntervalStreamId(TimeUnit timeUnit, long period, long initialDelay) {
+    private IntervalStreamId(long initialDelay, long period, TimeUnit timeUnit) {
         this.timeUnit = timeUnit;
         this.period = period;
         this.initialDelay = initialDelay;
+    }
+
+    public static final IntervalStreamId every(long period, TimeUnit timeUnit) {
+        return new IntervalStreamId(0, period, timeUnit);
+    }
+
+    public final IntervalStreamId initiallyDelayedBy(long newInitialDelay) {
+        return new IntervalStreamId(newInitialDelay, period, timeUnit);
     }
 
     public TimeUnit getUnit() {
