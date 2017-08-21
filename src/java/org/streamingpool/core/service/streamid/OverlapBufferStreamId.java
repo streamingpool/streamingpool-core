@@ -29,7 +29,7 @@ import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.streamfactory.OverlapBufferStreamFactory;
 
 /**
- * Provide an overlapping buffer for the specified {@link #sourceId}. The buffer begins whenever {@link BufferSpecification#startId()} stream
+ * Provide an overlapping buffer for the specified source id. The buffer begins whenever {@link BufferSpecification#startId()} stream
  * emits an item and ends when one of the {@link BufferSpecification#endStreamMatchers()} } matches an end. Optionally, it is possible to
  * specify a timeout for the closing stream in case it does not emit items.
  * <p>

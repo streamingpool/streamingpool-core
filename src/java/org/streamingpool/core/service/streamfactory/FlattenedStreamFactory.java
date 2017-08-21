@@ -20,19 +20,18 @@
 
 package org.streamingpool.core.service.streamfactory;
 
-import io.reactivex.Flowable;
-import org.reactivestreams.Publisher;
-import org.streamingpool.core.domain.ErrorDeflector;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.streamid.FlattenedStreamId;
 
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import io.reactivex.Flowable;
 
 /**
  * {@link StreamFactory} for the {@link FlattenedStreamId}s
