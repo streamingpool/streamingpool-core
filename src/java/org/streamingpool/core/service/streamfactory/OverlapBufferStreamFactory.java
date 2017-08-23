@@ -22,11 +22,17 @@
 
 package org.streamingpool.core.service.streamfactory;
 
+import static io.reactivex.BackpressureOverflowStrategy.DROP_OLDEST;
+
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.reactivex.Flowable;
+import io.reactivex.flowables.ConnectableFlowable;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
@@ -37,9 +43,6 @@ import org.streamingpool.core.service.streamid.BufferSpecification.EndStreamMatc
 import org.streamingpool.core.service.streamid.OverlapBufferStreamId;
 import org.streamingpool.core.service.util.DoAfterFirstSubscribe;
 
-import io.reactivex.Flowable;
-import io.reactivex.flowables.ConnectableFlowable;
-
 /**
  * Factory for {@link OverlapBufferStreamId}
  * 
@@ -47,6 +50,8 @@ import io.reactivex.flowables.ConnectableFlowable;
  * @author acalia
  */
 public class OverlapBufferStreamFactory implements StreamFactory {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OverlapBufferStreamFactory.class);
 
     @SuppressWarnings("unchecked")
     @Override
@@ -58,6 +63,7 @@ public class OverlapBufferStreamFactory implements StreamFactory {
         OverlapBufferStreamId<?> analysisId = (OverlapBufferStreamId<?>) id;
 
         BufferSpecification bufferSpecification = analysisId.bufferSpecification();
+        long bufferCapacity = analysisId.getBackpressureBufferCapacity();
 
         StreamId<?> startId = bufferSpecification.startId();
         StreamId<?> sourceId = analysisId.sourceId();
@@ -72,44 +78,27 @@ public class OverlapBufferStreamFactory implements StreamFactory {
                 .collect(Collectors.toMap(m -> (EndStreamMatcher<Object, Object>) m,
                         m -> Flowable.fromPublisher(discoveryService.discover(m.endStreamId())).publish()));
 
-        StreamConnector sourceStreamConnector = new StreamConnector(sourceStream);
         Flowable<?> bufferStream = sourceStream
                 .compose(new DoAfterFirstSubscribe<>(() -> {
                     endStreams.values().forEach(ConnectableFlowable::connect);
                     startStream.connect();
+                    sourceStream.connect();
                 }))
                 .buffer(startStream,
-                        opening -> closingStreamFor(opening, endStreams, timeout, sourceStreamConnector));
+                        opening -> closingStreamFor(opening, endStreams, timeout))
+                .onBackpressureBuffer(bufferCapacity,
+                        () -> LOGGER.warn("Dropping element on backpressure"),
+                        DROP_OLDEST);
         return ErrorStreamPair.ofData((Publisher<T>) bufferStream);
     }
 
     private Flowable<?> closingStreamFor(Object opening,
-            Map<EndStreamMatcher<Object, Object>, ConnectableFlowable<?>> endStreams, Flowable<?> timeout,
-            StreamConnector sourceStreamConnector) {
+            Map<EndStreamMatcher<Object, Object>, ConnectableFlowable<?>> endStreams, Flowable<?> timeout) {
 
         Set<Flowable<?>> matchingEndStreams = endStreams.entrySet().stream()
                 .map(e -> e.getValue().filter(v -> e.getKey().matching().test(opening, v))).collect(Collectors.toSet());
 
         matchingEndStreams.add(timeout);
-
-        return Flowable.merge(matchingEndStreams)
-                .compose(new DoAfterFirstSubscribe<>(sourceStreamConnector::connect))
-                .take(1);
-    }
-
-    // Connects only once the given ConnectableFlowable
-    private static class StreamConnector{
-        private final ConnectableFlowable<?> stream;
-        private final AtomicBoolean streamConnected = new AtomicBoolean(false);
-
-        private StreamConnector(ConnectableFlowable<?> stream) {
-            this.stream = stream;
-        }
-
-        public void connect(){
-            if(streamConnected.compareAndSet(false, true)){
-                stream.connect();
-            }
-        }
+        return Flowable.merge(matchingEndStreams).take(1);
     }
 }

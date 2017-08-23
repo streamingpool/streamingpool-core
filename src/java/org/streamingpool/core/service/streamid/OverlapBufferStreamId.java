@@ -24,6 +24,7 @@ package org.streamingpool.core.service.streamid;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.streamfactory.OverlapBufferStreamFactory;
@@ -44,17 +45,25 @@ import org.streamingpool.core.service.streamfactory.OverlapBufferStreamFactory;
  */
 public class OverlapBufferStreamId<T> implements StreamId<List<T>>, Serializable {
     private static final long serialVersionUID = 1L;
+    private static final long DEFAULT_BUFFER_CAPACITY = 128;
 
     private final BufferSpecification bufferSpecification;
     private final StreamId<T> sourceId;
+    private final long backpressureBufferCapacity;
 
     public static <T> OverlapBufferStreamId<T> of(StreamId<T> sourceId, BufferSpecification bufferSpecification) {
-        return new OverlapBufferStreamId<>(sourceId, bufferSpecification);
+        return new OverlapBufferStreamId<>(sourceId, bufferSpecification, DEFAULT_BUFFER_CAPACITY);
     }
 
-    private OverlapBufferStreamId(StreamId<T> sourceId, BufferSpecification bufferSpecification) {
+    public static <T> OverlapBufferStreamId<T> of(StreamId<T> sourceId, BufferSpecification bufferSpecification, long backpressureBufferCapacity) {
+        return new OverlapBufferStreamId<>(sourceId, bufferSpecification, backpressureBufferCapacity);
+    }
+
+    private OverlapBufferStreamId(StreamId<T> sourceId, BufferSpecification bufferSpecification,
+            long backpressureBufferCapacity) {
         this.bufferSpecification = bufferSpecification;
         this.sourceId = sourceId;
+        this.backpressureBufferCapacity = backpressureBufferCapacity;
     }
 
     public StreamId<T> sourceId() {
@@ -65,47 +74,33 @@ public class OverlapBufferStreamId<T> implements StreamId<List<T>>, Serializable
         return bufferSpecification;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((bufferSpecification == null) ? 0 : bufferSpecification.hashCode());
-        result = prime * result + ((sourceId == null) ? 0 : sourceId.hashCode());
-        return result;
+    public long getBackpressureBufferCapacity() {
+        return backpressureBufferCapacity;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        }
-        if (obj == null) {
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        OverlapBufferStreamId<?> other = (OverlapBufferStreamId<?>) obj;
-        if (bufferSpecification == null) {
-            if (other.bufferSpecification != null) {
-                return false;
-            }
-        } else if (!bufferSpecification.equals(other.bufferSpecification)) {
-            return false;
-        }
-        if (sourceId == null) {
-            if (other.sourceId != null) {
-                return false;
-            }
-        } else if (!sourceId.equals(other.sourceId)) {
-            return false;
-        }
-        return true;
+        OverlapBufferStreamId<?> that = (OverlapBufferStreamId<?>) o;
+        return backpressureBufferCapacity == that.backpressureBufferCapacity &&
+                Objects.equals(bufferSpecification, that.bufferSpecification) &&
+                Objects.equals(sourceId, that.sourceId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bufferSpecification, sourceId, backpressureBufferCapacity);
     }
 
     @Override
     public String toString() {
-        return "OverlapBufferStreamId [sourceId=" + sourceId + ", bufferSpecification=" + bufferSpecification + "]";
+        return "OverlapBufferStreamId{" +
+                "bufferSpecification=" + bufferSpecification +
+                ", sourceId=" + sourceId +
+                ", backpressureBufferCapacity=" + backpressureBufferCapacity +
+                '}';
     }
-
 }

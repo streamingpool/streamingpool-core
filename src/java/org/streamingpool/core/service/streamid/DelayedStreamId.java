@@ -26,6 +26,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.time.Duration;
+import java.util.Objects;
 
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.streamfactory.DelayedStreamFactory;
@@ -39,17 +40,24 @@ import org.streamingpool.core.service.streamfactory.DelayedStreamFactory;
  */
 public class DelayedStreamId<T> implements StreamId<T>, Serializable {
     private static final long serialVersionUID = 1L;
+    private static final long DEFAULT_BUFFER_CAPACITY = 128;
 
     private final StreamId<T> target;
     private final Duration delay;
+    private final long bufferCapacity;
 
     public static <T> DelayedStreamId<T> delayBy(StreamId<T> target, Duration delay) {
         return new DelayedStreamId<>(target, delay);
     }
 
     public DelayedStreamId(StreamId<T> target, Duration delay) {
+        this(target, delay, DEFAULT_BUFFER_CAPACITY);
+    }
+
+    public DelayedStreamId(StreamId<T> target, Duration delay, long bufferCapacity) {
         this.target = requireNonNull(target, "target of the delay must not be null");
         this.delay = requireNonNull(delay, "delay must not be null");
+        this.bufferCapacity = bufferCapacity;
     }
 
     public StreamId<T> getTarget() {
@@ -60,47 +68,33 @@ public class DelayedStreamId<T> implements StreamId<T>, Serializable {
         return delay;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((delay == null) ? 0 : delay.hashCode());
-        result = prime * result + ((target == null) ? 0 : target.hashCode());
-        return result;
+    public long getBufferCapacity() {
+        return bufferCapacity;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        }
-        if (obj == null) {
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        DelayedStreamId<?> other = (DelayedStreamId<?>) obj;
-        if (delay == null) {
-            if (other.delay != null) {
-                return false;
-            }
-        } else if (!delay.equals(other.delay)) {
-            return false;
-        }
-        if (target == null) {
-            if (other.target != null) {
-                return false;
-            }
-        } else if (!target.equals(other.target)) {
-            return false;
-        }
-        return true;
+        DelayedStreamId<?> that = (DelayedStreamId<?>) o;
+        return bufferCapacity == that.bufferCapacity &&
+                Objects.equals(target, that.target) &&
+                Objects.equals(delay, that.delay);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(target, delay, bufferCapacity);
     }
 
     @Override
     public String toString() {
-        return "DelayedStreamId [target=" + target + ", delay=" + delay + "]";
+        return "DelayedStreamId{" +
+                "target=" + target +
+                ", delay=" + delay +
+                ", bufferCapacity=" + bufferCapacity +
+                '}';
     }
-
 }

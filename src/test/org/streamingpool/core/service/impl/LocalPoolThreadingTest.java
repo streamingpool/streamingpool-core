@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.support.RxStreamSupport;
@@ -28,7 +29,9 @@ public class LocalPoolThreadingTest extends AbstractStreamTest implements RxStre
         StreamId<Long> streamId = provide(source).withUniqueStreamId();
         Flowable<Long> stream = rxFrom(streamId);
         stream.subscribe(i -> SECONDS.sleep(10));
-        stream.test().awaitCount(4).assertValueAt(1, v -> 4 == v.intValue());
+        TestSubscriber<Long> testSubscriber = stream.test().awaitCount(2);
+        testSubscriber.assertValueCount(2);
+        testSubscriber.assertValueAt(1, v -> 4 == v.intValue());
     }
 
 

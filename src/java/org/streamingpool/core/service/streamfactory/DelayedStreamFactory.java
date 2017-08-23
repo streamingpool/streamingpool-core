@@ -22,11 +22,16 @@
 
 package org.streamingpool.core.service.streamfactory;
 
+import static io.reactivex.BackpressureOverflowStrategy.DROP_OLDEST;
 import static io.reactivex.Flowable.fromPublisher;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.time.Duration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.reactivex.Flowable;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
@@ -41,6 +46,8 @@ import org.streamingpool.core.service.streamid.DelayedStreamId;
  */
 public class DelayedStreamFactory implements StreamFactory {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DelayedStreamFactory.class);
+
     @Override
     public <Y> ErrorStreamPair<Y> create(StreamId<Y> id, DiscoveryService discoveryService) {
         if (!(id instanceof DelayedStreamId)) {
@@ -49,7 +56,11 @@ public class DelayedStreamFactory implements StreamFactory {
         DelayedStreamId<Y> delayedId = (DelayedStreamId<Y>) id;
         Duration delay = delayedId.getDelay();
         StreamId<Y> target = delayedId.getTarget();
-        return ErrorStreamPair.ofData(fromPublisher(discoveryService.discover(target)).delay(delay.toMillis(), MILLISECONDS));
+        Flowable<Y> delayedStream = fromPublisher(discoveryService.discover(target)).delay(delay.toMillis(), MILLISECONDS);
+        Flowable<Y> bufferedStream = delayedStream.onBackpressureBuffer(delayedId.getBufferCapacity(),
+                () -> LOGGER.warn("Dropping value on backpressure"),
+                DROP_OLDEST);
+        return ErrorStreamPair.ofData(bufferedStream);
     }
 
 }

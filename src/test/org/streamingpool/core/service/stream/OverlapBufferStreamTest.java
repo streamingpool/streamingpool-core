@@ -42,6 +42,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableSet;
+import io.reactivex.Flowable;
+import io.reactivex.flowables.ConnectableFlowable;
+import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.subscribers.TestSubscriber;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.impl.LocalPool;
 import org.streamingpool.core.service.streamfactory.DelayedStreamFactory;
@@ -49,13 +55,6 @@ import org.streamingpool.core.service.streamfactory.OverlapBufferStreamFactory;
 import org.streamingpool.core.service.streamid.BufferSpecification;
 import org.streamingpool.core.service.streamid.BufferSpecification.EndStreamMatcher;
 import org.streamingpool.core.service.streamid.OverlapBufferStreamId;
-
-import com.google.common.collect.ImmutableSet;
-
-import io.reactivex.Flowable;
-import io.reactivex.flowables.ConnectableFlowable;
-import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class OverlapBufferStreamTest {
 
@@ -115,7 +114,8 @@ public class OverlapBufferStreamTest {
 
         subscribe(buffer);
         testScheduler.advanceTimeBy(365, TimeUnit.DAYS);
-        testSubscriber.assertEmpty();
+        testSubscriber.assertValueCount(0);
+        testSubscriber.assertComplete();
     }
 
 
