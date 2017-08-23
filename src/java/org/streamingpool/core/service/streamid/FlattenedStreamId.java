@@ -36,17 +36,17 @@ import static java.util.Objects.requireNonNull;
 public class FlattenedStreamId<T> implements StreamId<T> {
     private static final long serialVersionUID = 1L;
 
-    private final StreamId<Iterable<T>> sourceStreamId;
+    private final StreamId<Iterable<? extends T>> sourceStreamId;
 
-    public static <T> FlattenedStreamId<T> flatten(StreamId<Iterable<T>> sourceStreamId) {
+    public static <T> FlattenedStreamId<T> flatten(StreamId<Iterable<? extends T>> sourceStreamId) {
         return new FlattenedStreamId<>(sourceStreamId);
     }
 
-    public FlattenedStreamId(StreamId<Iterable<T>> sourceStreamId) {
+    public FlattenedStreamId(StreamId<Iterable<? extends T>> sourceStreamId) {
         this.sourceStreamId = requireNonNull(sourceStreamId, "sourceStreamId must not be null");
     }
 
-    public StreamId<Iterable<T>> sourceStreamId() {
+    public StreamId<Iterable<? extends T>> sourceStreamId() {
         return sourceStreamId;
     }
 

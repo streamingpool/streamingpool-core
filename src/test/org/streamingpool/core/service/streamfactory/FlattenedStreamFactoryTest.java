@@ -36,7 +36,7 @@ public class FlattenedStreamFactoryTest {
     private final FlattenedStreamFactory flattenedStreamFactory = new FlattenedStreamFactory();
 
     @Mock
-    private StreamId<Iterable<Integer>> sourceStreamId;
+    private StreamId<Iterable<? extends Integer>> sourceStreamId;
     @Mock
     private DiscoveryService discoveryService;
 

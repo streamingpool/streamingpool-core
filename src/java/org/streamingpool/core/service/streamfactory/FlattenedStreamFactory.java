@@ -51,10 +51,10 @@ public class FlattenedStreamFactory implements StreamFactory {
     }
 
     private <T> ErrorStreamPair<T> createFlattenedStream(FlattenedStreamId<T> id, DiscoveryService discoveryService) {
-        Flowable<Iterable<T>> sourceStream = Flowable.fromPublisher(discoveryService.discover(id.sourceStreamId()));
+        Flowable<Iterable<? extends T>> sourceStream = Flowable.fromPublisher(discoveryService.discover(id.sourceStreamId()));
 
         return ErrorStreamPair.ofData(sourceStream.flatMap(iterable -> {
-            Stream<T> stream = StreamSupport.stream(iterable.spliterator(), false).filter(Objects::nonNull);
+            Stream<? extends T> stream = StreamSupport.stream(iterable.spliterator(), false).filter(Objects::nonNull);
             return Flowable.fromIterable(stream.collect(Collectors.toList()));
         }));
     }
