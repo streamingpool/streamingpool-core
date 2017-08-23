@@ -38,11 +38,11 @@ public class FlattenedStreamId<T> implements StreamId<T> {
 
     private final StreamId<Iterable<T>> sourceStreamId;
 
-    public static <T> FlattenedStreamId<T> flatten(StreamId<Iterable<T>> sourceStreamId) {
+    public static <T> FlattenedStreamId<T> flatten(StreamId<Iterable<? extends T>> sourceStreamId) {
         return new FlattenedStreamId<>(sourceStreamId);
     }
 
-    public FlattenedStreamId(StreamId<Iterable<T>> sourceStreamId) {
+    public FlattenedStreamId(StreamId<Iterable<? extends T>> sourceStreamId) {
         this.sourceStreamId = requireNonNull(sourceStreamId, "sourceStreamId must not be null");
     }
 
