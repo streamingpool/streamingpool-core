@@ -57,7 +57,6 @@ public class DefaultStreamFactories {
         return new ZippedStreamFactory();
     }
 
-
     @Bean
     public DerivedStreamFactory derivedStreamIdStreamFactory() {
         return new DerivedStreamFactory();

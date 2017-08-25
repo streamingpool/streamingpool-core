@@ -21,14 +21,14 @@ public class ZippedStreamId<S, T> implements StreamId<T> {
     private final Iterable<StreamId<S>> sourceStreamIds;
     private final Function<Object[], Optional<T>> function;
 
-    public ZippedStreamId(Iterable<StreamId<S>> sourceStreamIds, Function<Object[], Optional<T>> function) {
+    private ZippedStreamId(Iterable<StreamId<S>> sourceStreamIds, Function<Object[], Optional<T>> function) {
         this.sourceStreamIds = sourceStreamIds;
         this.function = requireNonNull(function, "function must not be null");
     }
 
     public static <S, T> ZippedStreamId<S, T> zip(Iterable<StreamId<S>> streamIds,  Function<Object[], Optional<T>> function){
         Objects.requireNonNull(streamIds, "streamIds must not be null");
-        return new ZippedStreamId<S, T>(streamIds, function);
+        return new ZippedStreamId<>(streamIds, function);
     }
 
     public Iterable<StreamId<S>> sourceStreamIds() { return sourceStreamIds; }

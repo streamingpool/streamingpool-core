@@ -72,7 +72,7 @@ public class ZippedStreamTest extends AbstractStreamTest implements RxStreamSupp
         ZippedStreamId.zip(Arrays.asList(mock(StreamId.class), mock(StreamId.class)), null);
     }
 
-    private final TestSubscriber<Integer> createSubscriberAndWait(StreamId<Integer> sourceStreamId) {
+    private TestSubscriber<Integer> createSubscriberAndWait(StreamId<Integer> sourceStreamId) {
         TestSubscriber<Integer> subscriber = TestSubscriber.create();
         discover(sourceStreamId).subscribe(subscriber);
         try {
