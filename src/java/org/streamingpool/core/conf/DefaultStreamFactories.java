@@ -26,13 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.streamingpool.core.service.TypedStreamFactory;
-import org.streamingpool.core.service.streamfactory.CombineWithLatestStreamFactory;
-import org.streamingpool.core.service.streamfactory.CompositionStreamFactory;
-import org.streamingpool.core.service.streamfactory.DelayedStreamFactory;
-import org.streamingpool.core.service.streamfactory.DerivedStreamFactory;
-import org.streamingpool.core.service.streamfactory.FilteredStreamFactory;
-import org.streamingpool.core.service.streamfactory.IntervalStreamFactory;
-import org.streamingpool.core.service.streamfactory.OverlapBufferStreamFactory;
+import org.streamingpool.core.service.streamfactory.*;
 
 /**
  * Configuration for including the {@link TypedStreamFactory}s provided in the core project.
@@ -57,6 +51,12 @@ public class DefaultStreamFactories {
     public DelayedStreamFactory delayedStreamIdStreamFactory() {
         return new DelayedStreamFactory();
     }
+
+    @Bean
+    public ZippedStreamFactory zippedStreamFactory() {
+        return new ZippedStreamFactory();
+    }
+
 
     @Bean
     public DerivedStreamFactory derivedStreamIdStreamFactory() {
