@@ -14,6 +14,12 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import io.reactivex.functions.Function;
 
+/**
+ * Factory for {@link ZippedStreamId}
+ *
+ * @see ZippedStreamId
+ * @author jado
+ */
 public class ZippedStreamFactory implements StreamFactory {
 
     @Override
