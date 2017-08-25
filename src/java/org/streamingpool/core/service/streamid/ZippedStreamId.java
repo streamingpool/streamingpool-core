@@ -55,6 +55,14 @@ public class ZippedStreamId<S, T> implements StreamId<T> {
         result = 31 * result + (function != null ? function.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "ZippedStreamId{" +
+                "sourceStreamIds=" + sourceStreamIds +
+                ", function=" + function +
+                '}';
+    }
 }
 
 
