@@ -1,6 +1,7 @@
 package org.streamingpool.core.service.streamfactory;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.BiFunction;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.domain.ErrorDeflector;
 import org.streamingpool.core.domain.ErrorStreamPair;
@@ -29,20 +30,19 @@ public class ZippedStreamFactory implements StreamFactory {
             return ErrorStreamPair.empty();
         }
         @SuppressWarnings("unchecked")
-        ZippedStreamId<?, T> zippedId = (ZippedStreamId<?, T>) id;
+        ZippedStreamId<?, ?, T> zippedId = (ZippedStreamId<?, ?, T>) id;
 
         return createStream(zippedId, discoveryService);
     }
 
-    private <S, T> ErrorStreamPair<T> createStream( ZippedStreamId<S,  T> id, DiscoveryService discoveryService) {
+    private <S1, S2, T> ErrorStreamPair<T> createStream(ZippedStreamId<S1, S2,  T> id, DiscoveryService discoveryService) {
 
-        Iterable<Publisher<S>> publishers = StreamSupport.stream(id.sourceStreamIds().spliterator(), false)
-                .map(discoveryService::discover)
-                .collect(Collectors.toList());
-        final Function< Object[], Optional<T>> function = id.function();
+        Publisher<S1> publisher1 = discoveryService.discover(id.sourceStreamId1());
+        Publisher<S2> publisher2 = discoveryService.discover(id.sourceStreamId2());
+        BiFunction<S1, S2, Optional<T>> function = id.function();
 
         ErrorDeflector ed = ErrorDeflector.create();
-        return ed.streamNonEmpty(Flowable.zip(publishers, function));
+        return ed.streamNonEmpty(Flowable.zip(publisher1, publisher2, function));
 
     }
 
