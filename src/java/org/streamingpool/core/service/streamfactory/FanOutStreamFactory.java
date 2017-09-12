@@ -35,19 +35,19 @@ public class FanOutStreamFactory implements StreamFactory {
         Flowable<T> targetStream = Flowable.fromPublisher(discoveryService.discover(fanOutId.target())).share();
 
         if (backpressureStrategy instanceof BackpressureLatestStrategy) {
-            return ofData(targetStream.onBackpressureLatest());
+            return ed.stream(targetStream.onBackpressureLatest());
         }
         if (backpressureStrategy instanceof BackpressureDropStrategy) {
-            return ofData(targetStream.onBackpressureDrop());
+            return ed.stream(targetStream.onBackpressureDrop(v -> System.out.println(Thread.currentThread().getName() + " Droppped " +v)));
         }
         if (backpressureStrategy instanceof BackpressureBufferStrategy) {
             BackpressureBufferStrategy bufferStrategy = (BackpressureBufferStrategy) backpressureStrategy;
 
             if (bufferStrategy.overflowStrategy() == BackpressureBufferOverflowStrategy.DROP_LATEST) {
-                return ofData(targetStream.onBackpressureBuffer(bufferStrategy.bufferSize(), NOOP, BackpressureOverflowStrategy.DROP_LATEST));
+                return ed.stream(targetStream.onBackpressureBuffer(bufferStrategy.bufferSize(), NOOP, BackpressureOverflowStrategy.DROP_LATEST));
             }
             if (bufferStrategy.overflowStrategy() == BackpressureBufferOverflowStrategy.DROP_OLDEST) {
-                return ofData(targetStream.onBackpressureBuffer(bufferStrategy.bufferSize(), NOOP, BackpressureOverflowStrategy.DROP_OLDEST));
+                return ed.stream(targetStream.onBackpressureBuffer(bufferStrategy.bufferSize(), NOOP, BackpressureOverflowStrategy.DROP_OLDEST));
             }
 
             throw new IllegalArgumentException("Cannot determine the specified buffer overflow strategy: " + bufferStrategy);

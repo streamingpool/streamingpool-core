@@ -30,6 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.reactivex.BackpressureOverflowStrategy;
+import io.reactivex.BackpressureStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +85,12 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
     private <T> Publisher<T> applyBackpressure(Publisher<T> publisher) {
         return Flowable.fromPublisher(publisher)
-                .observeOn(scheduler, false, 1);
+                .onBackpressureBuffer(1, ()-> System.out.println("dropped"), BackpressureOverflowStrategy.DROP_OLDEST )
+                .observeOn(scheduler, false, 128)
+
+
+                .onBackpressureBuffer(1, ()-> System.out.println("dropped"), BackpressureOverflowStrategy.DROP_OLDEST )
+            ;
     }
 
     private <T> Publisher<T> getStreamWithIdOrElseThrow(StreamId<T> id) {
