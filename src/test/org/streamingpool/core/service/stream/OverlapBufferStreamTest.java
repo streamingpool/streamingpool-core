@@ -42,6 +42,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableSet;
+import io.reactivex.Flowable;
+import io.reactivex.flowables.ConnectableFlowable;
+import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.subscribers.TestSubscriber;
+import org.streamingpool.core.conf.PoolConfiguration;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.impl.LocalPool;
 import org.streamingpool.core.service.streamfactory.DelayedStreamFactory;
@@ -50,24 +57,19 @@ import org.streamingpool.core.service.streamid.BufferSpecification;
 import org.streamingpool.core.service.streamid.BufferSpecification.EndStreamMatcher;
 import org.streamingpool.core.service.streamid.OverlapBufferStreamId;
 
-import com.google.common.collect.ImmutableSet;
-
-import io.reactivex.Flowable;
-import io.reactivex.flowables.ConnectableFlowable;
-import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subscribers.TestSubscriber;
-
 public class OverlapBufferStreamTest {
 
     private LocalPool pool;
     private TestSubscriber<List<Long>> testSubscriber;
-    private TestScheduler testScheduler;
+    private PoolConfiguration poolConfiguration;
+    private  TestScheduler testScheduler;
 
     @Before
     public void setUp() {
         OverlapBufferStreamFactory factory = new OverlapBufferStreamFactory();
         testScheduler = new TestScheduler();
-        pool = new LocalPool(asList(factory, new DelayedStreamFactory()), testScheduler);
+        poolConfiguration = new PoolConfiguration(testScheduler);
+        pool = new LocalPool(asList(factory, new DelayedStreamFactory()), poolConfiguration);
         testSubscriber = new TestSubscriber<>();
     }
 

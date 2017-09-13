@@ -29,9 +29,12 @@ import static org.mockito.Mockito.mock;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 
-import io.reactivex.schedulers.Schedulers;
 import org.junit.Test;
+
+import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.conf.PoolConfiguration;
 import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamId;
@@ -40,8 +43,6 @@ import org.streamingpool.core.service.impl.ImmutableIdentifiedStreamCreator;
 import org.streamingpool.core.service.impl.LocalPool;
 import org.streamingpool.core.service.streamfactory.CreatorStreamFactory;
 import org.streamingpool.core.testing.NamedStreamId;
-
-import io.reactivex.Flowable;
 
 @SuppressWarnings("unchecked")
 /**
@@ -55,15 +56,17 @@ public class CreatorStreamTest {
     private static final StreamId<Object> ID_B = mock(StreamId.class);
     private static final Publisher<Object> STREAM_A = mock(Flowable.class);
     private static final Publisher<Object> STREAM_B = mock(Flowable.class);
+    protected static final PoolConfiguration POOL_CONFIGURATION = new PoolConfiguration(Schedulers.from(Executors.newSingleThreadExecutor()));
 
     private final IdentifiedStreamCreator<Object> creator = ImmutableIdentifiedStreamCreator.of(ID_A,
             discovery -> STREAM_A);
     private final CreatorStreamFactory factory = new CreatorStreamFactory(Arrays.asList(creator));
-    private final DiscoveryService discoveryService = new LocalPool(Arrays.asList(factory), Schedulers.from(Executors.newSingleThreadExecutor()));
+    private final DiscoveryService discoveryService = new LocalPool(Arrays.asList(factory),
+            POOL_CONFIGURATION);
 
     @Test(expected = CycleInStreamDiscoveryDetectedException.class)
     public void testCycleLoopDetectedUsingStreamCreators() {
-        DiscoveryService loopingDiscoveryService = new LocalPool(Arrays.asList(createLoopCreatorStreamFactory()), Schedulers.from(Executors.newSingleThreadExecutor()));
+        DiscoveryService loopingDiscoveryService = new LocalPool(Arrays.asList(createLoopCreatorStreamFactory()), POOL_CONFIGURATION);
 
         loopingDiscoveryService.discover(ID_A);
     }

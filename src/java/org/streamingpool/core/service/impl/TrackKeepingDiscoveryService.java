@@ -30,15 +30,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.reactivex.BackpressureOverflowStrategy;
-import io.reactivex.BackpressureStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.reactivex.BackpressureOverflowStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.Scheduler;
+import io.reactivex.functions.Action;
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.conf.PoolConfiguration;
 import org.streamingpool.core.domain.ErrorStreamPair;
+import org.streamingpool.core.domain.backpressure.BackpressureAware;
+import org.streamingpool.core.domain.backpressure.BackpressureBufferStrategy;
+import org.streamingpool.core.domain.backpressure.BackpressureDropStrategy;
+import org.streamingpool.core.domain.backpressure.BackpressureLatestStrategy;
+import org.streamingpool.core.domain.backpressure.BackpressureNoneStrategy;
+import org.streamingpool.core.domain.backpressure.BackpressureStrategy;
 import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
@@ -51,25 +57,25 @@ import org.streamingpool.core.service.StreamId;
 public class TrackKeepingDiscoveryService implements DiscoveryService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrackKeepingDiscoveryService.class);
-
+    private final Action NOOP = () -> {};
     private final Set<StreamId<?>> idsOfStreamsUnderCreation;
     private final List<StreamFactory> factories;
     private final PoolContent content;
     private final Thread contextOfExecution;
-    private final Scheduler scheduler;
+    private final PoolConfiguration poolConfiguration;
 
-    public TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content, Scheduler scheduler) {
-        this(factories, content, new HashSet<>(), Thread.currentThread(), scheduler);
+    public TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content, PoolConfiguration poolConfiguration) {
+        this(factories, content, new HashSet<>(), Thread.currentThread(), poolConfiguration);
 
     }
 
     private TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content,
-            Set<StreamId<?>> idsOfStreamsUnderCreation, Thread contextOfExecution, Scheduler scheduler) {
+            Set<StreamId<?>> idsOfStreamsUnderCreation, Thread contextOfExecution, PoolConfiguration poolConfiguration) {
         this.factories = requireNonNull(factories, "factories must not be null");
         this.content = requireNonNull(content, "activeStreams must not be null");
         this.idsOfStreamsUnderCreation = Collections.unmodifiableSet(idsOfStreamsUnderCreation);
         this.contextOfExecution = requireNonNull(contextOfExecution, "contextOfExecution must not be null");
-        this.scheduler = scheduler;
+        this.poolConfiguration = poolConfiguration;
     }
 
     @Override
@@ -80,17 +86,43 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         content.synchronousPutIfAbsent(id, () -> createFromFactories(id));
 
         Publisher<T> publisher = getStreamWithIdOrElseThrow(id);
-        return applyBackpressure(publisher);
+        Flowable<T> flowable =  observerOnThreadPool(publisher);
+        if(id instanceof BackpressureAware){
+            flowable = applyBackpressureStrategy(flowable,((BackpressureAware)id).backpressureStrategy());
+        }
+        return flowable;
     }
 
-    private <T> Publisher<T> applyBackpressure(Publisher<T> publisher) {
+    private <T> Flowable<T> applyBackpressureStrategy(Flowable<T> source, BackpressureStrategy backpressureStrategy) {
+        if(backpressureStrategy == null){
+            return source;
+        }
+        if (backpressureStrategy instanceof BackpressureLatestStrategy) {
+            return source.onBackpressureLatest();
+        }
+        if (backpressureStrategy instanceof BackpressureDropStrategy) {
+            return source.onBackpressureDrop(i -> {});
+        }
+        if (backpressureStrategy instanceof BackpressureBufferStrategy) {
+            BackpressureBufferStrategy bufferStrategy = (BackpressureBufferStrategy) backpressureStrategy;
+
+            if (bufferStrategy.overflowStrategy() == BackpressureBufferStrategy.BackpressureBufferOverflowStrategy.DROP_LATEST) {
+                return source.onBackpressureBuffer(bufferStrategy.bufferSize(), NOOP, BackpressureOverflowStrategy.DROP_LATEST);
+            }
+            if (bufferStrategy.overflowStrategy() == BackpressureBufferStrategy.BackpressureBufferOverflowStrategy.DROP_OLDEST) {
+                return source.onBackpressureBuffer(bufferStrategy.bufferSize(), NOOP, BackpressureOverflowStrategy.DROP_OLDEST);
+            }
+            throw new IllegalArgumentException("Cannot determine the specified buffer overflow strategy: " + bufferStrategy);
+        }
+        if (backpressureStrategy instanceof BackpressureNoneStrategy) {
+            return source;
+        }
+        throw new IllegalArgumentException("Cannot determine the specified backpressure strategy: " + backpressureStrategy);
+    }
+
+    private <T> Flowable<T> observerOnThreadPool(Publisher<T> publisher) {
         return Flowable.fromPublisher(publisher)
-                .onBackpressureBuffer(1, ()-> System.out.println("dropped"), BackpressureOverflowStrategy.DROP_OLDEST )
-                .observeOn(scheduler, false, 128)
-
-
-                .onBackpressureBuffer(1, ()-> System.out.println("dropped"), BackpressureOverflowStrategy.DROP_OLDEST )
-            ;
+                .observeOn(poolConfiguration.getScheduler(), false, poolConfiguration.getObserveOnCapacity());
     }
 
     private <T> Publisher<T> getStreamWithIdOrElseThrow(StreamId<T> id) {
@@ -123,7 +155,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
     private <T> TrackKeepingDiscoveryService cloneDiscoveryServiceIncluding(StreamId<T> newId) {
         Set<StreamId<?>> newSet = new HashSet<>(idsOfStreamsUnderCreation);
         newSet.add(newId);
-        return new TrackKeepingDiscoveryService(factories, content, newSet, contextOfExecution, scheduler);
+        return new TrackKeepingDiscoveryService(factories, content, newSet, contextOfExecution, poolConfiguration);
     }
 
     private <T> ErrorStreamPair<T> createFromFactories(StreamId<T> newId) {

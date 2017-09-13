@@ -26,7 +26,6 @@ import static org.streamingpool.core.util.MoreCollections.emptyIfNull;
 
 import java.util.List;
 
-import io.reactivex.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,7 +47,7 @@ import org.streamingpool.core.service.impl.LocalPool;
  * @author kfuchsbe
  */
 @Configuration
-@Import({TestSchedulerConfiguration.class, DefaultSchedulerConfiguration.class})
+@Import({ TestPoolConfiguration.class, DefaultPoolConfiguration.class})
 public class EmbeddedPoolConfiguration {
 
     /**
@@ -59,11 +58,11 @@ public class EmbeddedPoolConfiguration {
     private List<StreamFactory> streamFactories;
 
     @Autowired
-    private Scheduler scheduler;
+    private PoolConfiguration poolConfiguration;
 
     @Bean
     public LocalPool pool() {
-        return new LocalPool(emptyIfNull(streamFactories), scheduler);
+        return new LocalPool(emptyIfNull(streamFactories), poolConfiguration);
     }
 
 }

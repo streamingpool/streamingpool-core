@@ -28,14 +28,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile(TestSchedulerConfiguration.STREAMINGPOOL_TEST_SCHEDULER)
-public class TestSchedulerConfiguration {
+@Profile(TestPoolConfiguration.STREAMINGPOOL_TEST_SCHEDULER)
+public class TestPoolConfiguration {
 
     public static final String STREAMINGPOOL_TEST_SCHEDULER = "streamingpool.test.scheduler";
 
     @Bean
-    public TestScheduler scheduler(){
-        return new TestScheduler();
+    public PoolConfiguration localPoolConfiguration(){
+        return new PoolConfiguration(new TestScheduler(), 128);
     }
 
 
