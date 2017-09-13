@@ -23,11 +23,10 @@
 package org.streamingpool.core.conf;
 
 import static java.util.Arrays.stream;
-import static org.streamingpool.core.conf.TestSchedulerConfiguration.STREAMINGPOOL_TEST_SCHEDULER;
+import static org.streamingpool.core.conf.TestPoolConfiguration.STREAMINGPOOL_TEST_SCHEDULER;
 
 import java.util.concurrent.Executors;
 
-import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -39,18 +38,21 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 @Configuration
-public class DefaultSchedulerConfiguration {
+public class DefaultPoolConfiguration {
 
     public static final String STREAMINGPOOL_THREAD_POOL_SIZE = "streamingpool.threadPoolSize";
-
+    public static final String STREAMINGPOOL_OBSERVE_ON_CAPACITY = "streamingpool.observeOnCapacity";
 
     @Value("${" + STREAMINGPOOL_THREAD_POOL_SIZE + ":100}")
     private int threadPoolSize;
 
+    @Value("${" + STREAMINGPOOL_OBSERVE_ON_CAPACITY + ":128}")
+    private int observeOnCapacity;
+
     @Bean
     @Conditional(NoTestSchedulerPresent.class)
-    public Scheduler scheduler(){
-        return Schedulers.from(Executors.newFixedThreadPool(threadPoolSize));
+    public PoolConfiguration localPoolConfiguration() {
+        return new PoolConfiguration(Schedulers.from(Executors.newFixedThreadPool(threadPoolSize)), observeOnCapacity);
     }
 
     private static class NoTestSchedulerPresent implements Condition {
@@ -61,6 +63,5 @@ public class DefaultSchedulerConfiguration {
             return !stream(env.getActiveProfiles()).anyMatch(STREAMINGPOOL_TEST_SCHEDULER::equals);
         }
     }
-
 
 }

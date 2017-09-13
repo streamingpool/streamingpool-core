@@ -1,12 +1,16 @@
 package org.streamingpool.core.service.streamid;
 
-import org.streamingpool.core.domain.backpressure.BackpressureStrategy;
-import org.streamingpool.core.service.StreamId;
-
 import static java.util.Objects.requireNonNull;
 import static org.streamingpool.core.domain.backpressure.BackpressureStrategies.defaultBackpressureStrategy;
 
-public class FanOutStreamId<T> implements StreamId<T> {
+import java.util.Objects;
+
+import org.streamingpool.core.domain.backpressure.BackpressureAware;
+import org.streamingpool.core.domain.backpressure.BackpressureStrategy;
+import org.streamingpool.core.service.StreamId;
+
+public class FanOutStreamId<T> implements StreamId<T>, BackpressureAware {
+    private static final long serialVersionUID = 1L;
 
     private final StreamId<T> target;
     private final BackpressureStrategy backpressureStrategy;
@@ -17,39 +21,42 @@ public class FanOutStreamId<T> implements StreamId<T> {
     }
 
     public static <T> FanOutStreamId<T> fanOut(StreamId<T> target, BackpressureStrategy backpressureStrategy) {
-        return new FanOutStreamId<T>(target, backpressureStrategy);
+        return new FanOutStreamId<>(target, backpressureStrategy);
     }
     public static <T> FanOutStreamId<T> fanOut(StreamId<T> target) {
-        return new FanOutStreamId<T>(target, defaultBackpressureStrategy());
+        return new FanOutStreamId<>(target, defaultBackpressureStrategy());
     }
 
     public StreamId<T> target() {
         return target;
     }
 
+    @Override
     public BackpressureStrategy backpressureStrategy() {
         return backpressureStrategy;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         FanOutStreamId<?> that = (FanOutStreamId<?>) o;
-
-        return target != null ? target.equals(that.target) : that.target == null;
+        return Objects.equals(target, that.target) &&
+                Objects.equals(backpressureStrategy, that.backpressureStrategy);
     }
 
     @Override
     public int hashCode() {
-        return target != null ? target.hashCode() : 0;
+        return Objects.hash(target, backpressureStrategy);
     }
 
     @Override
     public String toString() {
-        return "FanOutStreamId[" +
-            "target=" + target +
-            ']';
+        return "FanOutStreamId{" +
+                "target=" + target +
+                ", backpressureStrategy=" + backpressureStrategy +
+                '}';
     }
 }

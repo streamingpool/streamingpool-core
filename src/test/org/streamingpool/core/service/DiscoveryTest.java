@@ -30,14 +30,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-import io.reactivex.schedulers.Schedulers;
-import org.assertj.core.util.Lists;
 import org.junit.Test;
-import org.reactivestreams.Publisher;
-import org.streamingpool.core.service.impl.LocalPool;
-import org.streamingpool.core.testing.StreamFactoryMock;
 
 import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
+import org.assertj.core.util.Lists;
+import org.reactivestreams.Publisher;
+import org.streamingpool.core.conf.PoolConfiguration;
+import org.streamingpool.core.service.impl.LocalPool;
+import org.streamingpool.core.testing.StreamFactoryMock;
 
 /**
  * Test for the discovery of Streams using {@link TypedStreamFactory} and {@link LocalPool}.
@@ -111,7 +112,7 @@ public class DiscoveryTest {
     }
 
     private DiscoveryService prepareDiscoveryService(final List<StreamFactory> factories) {
-        return new LocalPool(factories, Schedulers.from(Executors.newSingleThreadExecutor()));
+        return new LocalPool(factories, new PoolConfiguration(Schedulers.from(Executors.newSingleThreadExecutor())));
     }
 
     private List<String> toList(Publisher<String> result) {

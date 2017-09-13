@@ -24,15 +24,16 @@ package org.streamingpool.core.service.impl;
 
 import static org.mockito.Mockito.mock;
 
-import io.reactivex.schedulers.Schedulers;
+import java.util.Collections;
+import java.util.concurrent.Executors;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import io.reactivex.schedulers.Schedulers;
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.conf.PoolConfiguration;
 import org.streamingpool.core.service.StreamId;
-
-import java.util.Collections;
-import java.util.concurrent.Executors;
 
 /**
  * Standard unit tests covering {@link LocalPool}
@@ -51,7 +52,7 @@ public class LocalPoolTest {
 
     @Before
     public void setUp() {
-        pool = new LocalPool(Collections.emptyList(), Schedulers.from(Executors.newSingleThreadExecutor()));
+        pool = new LocalPool(Collections.emptyList(), new PoolConfiguration(Schedulers.from(Executors.newSingleThreadExecutor())));
         pool.provide(ID_A, STREAM_A);
     }
 

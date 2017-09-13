@@ -71,11 +71,6 @@ sourceCompatibility = 1.8
 dependencies {
     compile 'org.reactivestreams:reactive-streams:1.0.0'
     compile 'io.reactivex.rxjava2:rxjava:2.1.+'
-    compile group: 'io.projectreactor', name: 'reactor-core', version: '3.0.7.RELEASE'
-    //compile 'com.typesafe.akka:akka-stream_2.11:2.4.16'
-
-    //compile group: 'com.typesafe.akka', name: 'akka-stream_2.11', version:'2.5.3'
-    //testCompile group: 'com.typesafe.akka', name: 'akka-stream-testkit_2.11', version:'2.5.3'
 
     compile 'org.springframework:spring-core:4.3.9.RELEASE'
     compile 'org.springframework:spring-context:4.3.9.RELEASE'

@@ -27,9 +27,11 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.reactivestreams.Publisher;
+import org.streamingpool.core.conf.PoolConfiguration;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.ProvidingService;
@@ -37,8 +39,6 @@ import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamFactoryRegistry;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.TypedStreamFactory;
-
-import io.reactivex.Scheduler;
 
 /**
  * Local pool for providing and discovery of {@link Publisher}s. (this class is both a {@link DiscoveryService} and a
@@ -52,15 +52,15 @@ public class LocalPool implements DiscoveryService, ProvidingService, StreamFact
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalPool.class);
 
-    private final Scheduler scheduler;
+    private final PoolConfiguration poolConfiguration;
     private final List<StreamFactory> factories;
     private final PoolContent content = new PoolContent();
 
-    public LocalPool(List<StreamFactory> factories, Scheduler scheduler) {
+    public LocalPool(List<StreamFactory> factories, PoolConfiguration poolConfiguration) {
         requireNonNull(factories,"Factories can not be null");
         this.factories = new CopyOnWriteArrayList<>(factories);
         LOGGER.info("Available Stream Factories: {}", factories);
-        this.scheduler = scheduler;
+        this.poolConfiguration = poolConfiguration;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class LocalPool implements DiscoveryService, ProvidingService, StreamFact
     @Override
     public <T> Publisher<T> discover(StreamId<T> id) {
         requireNonNull(id, "Cannot discover a null id");
-        return new TrackKeepingDiscoveryService(factories, content, scheduler).discover(id);
+        return new TrackKeepingDiscoveryService(factories, content, poolConfiguration).discover(id);
     }
 
     @Override

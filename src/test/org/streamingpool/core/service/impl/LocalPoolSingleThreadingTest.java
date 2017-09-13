@@ -1,7 +1,7 @@
 package org.streamingpool.core.service.impl;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.streamingpool.core.conf.DefaultSchedulerConfiguration.STREAMINGPOOL_THREAD_POOL_SIZE;
+import static org.streamingpool.core.conf.DefaultPoolConfiguration.STREAMINGPOOL_THREAD_POOL_SIZE;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
