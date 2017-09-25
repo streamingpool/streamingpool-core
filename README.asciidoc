@@ -5,6 +5,7 @@ image:https://img.shields.io/travis/streamingpool/streamingpool-core/master.svg[
 image:https://img.shields.io/github/release/streamingpool/streamingpool-core.svg[]
 image:https://img.shields.io/github/license/streamingpool/streamingpool-core.svg[]
 image:https://codecov.io/gh/streamingpool/streamingpool-core/branch/master/graph/badge.svg["codecov", link="https://codecov.io/gh/streamingpool/streamingpool-core"]
+image:https://api.codacy.com/project/badge/Grade/b398bb4734f64bd28767234b88a75c93["Codacy code quality", link="https://www.codacy.com/app/tensorics/streamingpool-core?utm_source=github.com&utm_medium=referral&utm_content=streamingpool/streamingpool-core&utm_campaign=Badge_Grade"]
 
 == Getting Started
 In order to use the Streaming Pool, just get the latest version from https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22streamingpool-core%22[Maven Central].
