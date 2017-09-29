@@ -51,7 +51,7 @@ public class FlattenedStreamFactory implements StreamFactory {
     }
 
     private <T> ErrorStreamPair<T> createFlattenedStream(FlattenedStreamId<T> id, DiscoveryService discoveryService) {
-        Flowable<Iterable<? extends T>> sourceStream = Flowable.fromPublisher(discoveryService.discover(id.sourceStreamId()));
+        Flowable<? extends Iterable<? extends T>> sourceStream = Flowable.fromPublisher(discoveryService.discover(id.sourceStreamId()));
 
         return ErrorStreamPair.ofData(sourceStream.flatMap(iterable -> {
             Stream<? extends T> stream = StreamSupport.stream(iterable.spliterator(), false).filter(Objects::nonNull);
