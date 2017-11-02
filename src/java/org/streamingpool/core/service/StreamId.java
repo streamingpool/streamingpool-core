@@ -34,6 +34,6 @@ import java.io.Serializable;
  *
  * @param <T> the type of the data that the a stream created from this id contains
  */
-public interface StreamId<T> extends Serializable{
+public interface StreamId<T> extends Serializable {
     /* Marker interface */
 }
