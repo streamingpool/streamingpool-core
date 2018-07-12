@@ -44,9 +44,6 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'jacoco'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-apply plugin: 'nebula.maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 repositories {
@@ -60,6 +57,10 @@ repositories {
 }
 
 if (DEPLOYMENT) {
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: 'nebula.maven-publish'
+
     println 'Applying deployment scripts'
     apply from: './scripts/bintray-deploy.gradle'
 }
@@ -104,14 +105,18 @@ javadoc { options.encoding = "UTF-8" }
 
 task wrapper(type: Wrapper) { gradleVersion = '4.0' }
 
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
+if(!project.tasks.findByName("javadocJar")) {
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
 }
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+if(!project.tasks.findByName("sourcesJar")) {
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
 }
 
 artifacts { archives javadocJar, sourcesJar }
