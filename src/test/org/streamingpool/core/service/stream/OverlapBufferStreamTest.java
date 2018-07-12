@@ -93,7 +93,7 @@ public class OverlapBufferStreamTest {
 
     @Test
     public void dataStreamEndsBeforeEndStreamEmitsShouldBufferEverything() {
-        StreamId<Long> sourceId = registerRx(interval(1, SECONDS, testScheduler).take(5));
+        StreamId<Long> sourceId = registerRx(merge(never(), interval(1, SECONDS, testScheduler).take(5)));
         StreamId<Object> startId = registerRx(merge(just(new Object()).delay(2, SECONDS, testScheduler), never()));
         StreamId<Object> endId = registerRx(never());
 
