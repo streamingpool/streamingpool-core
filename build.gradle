@@ -44,6 +44,8 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'jacoco'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
 
 repositories {
     if (CERN_VM) {
@@ -67,7 +69,7 @@ if (DEPLOYMENT) {
 
 group 'org.streamingpool'
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
     compile 'org.reactivestreams:reactive-streams:1.0.0'
@@ -103,7 +105,7 @@ sourceSets {
 
 javadoc { options.encoding = "UTF-8" }
 
-task wrapper(type: Wrapper) { gradleVersion = '4.0' }
+task wrapper(type: Wrapper) { gradleVersion = '4.8.1' }
 
 if(!project.tasks.findByName("javadocJar")) {
     task javadocJar(type: Jar) {
