@@ -44,7 +44,6 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'jacoco'
-apply plugin: 'com.jfrog.bintray'
 
 repositories {
     if (CERN_VM) {
@@ -60,6 +59,7 @@ if (DEPLOYMENT) {
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
     apply plugin: 'nebula.maven-publish'
+    apply plugin: 'com.jfrog.bintray'
 
     println 'Applying deployment scripts'
     apply from: './scripts/bintray-deploy.gradle'
