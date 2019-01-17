@@ -111,8 +111,8 @@ public class StreamFactoryMock<T> {
     public StreamFactory build() {
         final StreamFactory factoryMock = mock(StreamFactory.class);
         when(factoryMock.create(any(), any())).thenAnswer(args -> {
-            StreamId<T> streamId = args.getArgumentAt(0, StreamId.class);
-            DiscoveryService discovery = args.getArgumentAt(1, DiscoveryService.class);
+            StreamId<T> streamId = args.getArgument(0);
+            DiscoveryService discovery = args.getArgument(1);
 
             if (withIdDiscover.containsKey(streamId)) {
                 return ErrorStreamPair.ofData(Flowable.merge(
