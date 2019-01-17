@@ -75,16 +75,17 @@ dependencies {
     compile 'org.reactivestreams:reactive-streams:1.0.0'
     compile 'io.reactivex.rxjava2:rxjava:2.1.16'
 
-    compile 'org.springframework:spring-core:4.3.13.RELEASE'
-    compile 'org.springframework:spring-context:4.3.13.RELEASE'
-    compile 'org.springframework:spring-test:4.3.13.RELEASE' // Testing utils in /src/java for the moment
+    compile 'org.springframework:spring-core:5.1.2.RELEASE'
+    compile 'org.springframework:spring-context:5.1.2.RELEASE'
+    compile 'org.springframework:spring-test:5.1.2.RELEASE' // Testing utils in /src/java for the moment
 
     compile 'org.slf4j:slf4j-api:1.7.25'
 
-    compile 'com.google.guava:guava:22.0'
+    compile 'com.google.guava:guava:27.0.1-jre'
 
     compile 'junit:junit:4.12' // Testing utils in /src/java for the moment
-    compile 'org.mockito:mockito-core:1.10.19' // Testing utils in /src/java for the moment
+    //compile 'org.mockito:mockito-core:2.23.0' // Testing utils in /src/java for the moment
+    compile 'org.mockito:mockito-core:2.23.+'
     testCompile 'org.assertj:assertj-core:3.8.+'
     testCompile 'pl.pragmatists:JUnitParams:1.1.0'
     testCompile 'com.openpojo:openpojo:0.8.10'
