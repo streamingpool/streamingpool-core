@@ -51,6 +51,7 @@ import io.reactivex.subscribers.TestSubscriber;
 import org.streamingpool.core.conf.PoolConfiguration;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.impl.LocalPool;
+import org.streamingpool.core.service.impl.PoolContent;
 import org.streamingpool.core.service.streamfactory.DelayedStreamFactory;
 import org.streamingpool.core.service.streamfactory.OverlapBufferStreamFactory;
 import org.streamingpool.core.service.streamid.BufferSpecification;
@@ -69,7 +70,7 @@ public class OverlapBufferStreamTest {
         OverlapBufferStreamFactory factory = new OverlapBufferStreamFactory();
         testScheduler = new TestScheduler();
         poolConfiguration = new PoolConfiguration(testScheduler);
-        pool = new LocalPool(asList(factory, new DelayedStreamFactory()), poolConfiguration);
+        pool = new LocalPool(asList(factory, new DelayedStreamFactory()), poolConfiguration, new PoolContent());
         testSubscriber = new TestSubscriber<>();
     }
 

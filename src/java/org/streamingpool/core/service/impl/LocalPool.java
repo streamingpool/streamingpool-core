@@ -49,13 +49,14 @@ public class LocalPool implements DiscoveryService, ProvidingService, StreamFact
 
     private final PoolConfiguration poolConfiguration;
     private final List<StreamFactory> factories;
-    private final PoolContent content = new PoolContent();
+    private final PoolContent content;
 
-    public LocalPool(List<StreamFactory> factories, PoolConfiguration poolConfiguration) {
+    public LocalPool(List<StreamFactory> factories, PoolConfiguration poolConfiguration, PoolContent content) {
         requireNonNull(factories,"Factories can not be null");
         this.factories = new CopyOnWriteArrayList<>(factories);
         LOGGER.info("Available Stream Factories: {}", factories);
         this.poolConfiguration = poolConfiguration;
+        this.content = content;
     }
 
     @Override
@@ -87,7 +88,4 @@ public class LocalPool implements DiscoveryService, ProvidingService, StreamFact
         LOGGER.info("Fallback {} has been added to the factories", fallbackFactory);
     }
 
-    public DependencyGraph dependencies() {
-        return content.dependencies();
-    }
 }

@@ -41,6 +41,7 @@ import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.impl.IdentifiedStreamCreator;
 import org.streamingpool.core.service.impl.ImmutableIdentifiedStreamCreator;
 import org.streamingpool.core.service.impl.LocalPool;
+import org.streamingpool.core.service.impl.PoolContent;
 import org.streamingpool.core.service.streamfactory.CreatorStreamFactory;
 import org.streamingpool.core.testing.NamedStreamId;
 
@@ -62,11 +63,11 @@ public class CreatorStreamTest {
             discovery -> STREAM_A);
     private final CreatorStreamFactory factory = new CreatorStreamFactory(Arrays.asList(creator));
     private final DiscoveryService discoveryService = new LocalPool(Arrays.asList(factory),
-            POOL_CONFIGURATION);
+            POOL_CONFIGURATION, new PoolContent());
 
     @Test(expected = CycleInStreamDiscoveryDetectedException.class)
     public void testCycleLoopDetectedUsingStreamCreators() {
-        DiscoveryService loopingDiscoveryService = new LocalPool(Arrays.asList(createLoopCreatorStreamFactory()), POOL_CONFIGURATION);
+        DiscoveryService loopingDiscoveryService = new LocalPool(Arrays.asList(createLoopCreatorStreamFactory()), POOL_CONFIGURATION, new PoolContent());
 
         loopingDiscoveryService.discover(ID_A);
     }

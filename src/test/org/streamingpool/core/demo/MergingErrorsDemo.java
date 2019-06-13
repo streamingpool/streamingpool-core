@@ -1,7 +1,8 @@
-package org.streamingpool.core.service.impl;
+package org.streamingpool.core.demo;
 
 import io.reactivex.Flowable;
 import org.assertj.core.api.Assertions;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.streamid.DerivedStreamId;
@@ -14,10 +15,11 @@ import java.util.concurrent.TimeUnit;
 
 import static org.streamingpool.core.service.streamid.DerivedStreamId.derive;
 
-public class DependencyTest extends AbstractStreamTest implements RxStreamSupport {
+@Ignore("just a try")
+public class MergingErrorsDemo extends AbstractStreamTest implements RxStreamSupport {
 
     @Test
-    public void test() throws IOException {
+    public void testDependencyGraphIsCorrectlyCreated() throws IOException {
         StreamId<Long> SOURCE_1 = source();
         DerivedStreamId<Long, String> DERIVED_1_A = derive(SOURCE_1, s -> {
             if(s % 2 == 0)
@@ -40,8 +42,8 @@ public class DependencyTest extends AbstractStreamTest implements RxStreamSuppor
         rxFrom(MergedErrorStreamId.mergeErrorsStartingFrom(LEAF_1)).subscribe(System.err::println);
         rxFrom(MergedErrorStreamId.mergeErrorsStartingFrom(LEAF_2)).subscribe(System.err::println);
 
-        Assertions.assertThat(streamDependencies().getSubgraphStartingFrom(LEAF_1)).containsOnlyOnce(SOURCE_1, DERIVED_1_A, LEAF_1);
-        Assertions.assertThat(streamDependencies().getSubgraphStartingFrom(LEAF_2)).containsOnlyOnce(SOURCE_2, DERIVED_2_A, LEAF_2);
+        Assertions.assertThat(getSubgraphStartingFrom(LEAF_1)).containsOnlyOnce(SOURCE_1, DERIVED_1_A, LEAF_1);
+        Assertions.assertThat(getSubgraphStartingFrom(LEAF_2)).containsOnlyOnce(SOURCE_2, DERIVED_2_A, LEAF_2);
 
         System.in.read();
     }

@@ -89,6 +89,7 @@ dependencies {
     testCompile 'org.assertj:assertj-core:3.8.+'
     testCompile 'pl.pragmatists:JUnitParams:1.1.0'
     testCompile 'com.openpojo:openpojo:0.8.10'
+    testCompile 'org.slf4j:slf4j-simple:1.7.25'
 }
 
 sourceSets {

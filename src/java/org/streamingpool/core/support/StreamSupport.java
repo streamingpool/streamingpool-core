@@ -27,6 +27,9 @@ import org.streamingpool.core.service.CreatorProvidingService;
 import org.streamingpool.core.service.ProvidingService;
 import org.streamingpool.core.service.StreamCreator;
 import org.streamingpool.core.service.StreamId;
+import org.streamingpool.core.service.InstrumentationService;
+
+import java.util.Set;
 
 /**
  * Support interface for working with {@link Publisher}s. Provides convenience and fluid methods.
@@ -41,7 +44,13 @@ public interface StreamSupport {
 
     <T> OngoingLazyProviding<T> provide(StreamCreator<T> reactStream);
 
+    default Set<StreamId<?>> getSubgraphStartingFrom(StreamId<?> sourceId) {
+        return dependencyService().dependencies().getSubgraphStartingFrom(sourceId);
+    }
+
     ProvidingService providingService();
+
+    InstrumentationService dependencyService();
 
     class OngoingProviding<T> {
         private final Publisher<T> reactStream;

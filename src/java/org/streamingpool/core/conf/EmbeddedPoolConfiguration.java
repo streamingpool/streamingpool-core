@@ -30,9 +30,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.streamingpool.core.service.InstrumentationService;
+import org.streamingpool.core.service.impl.InstrumentationServiceImpl;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.TypedStreamFactory;
 import org.streamingpool.core.service.impl.LocalPool;
+import org.streamingpool.core.service.impl.PoolContent;
 
 /**
  * The spring configuration which shall be used in any application that will have the spring pool embedded. It provides
@@ -57,12 +60,19 @@ public class EmbeddedPoolConfiguration {
     @Autowired(required = false)
     private List<StreamFactory> streamFactories;
 
-    @Autowired
-    private PoolConfiguration poolConfiguration;
+    @Bean
+    public PoolContent poolContent() {
+        return new PoolContent();
+    }
 
     @Bean
-    public LocalPool pool() {
-        return new LocalPool(emptyIfNull(streamFactories), poolConfiguration);
+    public InstrumentationService instrumentService(PoolContent content) {
+        return new InstrumentationServiceImpl(content);
+    }
+
+    @Bean
+    public LocalPool pool(PoolConfiguration poolConfiguration, PoolContent content) {
+        return new LocalPool(emptyIfNull(streamFactories), poolConfiguration, content);
     }
 
 }

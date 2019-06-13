@@ -14,17 +14,23 @@ public class DependencyGraphImpl implements DependencyGraph {
     private final Multimap<StreamId<?>, StreamId<?>> dependencies = HashMultimap.create();
 
     public void addDependency(StreamId<?> target, StreamId<?> parent) {
-        dependencies.put(target, parent);
+        synchronized (dependencies) {
+            dependencies.put(target, parent);
+        }
     }
 
     @Override
     public Set<StreamId<?>> getSubgraphStartingFrom(StreamId<?> source) {
-        Collection<StreamId<?>> ancestors = dependencies.get(source);
-        if (ancestors.isEmpty()) {
-            return ImmutableSet.of(source);
+        synchronized (dependencies) {
+            Collection<StreamId<?>> ancestors = dependencies.get(source);
+            if (ancestors.isEmpty()) {
+                return ImmutableSet.of(source);
+            }
+            Set<StreamId<?>> ancestorsId = ancestors.stream()
+                    .flatMap(ancestor -> getSubgraphStartingFrom(ancestor).stream())
+                    .collect(Collectors.toSet());
+            return ImmutableSet.<StreamId<?>>builder().add(source).addAll(ancestorsId).build();
         }
-        Set<StreamId<?>> ancestorsId = ancestors.stream().flatMap(ancestor -> getSubgraphStartingFrom(ancestor).stream()).collect(Collectors.toSet());
-        return ImmutableSet.<StreamId<?>>builder().add(source).addAll(ancestorsId).build();
     }
 
 }
