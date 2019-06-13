@@ -24,11 +24,14 @@ package org.streamingpool.core.support;
 
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.streamingpool.core.domain.DependencyGraph;
+import org.streamingpool.core.domain.DependencyGraphImpl;
 import org.streamingpool.core.service.CreatorProvidingService;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.ProvidingService;
 import org.streamingpool.core.service.StreamCreator;
 import org.streamingpool.core.service.StreamId;
+import org.streamingpool.core.service.impl.LocalPool;
 
 /**
  * This class provides support for the discovery and for providing streams.
@@ -71,4 +74,11 @@ public class AbstractStreamSupport implements StreamSupport {
         return providingService;
     }
 
+    /**
+     * Avoid the cast
+     */
+    @Deprecated
+    public DependencyGraph streamDependencies() {
+        return ((LocalPool) discoveryService).dependencies();
+    }
 }

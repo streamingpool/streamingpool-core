@@ -38,6 +38,7 @@ import io.reactivex.Flowable;
 import io.reactivex.functions.Action;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.conf.PoolConfiguration;
+import org.streamingpool.core.domain.DependencyGraph;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.domain.backpressure.BackpressureAware;
 import org.streamingpool.core.domain.backpressure.BackpressureBufferStrategy;
@@ -49,6 +50,7 @@ import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
+import org.streamingpool.core.service.diagnostic.ErrorStreamId;
 
 /**
  * Special implementation of a {@link DiscoveryService}. It is able to discover streams recursively while preventing
@@ -59,6 +61,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrackKeepingDiscoveryService.class);
     private final Action NOOP = () -> {};
     private final Set<StreamId<?>> idsOfStreamsUnderCreation;
+    private final Set<StreamId<?>> idsDiscovered;
     private final List<StreamFactory> factories;
     private final PoolContent content;
     private final Thread contextOfExecution;
@@ -66,7 +69,6 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
     public TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content, PoolConfiguration poolConfiguration) {
         this(factories, content, new HashSet<>(), Thread.currentThread(), poolConfiguration);
-
     }
 
     private TrackKeepingDiscoveryService(List<StreamFactory> factories, PoolContent content,
@@ -76,6 +78,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         this.idsOfStreamsUnderCreation = Collections.unmodifiableSet(idsOfStreamsUnderCreation);
         this.contextOfExecution = requireNonNull(contextOfExecution, "contextOfExecution must not be null");
         this.poolConfiguration = poolConfiguration;
+        this.idsDiscovered = new HashSet<>();
     }
 
     @Override
@@ -84,6 +87,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         checkForRecursiveCycles(id);
 
         content.synchronousPutIfAbsent(id, () -> createFromFactories(id));
+        idsDiscovered.add(id);
 
         Publisher<T> publisher = getStreamWithIdOrElseThrow(id);
         Flowable<T> flowable =  observerOnThreadPool(publisher);
@@ -160,7 +164,8 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
     private <T> ErrorStreamPair<T> createFromFactories(StreamId<T> newId) {
         for (StreamFactory factory : factories) {
-            ErrorStreamPair<T> factoryResult = factory.create(newId, cloneDiscoveryServiceIncluding(newId));
+            TrackKeepingDiscoveryService innerDiscoveryService = cloneDiscoveryServiceIncluding(newId);
+            ErrorStreamPair<T> factoryResult = factory.create(newId, innerDiscoveryService);
 
             if (factoryResult == null) {
                 throw new IllegalStateException(format(
@@ -169,10 +174,17 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
 
             if (factoryResult.isPresent()) {
                 LOGGER.info("Stream from id '{}' was successfully created by factory '{}'", newId, factory);
+                innerDiscoveryService.idsDiscovered
+                        .forEach(ancestor -> content.addDependency(newId, ancestor));
+
                 return ErrorStreamPair.ofDataError(factoryResult.data(), factoryResult.error());
             }
         }
         return ErrorStreamPair.empty();
     }
 
+    @Deprecated
+    public PoolContent content() {
+        return content;
+    }
 }

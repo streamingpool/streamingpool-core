@@ -31,6 +31,8 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
+import org.streamingpool.core.domain.DependencyGraph;
+import org.streamingpool.core.domain.DependencyGraphImpl;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.diagnostic.ErrorStreamId;
@@ -48,8 +50,10 @@ public class PoolContent {
     private final ConcurrentMap<StreamId<?>, Publisher<?>> activeStreams = new ConcurrentHashMap<>();
     private final ReplayProcessor<StreamId<?>> newStreamHook = ReplayProcessor.create();
     private final ExecutorService hookExecutor = Executors.newSingleThreadExecutor();
+    private final DependencyGraphImpl dependencies;
 
     public PoolContent() {
+        dependencies = new DependencyGraphImpl();
         addStreamHooks();
     }
 
@@ -83,5 +87,13 @@ public class PoolContent {
      */
     private void addStreamHooks() {
         activeStreams.put(NEW_STREAM_HOOK, newStreamHook);
+    }
+
+    public void addDependency(StreamId<?> source, StreamId<?> ancestor) {
+        dependencies.addDependency(source, ancestor);
+    }
+
+    public DependencyGraph dependencies() {
+        return dependencies;
     }
 }

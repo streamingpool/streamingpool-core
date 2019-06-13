@@ -22,23 +22,18 @@
 
 package org.streamingpool.core.service.impl;
 
-import static java.util.Objects.requireNonNull;
+import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.streamingpool.core.conf.PoolConfiguration;
+import org.streamingpool.core.domain.DependencyGraph;
+import org.streamingpool.core.domain.ErrorStreamPair;
+import org.streamingpool.core.service.*;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.reactivestreams.Publisher;
-import org.streamingpool.core.conf.PoolConfiguration;
-import org.streamingpool.core.domain.ErrorStreamPair;
-import org.streamingpool.core.service.DiscoveryService;
-import org.streamingpool.core.service.ProvidingService;
-import org.streamingpool.core.service.StreamFactory;
-import org.streamingpool.core.service.StreamFactoryRegistry;
-import org.streamingpool.core.service.StreamId;
-import org.streamingpool.core.service.TypedStreamFactory;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Local pool for providing and discovery of {@link Publisher}s. (this class is both a {@link DiscoveryService} and a
@@ -92,4 +87,7 @@ public class LocalPool implements DiscoveryService, ProvidingService, StreamFact
         LOGGER.info("Fallback {} has been added to the factories", fallbackFactory);
     }
 
+    public DependencyGraph dependencies() {
+        return content.dependencies();
+    }
 }

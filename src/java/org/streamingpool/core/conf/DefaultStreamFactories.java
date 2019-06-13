@@ -38,6 +38,11 @@ import org.streamingpool.core.service.streamfactory.*;
 public class DefaultStreamFactories {
 
     @Bean
+    public MergedErrorStreamFactory mergedErrorStreamFactory() {
+        return new MergedErrorStreamFactory();
+    }
+
+    @Bean
     public CompositionStreamFactory compositionStreamFactory() {
         return new CompositionStreamFactory();
     }
