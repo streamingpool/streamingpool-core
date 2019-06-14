@@ -38,7 +38,6 @@ import io.reactivex.Flowable;
 import io.reactivex.functions.Action;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.conf.PoolConfiguration;
-import org.streamingpool.core.domain.DependencyGraph;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.domain.backpressure.BackpressureAware;
 import org.streamingpool.core.domain.backpressure.BackpressureBufferStrategy;
@@ -50,7 +49,6 @@ import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
 import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.StreamFactory;
 import org.streamingpool.core.service.StreamId;
-import org.streamingpool.core.service.diagnostic.ErrorStreamId;
 
 /**
  * Special implementation of a {@link DiscoveryService}. It is able to discover streams recursively while preventing

@@ -1,6 +1,6 @@
 package org.streamingpool.core.service.impl;
 
-import org.streamingpool.core.domain.DependencyGraph;
+import org.streamingpool.core.domain.StreamDependencyTree;
 import org.streamingpool.core.service.InstrumentationService;
 
 public class InstrumentationServiceImpl implements InstrumentationService {
@@ -11,7 +11,7 @@ public class InstrumentationServiceImpl implements InstrumentationService {
     }
 
     @Override
-    public DependencyGraph dependencies() {
-        return content.dependencies();
+    public StreamDependencyTree dependencyTree() {
+        return content.dependencyTree();
     }
 }

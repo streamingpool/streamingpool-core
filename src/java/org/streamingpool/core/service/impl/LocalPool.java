@@ -26,7 +26,6 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.streamingpool.core.conf.PoolConfiguration;
-import org.streamingpool.core.domain.DependencyGraph;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.*;
 

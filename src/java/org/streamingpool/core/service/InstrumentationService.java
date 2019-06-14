@@ -1,6 +1,6 @@
 package org.streamingpool.core.service;
 
-import org.streamingpool.core.domain.DependencyGraph;
+import org.streamingpool.core.domain.StreamDependencyTree;
 
 /**
  * Service to get instrumentation/debug information about a pool
@@ -8,8 +8,8 @@ import org.streamingpool.core.domain.DependencyGraph;
 public interface InstrumentationService {
 
     /**
-     * Get the {@link DependencyGraph} containing all the {@link org.streamingpool.core.service.StreamId} and the
+     * Get the {@link StreamDependencyTree} containing all the {@link org.streamingpool.core.service.StreamId} and the
      * corresponding dependencies of the pool
      */
-    DependencyGraph dependencies();
+    StreamDependencyTree dependencyTree();
 }

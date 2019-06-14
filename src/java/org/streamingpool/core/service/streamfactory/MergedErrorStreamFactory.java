@@ -2,11 +2,13 @@ package org.streamingpool.core.service.streamfactory;
 
 import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
-import org.streamingpool.core.domain.DependencyGraph;
+import org.streamingpool.core.domain.StreamDependencyTree;
 import org.streamingpool.core.domain.ErrorStreamPair;
-import org.streamingpool.core.service.*;
+import org.streamingpool.core.service.DiscoveryService;
+import org.streamingpool.core.service.InstrumentationService;
+import org.streamingpool.core.service.StreamFactory;
+import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.diagnostic.ErrorStreamId;
-import org.streamingpool.core.service.impl.TrackKeepingDiscoveryService;
 import org.streamingpool.core.service.streamid.MergedErrorStreamId;
 
 import java.util.Set;
@@ -28,12 +30,8 @@ public class MergedErrorStreamFactory implements StreamFactory {
 
         MergedErrorStreamId streamId = (MergedErrorStreamId) id;
 
-        if(!(discoveryService instanceof TrackKeepingDiscoveryService)) {
-            throw new IllegalStateException("Refactor this");
-        }
-
-        DependencyGraph dependencies = instrumentationService.dependencies();
-        Set<Publisher<Throwable>> dependenciesOfSource = dependencies.getSubgraphStartingFrom(streamId.getSourceStreamId())
+        StreamDependencyTree dependencies = instrumentationService.dependencyTree();
+        Set<Publisher<Throwable>> dependenciesOfSource = dependencies.getAncestorsFrom(streamId.getSourceStreamId())
                 .stream()
                 .map(ErrorStreamId::of)
                 .map(discoveryService::discover)

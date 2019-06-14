@@ -45,7 +45,7 @@ public interface StreamSupport {
     <T> OngoingLazyProviding<T> provide(StreamCreator<T> reactStream);
 
     default Set<StreamId<?>> getSubgraphStartingFrom(StreamId<?> sourceId) {
-        return dependencyService().dependencies().getSubgraphStartingFrom(sourceId);
+        return dependencyService().dependencyTree().getAncestorsFrom(sourceId);
     }
 
     ProvidingService providingService();
