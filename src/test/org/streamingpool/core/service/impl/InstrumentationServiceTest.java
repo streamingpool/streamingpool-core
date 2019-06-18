@@ -28,6 +28,23 @@ public class InstrumentationServiceTest extends AbstractStreamTest {
         assertThat(getSubgraphStartingFrom(LEAF_2)).containsOnlyOnce(SOURCE_2, DERIVED_2_A, LEAF_2);
     }
 
+    @Test
+    public void testDependencyGraphWithTheSharedSourceIsCorrectlyCreated() {
+        StreamId<Long> SOURCE = source();
+        DerivedStreamId<Long, String> DERIVED_1_A = derive(SOURCE, s -> s + " derived 1 A");
+        DerivedStreamId<String, String> LEAF_1 = derive(DERIVED_1_A, s -> s + " derived 2 A");
+
+
+        DerivedStreamId<Long, String> DERIVED_2_A = derive(SOURCE, s -> s + " derived 1 B");
+        DerivedStreamId<String, String> LEAF_2 = derive(DERIVED_2_A, s -> s + " derived 2 B");
+
+        discover(LEAF_1);
+        discover(LEAF_2);
+
+        assertThat(getSubgraphStartingFrom(LEAF_1)).containsOnlyOnce(SOURCE, DERIVED_1_A, LEAF_1);
+        assertThat(getSubgraphStartingFrom(LEAF_2)).containsOnlyOnce(SOURCE, DERIVED_2_A, LEAF_2);
+    }
+
     private StreamId<Long> source() {
         return provide(Flowable.just(1L)).withUniqueStreamId();
     }
