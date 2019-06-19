@@ -9,7 +9,7 @@ public class StreamDependencyTreeTest {
 
     @Test
     public void test() {
-        StreamStreamDependencyTreeImpl graph = new StreamStreamDependencyTreeImpl();
+        StreamDependencyTreeImpl graph = new StreamDependencyTreeImpl();
         StreamId SOURCE = Mockito.mock(StreamId.class);
         StreamId ANCESTOR_1 = Mockito.mock(StreamId.class);
         StreamId ANCESTOR_2 = Mockito.mock(StreamId.class);
@@ -21,7 +21,7 @@ public class StreamDependencyTreeTest {
 
     @Test
     public void test2(){
-        StreamStreamDependencyTreeImpl graph = new StreamStreamDependencyTreeImpl();
+        StreamDependencyTreeImpl graph = new StreamDependencyTreeImpl();
         StreamId SOURCE_1 = Mockito.mock(StreamId.class);
         StreamId SOURCE_2 = Mockito.mock(StreamId.class);
         StreamId ANCESTOR = Mockito.mock(StreamId.class);

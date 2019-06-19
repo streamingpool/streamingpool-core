@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class StreamStreamDependencyTreeImpl implements StreamDependencyTree {
+public class StreamDependencyTreeImpl implements StreamDependencyTree {
 
     private final Multimap<StreamId<?>, StreamId<?>> dependencies = HashMultimap.create();
 

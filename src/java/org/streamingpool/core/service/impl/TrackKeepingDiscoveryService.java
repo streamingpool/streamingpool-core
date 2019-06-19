@@ -22,33 +22,27 @@
 
 package org.streamingpool.core.service.impl;
 
-import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
+import io.reactivex.BackpressureOverflowStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.functions.Action;
+import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.streamingpool.core.conf.PoolConfiguration;
+import org.streamingpool.core.domain.ErrorStreamPair;
+import org.streamingpool.core.domain.backpressure.*;
+import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
+import org.streamingpool.core.service.DiscoveryService;
+import org.streamingpool.core.service.StreamFactory;
+import org.streamingpool.core.service.StreamId;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.reactivex.BackpressureOverflowStrategy;
-import io.reactivex.Flowable;
-import io.reactivex.functions.Action;
-import org.reactivestreams.Publisher;
-import org.streamingpool.core.conf.PoolConfiguration;
-import org.streamingpool.core.domain.ErrorStreamPair;
-import org.streamingpool.core.domain.backpressure.BackpressureAware;
-import org.streamingpool.core.domain.backpressure.BackpressureBufferStrategy;
-import org.streamingpool.core.domain.backpressure.BackpressureDropStrategy;
-import org.streamingpool.core.domain.backpressure.BackpressureLatestStrategy;
-import org.streamingpool.core.domain.backpressure.BackpressureNoneStrategy;
-import org.streamingpool.core.domain.backpressure.BackpressureStrategy;
-import org.streamingpool.core.service.CycleInStreamDiscoveryDetectedException;
-import org.streamingpool.core.service.DiscoveryService;
-import org.streamingpool.core.service.StreamFactory;
-import org.streamingpool.core.service.StreamId;
+import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Special implementation of a {@link DiscoveryService}. It is able to discover streams recursively while preventing
@@ -173,7 +167,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
             if (factoryResult.isPresent()) {
                 LOGGER.info("Stream from id '{}' was successfully created by factory '{}'", newId, factory);
                 innerDiscoveryService.idsDiscovered
-                        .forEach(ancestor -> content.addDependency(newId, ancestor));
+                        .forEach(parent -> content.addDependency(newId, parent));
 
                 return ErrorStreamPair.ofDataError(factoryResult.data(), factoryResult.error());
             }
@@ -181,8 +175,4 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         return ErrorStreamPair.empty();
     }
 
-    @Deprecated
-    public PoolContent content() {
-        return content;
-    }
 }
