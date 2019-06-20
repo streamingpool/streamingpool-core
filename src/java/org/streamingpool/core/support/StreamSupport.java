@@ -44,13 +44,16 @@ public interface StreamSupport {
 
     <T> OngoingLazyProviding<T> provide(StreamCreator<T> reactStream);
 
-    default Set<StreamId<?>> getSubgraphStartingFrom(StreamId<?> sourceId) {
-        return dependencyService().dependencyTree().getAncestorsFrom(sourceId);
+    /**
+     * Get all the ancestors of the given {@link StreamId}. NOTE: this INCLUDES the source {@link StreamId}!
+     */
+    default Set<StreamId<?>> getAncestorsFrom(StreamId<?> sourceId) {
+        return instrumentationService().dependencyTree().getAncestorsFrom(sourceId);
     }
 
     ProvidingService providingService();
 
-    InstrumentationService dependencyService();
+    InstrumentationService instrumentationService();
 
     class OngoingProviding<T> {
         private final Publisher<T> reactStream;

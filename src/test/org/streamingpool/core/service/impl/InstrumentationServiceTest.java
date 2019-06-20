@@ -24,8 +24,8 @@ public class InstrumentationServiceTest extends AbstractStreamTest {
         discover(LEAF_1);
         discover(LEAF_2);
 
-        assertThat(getSubgraphStartingFrom(LEAF_1)).containsOnlyOnce(SOURCE_1, DERIVED_1_A, LEAF_1);
-        assertThat(getSubgraphStartingFrom(LEAF_2)).containsOnlyOnce(SOURCE_2, DERIVED_2_A, LEAF_2);
+        assertThat(getAncestorsFrom(LEAF_1)).containsOnlyOnce(SOURCE_1, DERIVED_1_A, LEAF_1);
+        assertThat(getAncestorsFrom(LEAF_2)).containsOnlyOnce(SOURCE_2, DERIVED_2_A, LEAF_2);
     }
 
     @Test
@@ -41,8 +41,8 @@ public class InstrumentationServiceTest extends AbstractStreamTest {
         discover(LEAF_1);
         discover(LEAF_2);
 
-        assertThat(getSubgraphStartingFrom(LEAF_1)).containsOnlyOnce(SOURCE, DERIVED_1_A, LEAF_1);
-        assertThat(getSubgraphStartingFrom(LEAF_2)).containsOnlyOnce(SOURCE, DERIVED_2_A, LEAF_2);
+        assertThat(getAncestorsFrom(LEAF_1)).containsOnlyOnce(SOURCE, DERIVED_1_A, LEAF_1);
+        assertThat(getAncestorsFrom(LEAF_2)).containsOnlyOnce(SOURCE, DERIVED_2_A, LEAF_2);
     }
 
     private StreamId<Long> source() {

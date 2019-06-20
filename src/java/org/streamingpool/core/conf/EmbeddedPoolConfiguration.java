@@ -66,7 +66,7 @@ public class EmbeddedPoolConfiguration {
     }
 
     @Bean
-    public InstrumentationService instrumentService(PoolContent content) {
+    public InstrumentationService instrumentationService(PoolContent content) {
         return new InstrumentationServiceImpl(content);
     }
 

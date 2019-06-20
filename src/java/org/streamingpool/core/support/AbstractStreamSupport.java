@@ -52,7 +52,7 @@ public class AbstractStreamSupport implements StreamSupport {
     @Autowired
     private CreatorProvidingService lazyProvidingService;
     @Autowired
-    private InstrumentationService dependencyService;
+    private InstrumentationService instrumentationService;
 
     @Override
     public <T> Publisher<T> discover(StreamId<T> id) {
@@ -75,7 +75,7 @@ public class AbstractStreamSupport implements StreamSupport {
     }
 
     @Override
-    public InstrumentationService dependencyService() {
-        return dependencyService;
+    public InstrumentationService instrumentationService() {
+        return instrumentationService;
     }
 }

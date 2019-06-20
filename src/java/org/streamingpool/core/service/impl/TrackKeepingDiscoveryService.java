@@ -53,7 +53,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrackKeepingDiscoveryService.class);
     private final Action NOOP = () -> {};
     private final Set<StreamId<?>> idsOfStreamsUnderCreation;
-    private final Set<StreamId<?>> idsDiscovered;
+    private final Set<StreamId<?>> idsDiscovered = new HashSet<>();
     private final List<StreamFactory> factories;
     private final PoolContent content;
     private final Thread contextOfExecution;
@@ -70,7 +70,6 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         this.idsOfStreamsUnderCreation = Collections.unmodifiableSet(idsOfStreamsUnderCreation);
         this.contextOfExecution = requireNonNull(contextOfExecution, "contextOfExecution must not be null");
         this.poolConfiguration = poolConfiguration;
-        this.idsDiscovered = new HashSet<>();
     }
 
     @Override
@@ -78,15 +77,38 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         checkSameContexOfExecution();
         checkForRecursiveCycles(id);
 
-        content.synchronousPutIfAbsent(id, () -> createFromFactories(id));
+        /* Use the factories to create the new id in case is not present. */
+        /* NOTE: Using lambda here since calling it from anywhere else would break the synchronization  */
+        content.synchronousPutIfAbsent(id, () -> {
+            for (StreamFactory factory : factories) {
+                /* A fresh discovery service is used to keep track of the under-creation ids in a synchronized way  */
+                TrackKeepingDiscoveryService innerDiscoveryService = cloneDiscoveryServiceIncluding(id);
+                ErrorStreamPair<T> factoryResult = factory.create(id, innerDiscoveryService);
+
+                if (factoryResult == null) {
+                    throw new IllegalStateException(format(
+                            "Factory %s returned null instead of a valid stream object for the id %s", factory, id));
+                }
+
+                if (factoryResult.isPresent()) {
+                    LOGGER.info("Stream from id '{}' was successfully created by factory '{}'", id, factory);
+                    innerDiscoveryService.idsDiscovered
+                            .forEach(parent -> content.addDependency(id, parent));
+
+                    return ErrorStreamPair.ofDataError(factoryResult.data(), factoryResult.error());
+                }
+            }
+            return ErrorStreamPair.empty();
+        });
+
         idsDiscovered.add(id);
 
         Publisher<T> publisher = getStreamWithIdOrElseThrow(id);
-        Flowable<T> flowable =  observerOnThreadPool(publisher);
+        Flowable<T> stream =  observeOnThreadPool(publisher);
         if(id instanceof BackpressureAware){
-            flowable = applyBackpressureStrategy(flowable,((BackpressureAware)id).backpressureStrategy());
+            stream = applyBackpressureStrategy(stream,((BackpressureAware)id).backpressureStrategy());
         }
-        return flowable;
+        return stream;
     }
 
     private <T> Flowable<T> applyBackpressureStrategy(Flowable<T> source, BackpressureStrategy backpressureStrategy) {
@@ -116,7 +138,7 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         throw new IllegalArgumentException("Cannot determine the specified backpressure strategy: " + backpressureStrategy);
     }
 
-    private <T> Flowable<T> observerOnThreadPool(Publisher<T> publisher) {
+    private <T> Flowable<T> observeOnThreadPool(Publisher<T> publisher) {
         return Flowable.fromPublisher(publisher)
                 .observeOn(poolConfiguration.getScheduler(), false, poolConfiguration.getObserveOnCapacity());
     }
@@ -152,27 +174,6 @@ public class TrackKeepingDiscoveryService implements DiscoveryService {
         Set<StreamId<?>> newSet = new HashSet<>(idsOfStreamsUnderCreation);
         newSet.add(newId);
         return new TrackKeepingDiscoveryService(factories, content, newSet, contextOfExecution, poolConfiguration);
-    }
-
-    private <T> ErrorStreamPair<T> createFromFactories(StreamId<T> newId) {
-        for (StreamFactory factory : factories) {
-            TrackKeepingDiscoveryService innerDiscoveryService = cloneDiscoveryServiceIncluding(newId);
-            ErrorStreamPair<T> factoryResult = factory.create(newId, innerDiscoveryService);
-
-            if (factoryResult == null) {
-                throw new IllegalStateException(format(
-                        "Factory %s returned null instead of a valid stream object for the id %s", factory, newId));
-            }
-
-            if (factoryResult.isPresent()) {
-                LOGGER.info("Stream from id '{}' was successfully created by factory '{}'", newId, factory);
-                innerDiscoveryService.idsDiscovered
-                        .forEach(parent -> content.addDependency(newId, parent));
-
-                return ErrorStreamPair.ofDataError(factoryResult.data(), factoryResult.error());
-            }
-        }
-        return ErrorStreamPair.empty();
     }
 
 }

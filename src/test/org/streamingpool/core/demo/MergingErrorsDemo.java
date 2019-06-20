@@ -42,8 +42,8 @@ public class MergingErrorsDemo extends AbstractStreamTest implements RxStreamSup
         rxFrom(MergedErrorStreamId.mergeErrorsStartingFrom(LEAF_1)).subscribe(System.err::println);
         rxFrom(MergedErrorStreamId.mergeErrorsStartingFrom(LEAF_2)).subscribe(System.err::println);
 
-        Assertions.assertThat(getSubgraphStartingFrom(LEAF_1)).containsOnlyOnce(SOURCE_1, DERIVED_1_A, LEAF_1);
-        Assertions.assertThat(getSubgraphStartingFrom(LEAF_2)).containsOnlyOnce(SOURCE_2, DERIVED_2_A, LEAF_2);
+        Assertions.assertThat(getAncestorsFrom(LEAF_1)).containsOnlyOnce(SOURCE_1, DERIVED_1_A, LEAF_1);
+        Assertions.assertThat(getAncestorsFrom(LEAF_2)).containsOnlyOnce(SOURCE_2, DERIVED_2_A, LEAF_2);
 
         System.in.read();
     }

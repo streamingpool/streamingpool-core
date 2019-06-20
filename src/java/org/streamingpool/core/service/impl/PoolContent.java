@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.domain.StreamDependencyTree;
-import org.streamingpool.core.domain.StreamDependencyTreeImpl;
+import org.streamingpool.core.domain.SynchronizedStreamDependencyTree;
 import org.streamingpool.core.domain.ErrorStreamPair;
 import org.streamingpool.core.service.StreamId;
 import org.streamingpool.core.service.diagnostic.ErrorStreamId;
@@ -50,10 +50,10 @@ public class PoolContent {
     private final ConcurrentMap<StreamId<?>, Publisher<?>> activeStreams = new ConcurrentHashMap<>();
     private final ReplayProcessor<StreamId<?>> newStreamHook = ReplayProcessor.create();
     private final ExecutorService hookExecutor = Executors.newSingleThreadExecutor();
-    private final StreamDependencyTreeImpl dependencies;
+    private final SynchronizedStreamDependencyTree dependencies;
 
     public PoolContent() {
-        dependencies = new StreamDependencyTreeImpl();
+        dependencies = new SynchronizedStreamDependencyTree();
         addStreamHooks();
     }
 
