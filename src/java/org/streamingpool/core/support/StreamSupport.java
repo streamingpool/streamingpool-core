@@ -27,6 +27,9 @@ import org.streamingpool.core.service.CreatorProvidingService;
 import org.streamingpool.core.service.ProvidingService;
 import org.streamingpool.core.service.StreamCreator;
 import org.streamingpool.core.service.StreamId;
+import org.streamingpool.core.service.InstrumentationService;
+
+import java.util.Set;
 
 /**
  * Support interface for working with {@link Publisher}s. Provides convenience and fluid methods.
@@ -41,7 +44,16 @@ public interface StreamSupport {
 
     <T> OngoingLazyProviding<T> provide(StreamCreator<T> reactStream);
 
+    /**
+     * Get all the ancestors of the given {@link StreamId}. NOTE: this INCLUDES the source {@link StreamId}!
+     */
+    default Set<StreamId<?>> getAncestorsFrom(StreamId<?> sourceId) {
+        return instrumentationService().dependencyTree().getAncestorsFrom(sourceId);
+    }
+
     ProvidingService providingService();
+
+    InstrumentationService instrumentationService();
 
     class OngoingProviding<T> {
         private final Publisher<T> reactStream;

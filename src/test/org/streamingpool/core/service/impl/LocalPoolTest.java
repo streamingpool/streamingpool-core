@@ -52,7 +52,7 @@ public class LocalPoolTest {
 
     @Before
     public void setUp() {
-        pool = new LocalPool(Collections.emptyList(), new PoolConfiguration(Schedulers.from(Executors.newSingleThreadExecutor())));
+        pool = new LocalPool(Collections.emptyList(), new PoolConfiguration(Schedulers.from(Executors.newSingleThreadExecutor())), new PoolContent());
         pool.provide(ID_A, STREAM_A);
     }
 

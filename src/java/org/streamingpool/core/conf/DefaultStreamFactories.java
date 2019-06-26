@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.streamingpool.core.service.TypedStreamFactory;
+import org.streamingpool.core.service.InstrumentationService;
 import org.streamingpool.core.service.streamfactory.*;
 
 /**
@@ -36,6 +37,11 @@ import org.streamingpool.core.service.streamfactory.*;
 @Configuration
 @Import({ StreamCreatorFactoryConfiguration.class })
 public class DefaultStreamFactories {
+
+    @Bean
+    public MergedErrorStreamFactory mergedErrorStreamFactory(InstrumentationService instrumentationService) {
+        return new MergedErrorStreamFactory(instrumentationService);
+    }
 
     @Bean
     public CompositionStreamFactory compositionStreamFactory() {

@@ -29,6 +29,7 @@ import org.streamingpool.core.service.DiscoveryService;
 import org.streamingpool.core.service.ProvidingService;
 import org.streamingpool.core.service.StreamCreator;
 import org.streamingpool.core.service.StreamId;
+import org.streamingpool.core.service.InstrumentationService;
 
 /**
  * This class provides support for the discovery and for providing streams.
@@ -50,6 +51,8 @@ public class AbstractStreamSupport implements StreamSupport {
     private ProvidingService providingService;
     @Autowired
     private CreatorProvidingService lazyProvidingService;
+    @Autowired
+    private InstrumentationService instrumentationService;
 
     @Override
     public <T> Publisher<T> discover(StreamId<T> id) {
@@ -71,4 +74,8 @@ public class AbstractStreamSupport implements StreamSupport {
         return providingService;
     }
 
+    @Override
+    public InstrumentationService instrumentationService() {
+        return instrumentationService;
+    }
 }
