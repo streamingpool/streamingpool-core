@@ -1,44 +1,20 @@
 buildscript {
-    project.ext.CERN_VM = System.getProperty('CERN_TECHNET_VM') ?: System.getenv('CERN_TECHNET_VM') ?: false
-    project.ext.TRAVIS_CI = System.getProperty('TRAVIS') ?: System.getenv('TRAVIS') ?: false
-    project.ext.DEPLOYMENT = System.getProperty('deployment') ?: false
-    project.ext.VCS_TAG = System.getProperty('TRAVIS_TAG') ?: System.getenv('TRAVIS_TAG')
-    project.ext.POM = [
-            groupId    : 'org.streamingpool',
-            artifactId : 'streamingpool-core',
-            description: 'This project is an high level abstraction over Reactive Streams libraries that is currently used inside CERN.',
-            developers : [[
-                                  id   : 'streamingpool-dev',
-                                  name : 'Streamingpool Developers',
-                                  email: 'streamingpool-dev@cern.ch'
-                          ]]
-    ]
-    project.ext.INFO = [
-            repo        : 'https://github.com/streamingpool/streamingpool-core.git',
-            url         : 'http://www.streamingpool.org/',
-            github      : 'https://github.com/streamingpool/streamingpool-core',
-            githubIssues: 'https://github.com/streamingpool/streamingpool-core/issues'
-    ]
-    project.ext.BINTRAY = [
-            repo        : 'streamingpool-repos',
-            name        : 'org.streamingpool:streamingpool-core',
-            organization: 'streamingpool',
-            userName    : 'streamingpool-dev',
-            apiToken    : System.getenv('BINTRAY_API_TOKEN')
-    ]
+    project.ext['CERN_VM'] = System.getProperty('CERN_TECHNET_VM') ?: System.getenv('CERN_TECHNET_VM') ?: project.hasProperty('CERN_TECHNET_VM') ?: false
+    project.ext['DEPLOYMENT'] = System.getProperty('DEPLOYMENT') ?: false
+
     repositories {
-        if (CERN_VM) {
-            maven { url 'http://artifactory.cern.ch/gradle-plugins' }
+        if (project['CERN_VM']) {
             maven { url 'http://artifactory.cern.ch/ds-jcenter' }
             maven { url 'http://artifactory.cern.ch/development' }
+            maven { url 'http://artifactory.cern.ch/gradle-plugins' }
         } else {
-            mavenCentral()
-            jcenter()
+            gradlePluginPortal()
         }
     }
+
     dependencies {
-        classpath 'com.netflix.nebula:nebula-publishing-plugin:5.1.0'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath 'com.github.jk1:gradle-license-report:1.5'
+        classpath 'io.github.gradle-nexus:publish-plugin:1.0.0'
     }
 }
 
@@ -47,41 +23,31 @@ apply plugin: 'jacoco'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-repositories {
-    if (CERN_VM) {
-            maven { url 'http://artifactory.cern.ch/ds-jcenter' }
-            maven { url 'http://artifactory.cern.ch/development' }
-    } else {
-        mavenCentral()
-        jcenter()
-    }
-}
-
-if (DEPLOYMENT) {
-    apply plugin: 'maven'
-    apply plugin: 'maven-publish'
-    apply plugin: 'nebula.maven-publish'
-    apply plugin: 'com.jfrog.bintray'
-
-    println 'Applying deployment scripts'
-    apply from: './scripts/bintray-deploy.gradle'
-}
-
-group 'org.streamingpool'
+group = project['POM.groupId']
 
 sourceCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    if (CERN_VM) {
+        maven { url 'http://artifactory.cern.ch/ds-jcenter' }
+        maven { url 'http://artifactory.cern.ch/development' }
+    } else {
+        mavenCentral()
+    }
+}
 
 dependencies {
     compile 'org.reactivestreams:reactive-streams:1.0.0'
     compile 'io.reactivex.rxjava2:rxjava:2.1.16'
 
-    compile 'org.springframework:spring-core:5.1.2.RELEASE'
-    compile 'org.springframework:spring-context:5.1.2.RELEASE'
-    compile 'org.springframework:spring-test:5.1.2.RELEASE' // Testing utils in /src/java for the moment
+    compile group: 'org.springframework', name: 'spring-core', version: springVersion
+    compile group: 'org.springframework', name: 'spring-context', version: springVersion
+    // Testing utils in /src/java for the moment
+    compile group: 'org.springframework', name: 'spring-test', version: springVersion
 
     compile 'org.slf4j:slf4j-api:1.7.25'
 
-    compile 'com.google.guava:guava:27.0.1-jre'
+    compile group: 'com.google.guava', name: 'guava', version: guavaVersion
 
     compile 'junit:junit:4.12' // Testing utils in /src/java for the moment
     compile 'org.mockito:mockito-core:2.23.0' // Testing utils in /src/java for the moment
@@ -105,25 +71,27 @@ sourceSets {
     }
 }
 
+wrapper {
+    gradleVersion = '5.4.1'
+    distributionType = Wrapper.DistributionType.ALL
+}
+
 javadoc { options.encoding = "UTF-8" }
 
-task wrapper(type: Wrapper) { gradleVersion = '4.8.1' }
 
-if(!project.tasks.findByName("javadocJar")) {
+if (!project.tasks.findByName("javadocJar")) {
     task javadocJar(type: Jar) {
         classifier = 'javadoc'
         from javadoc
     }
 }
 
-if(!project.tasks.findByName("sourcesJar")) {
+if (!project.tasks.findByName("sourcesJar")) {
     task sourcesJar(type: Jar) {
         classifier = 'sources'
         from sourceSets.main.allSource
     }
 }
-
-artifacts { archives javadocJar, sourcesJar }
 
 jacocoTestReport {
     reports {
@@ -146,4 +114,19 @@ idea {
         downloadJavadoc = true
         downloadSources = true
     }
+}
+
+if (!project['CERN_VM']) {
+    println 'Applying licensing report'
+    apply plugin: 'com.github.jk1.dependency-license-report'
+
+    licenseReport {
+        renderers = [this.class.classLoader.loadClass('com.github.jk1.license.render.InventoryHtmlReportRenderer').newInstance()]
+        filters = [this.class.classLoader.loadClass('com.github.jk1.license.filter.LicenseBundleNormalizer').newInstance()]
+    }
+}
+
+if (project['DEPLOYMENT']) {
+    println 'Applying deployment scripts'
+    apply from: 'https://raw.githubusercontent.com/ossgang/gradle-scripts/master/deployment/deploy-to-maven-central.gradle'
 }
