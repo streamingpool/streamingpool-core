@@ -8,6 +8,7 @@ before_install:
 script:
   - ./gradlew check --stacktrace
   - ./gradlew jacocoTestReport
+  - ./gradlew dependencies
 before_deploy:
   - ./gradlew generateLicenseReport
   - ./gradlew javadoc
