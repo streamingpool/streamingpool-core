@@ -60,7 +60,7 @@ public class EmbeddedPoolConfiguration {
     @Autowired(required = false)
     private List<StreamFactory> streamFactories;
 
-    @Bean
+    @Bean(destroyMethod = "shutdown")
     public PoolContent poolContent() {
         return new PoolContent();
     }

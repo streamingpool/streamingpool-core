@@ -1,23 +1,21 @@
 // @formatter:off
 /**
-*
-* This file is part of streaming pool (http://www.streamingpool.org).
-* 
-* Copyright (c) 2017-present, CERN. All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-* 
-*/
+ * This file is part of streaming pool (http://www.streamingpool.org).
+ * <p>
+ * Copyright (c) 2017-present, CERN. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 // @formatter:on
 
 package org.streamingpool.core.service.impl;
@@ -30,6 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.reactivestreams.Publisher;
 import org.streamingpool.core.domain.StreamDependencyTree;
 import org.streamingpool.core.domain.SynchronizedStreamDependencyTree;
@@ -42,19 +41,26 @@ import io.reactivex.processors.ReplayProcessor;
 
 /**
  * Encapsulate the state of a streaming pool.
- * 
+ *
  * @author acalia, kfuchsbe, mihostet
  */
 public class PoolContent {
 
     private final ConcurrentMap<StreamId<?>, Publisher<?>> activeStreams = new ConcurrentHashMap<>();
     private final ReplayProcessor<StreamId<?>> newStreamHook = ReplayProcessor.create();
-    private final ExecutorService hookExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService hookExecutor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
+            .setDaemon(false)
+            .setNameFormat("streamingpool-hook-thread-%d")
+            .build());
     private final SynchronizedStreamDependencyTree dependencies;
 
     public PoolContent() {
         dependencies = new SynchronizedStreamDependencyTree();
         addStreamHooks();
+    }
+
+    public void shutdown() {
+        hookExecutor.shutdown();
     }
 
     public <T> boolean synchronousPutIfAbsent(StreamId<T> id, Supplier<ErrorStreamPair<T>> supplier) {
