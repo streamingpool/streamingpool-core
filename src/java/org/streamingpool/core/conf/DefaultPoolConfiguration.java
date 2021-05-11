@@ -51,7 +51,7 @@ public class DefaultPoolConfiguration {
     @Value("${" + STREAMINGPOOL_THREAD_POOL_KEEP_ALIVE_SECONDS + ":60}")
     private long keepAliveTimeSeconds;
 
-    @Value("${" + STREAMINGPOOL_THREAD_POOL_USE_DAEMON_THREADS + ":true}")
+    @Value("${" + STREAMINGPOOL_THREAD_POOL_USE_DAEMON_THREADS + ":false}")
     private boolean useDaemonThreads;
 
     @Bean(destroyMethod = "shutdown")
